@@ -21,6 +21,8 @@
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_instancing
+            
             
             #include "UnityCG.cginc"
 
@@ -39,14 +41,13 @@
             sampler2D _MainTex;
             float _AnimSpeed;
             float _AWidth;
-            float4 _BaseColor;
+            float4 _BaseColor;  
+            StructuredBuffer<float4x4> _ButterflyBuffer;
 
-            v2f vert (appdata v)
+            v2f vert (appdata v,uint id : SV_InstanceID)
             {
-                float3 p=v.vertex.xyz;
-                
-                // float a=abs(p.x);
-                // p.y+=a*sin(_Time.y*_AnimSpeed)*_AWidth;
+                float4 p=v.vertex;
+               
 
                float t=sin(_Time.y*_AnimSpeed)*sign(p.x)*_AWidth;
                float2x2 rot=float2x2(
@@ -55,10 +56,11 @@
                );
                p.xy=mul(rot,p.xy);
 
-                v.vertex.xyz=p;
+                 p=mul(_ButterflyBuffer[id],p);
+               
 
                 v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.vertex = UnityObjectToClipPos(p);
                 o.uv = v.uv;
                 return o;
             }
