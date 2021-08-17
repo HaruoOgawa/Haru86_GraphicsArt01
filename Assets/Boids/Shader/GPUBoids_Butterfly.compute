@@ -1,14 +1,65 @@
-﻿// Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel CSMain
+﻿#pragma kernel CalVector
+#pragma kernel ResultVector
 
-// Create a RenderTexture with enableRandomWrite flag and set it
-// with cs.SetTexture
-RWTexture2D<float4> Result;
+#define NUMTHREADS_X_NUM 256
 
-[numthreads(8,8,1)]
-void CSMain (uint3 id : SV_DispatchThreadID)
-{
-    // TODO: insert actual code here!
+struct Butterfly{
+    float3 position;
+    float3 velocity;
+};
 
-    Result[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
+RWStructuredBuffer<Butterfly> _comouteBuffer_boids_write;
+RWStructuredBuffer<Butterfly> _comouteBuffer_boids_read;
+int _butterfly_count;
+
+groupshared Butterfly butterfly_data[NUMTHREADS_X_NUM];
+
+[numthreads(NUMTHREADS_X_NUM,1,1)]
+void CalVector(
+    uint3 GID : SV_GROUPTHREADID,
+    uint3 DID : SV_DISPATCHTHREADID
+){
+    Butterfly my_butterfly_data=_comouteBuffer_boids_read[DID.x];
+     float3 my_position=my_butterfly_data.position;
+     float3 my_velocity=my_butterfly_data.velocity;
+
+    float3 joinVal=float3(0,0,0);
+    float3 separateVal=float3(0,0,0);
+    float3 alignmentVal=float3(0,0,0);
+
+    float joinCount=0;
+    float separateCount=0;
+    float alignmentCount=0;
+
+    [loop]
+    for(int i=0;i<_butterfly_count;i+NUMTHREADS_X_NUM-1){
+        butterfly_data[GID.x]=_comouteBuffer_boids_read[i+GID.x];
+        
+        GroupMemoryBarrierWithGroupSync();
+        
+        for(int q=0;q<NUMTHREADS_X_NUM;q++){
+            float3 other_position=butterfly_data[q].position;
+            float3 other_velocity=butterfly_data[q].velocity;
+
+            //join
+
+            //separate
+
+            //alignment
+            
+        }
+
+        GroupMemoryBarrierWithGroupSync();
+
+    }
+
+    
 }
+
+[numthreads(NUMTHREADS_X_NUM,1,1)]
+void ResultVector(
+      uint3 GID : SV_GROUPTHREADID,
+    uint3 DID : SV_DISPATCHTHREADID
+){
+
+} 
