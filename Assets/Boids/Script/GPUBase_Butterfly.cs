@@ -41,12 +41,12 @@
                 butterfly_buffer=new ComputeBuffer(count,Marshal.SizeOf(typeof(Matrix4x4)));
                 butterfly_buffer.SetData(butterfly_TRS);
                 butterflyRender_mat.SetBuffer("_ButterflyBuffer",butterfly_buffer);*/
-                butterflyRender_mat.SetBuffer("_boidsBuffer",gPUBoids_Butterfly.comouteBuffer_boids_read);
+               // butterflyRender_mat.SetBuffer("_boidsBuffer",gPUBoids_Butterfly.comouteBuffer_boids_data);
         }
 
         void Update()
         {
-             butterflyRender_mat.SetBuffer("_boidsBuffer",gPUBoids_Butterfly.comouteBuffer_boids_read);
+             butterflyRender_mat.SetBuffer("_boidsBuffer",gPUBoids_Butterfly.comouteBuffer_boids_data);
             Graphics.DrawMeshInstancedProcedural(plane_mesh,0,butterflyRender_mat,new Bounds(transform.position,Vector3.one*500),count);
         }
 

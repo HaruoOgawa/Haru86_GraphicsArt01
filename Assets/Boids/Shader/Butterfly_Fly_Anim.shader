@@ -56,7 +56,7 @@
                // p.xyz=_boidsBuffer[id].position;
                
 
-               float t=sin(_Time.y*_AnimSpeed)*sign(p.x)*_AWidth;
+               float t=sin(_Time.y*_AnimSpeed+(float)id)*sign(p.x)*_AWidth;
                float2x2 rot=float2x2(
                    float2(cos(t),-sin(t)),
                    float2(sin(t),cos(t))

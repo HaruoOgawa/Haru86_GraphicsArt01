@@ -8,8 +8,10 @@ struct Butterfly{
     float3 velocity;
 };
 
-RWStructuredBuffer<Butterfly> _comouteBuffer_boids_write;
-RWStructuredBuffer<Butterfly> _comouteBuffer_boids_read;
+RWStructuredBuffer<Butterfly> _boids_data_write;
+RWStructuredBuffer<Butterfly> _boids_data_read;
+RWStructuredBuffer<float3> _boids_force_write;
+RWStructuredBuffer<float3> _boids_force_read;
 
 int _butterfly_count;
 float _maxBoidsDist;
@@ -22,7 +24,7 @@ void CalVector(
     uint3 GID : SV_GROUPTHREADID,
     uint3 DID : SV_DISPATCHTHREADID
 ){
-    Butterfly my_butterfly_data=_comouteBuffer_boids_read[DID.x];
+    Butterfly my_butterfly_data=_boids_data_read[DID.x];
      float3 my_position=my_butterfly_data.position;
      float3 my_velocity=my_butterfly_data.velocity;
 
@@ -44,7 +46,7 @@ void CalVector(
     
     [loop]
     for(int i=0;i<_butterfly_count;i+=NUMTHREADS_X_NUM){
-        butterfly_data[GID.x]=_comouteBuffer_boids_read[i+GID.x];
+        butterfly_data[GID.x]=_boids_data_read[i+GID.x];
         
         GroupMemoryBarrierWithGroupSync();
 
@@ -53,7 +55,7 @@ void CalVector(
             float3 other_position=butterfly_data[q].position;
             float3 other_velocity=butterfly_data[q].velocity;
 
-            float dis=distance(my_position,other_position);
+            float dis=length(other_position-my_position);
 
             //join
             if(dis>0&&dis<_maxBoidsDist){
@@ -63,7 +65,7 @@ void CalVector(
             //separate
             if(dis>0&&dis<_maxBoidsDist){
                 float3 dirVector=other_position-my_position;
-                separateVectorSum+=dirVector;
+                separateVectorSum-=dirVector;
                 separateCount++;
             }
             //alignment
@@ -85,7 +87,7 @@ void CalVector(
     
     //separateForce
     separateForce=separateVectorSum/(float)separateVectorSum;
-    separateForce= -1.0*separateForce;
+   // separateForce= -1.0*separateForce;
 
     //alignmentForce
     alignmentForce=alignmentVectorSum/(float)alignmentCount;
@@ -94,12 +96,10 @@ void CalVector(
     result_velocity+=joinForce;
     result_velocity+=separateForce;
     result_velocity+=alignmentForce;
-
-    my_butterfly_data.velocity=result_velocity;
-    
-    _comouteBuffer_boids_write[DID.x]=my_butterfly_data;
+  
+    _boids_force_write[DID.x]=result_velocity;
     //swap
-    _comouteBuffer_boids_read[DID.x]=_comouteBuffer_boids_write[DID.x];
+   
 
 }
 
@@ -108,16 +108,16 @@ void ResultVector(
       uint3 GID : SV_GROUPTHREADID,
     uint3 DID : SV_DISPATCHTHREADID
 ){
-    Butterfly now_butterfly_data=_comouteBuffer_boids_read[DID.x];
-    float3 now_pos=now_butterfly_data.position;
-    float3 now_vel=now_butterfly_data.velocity;
+    Butterfly boids_data=_boids_data_write[DID.x];
+    float3 now_pos=boids_data.position;
+    float3 now_vel=boids_data.velocity;
 
-    Butterfly next_butterfly_daya=_comouteBuffer_boids_write[DID.x];
-    float3 nex_vel=now_vel+next_butterfly_daya.velocity;
-    float3 next_pos=now_pos+nex_vel*_DTime+_DTime;
+    float3 force=_boids_force_read[DID.x];
+    float3 nex_vel=force-now_vel;
+    float3 next_pos=now_pos+normalize(nex_vel)*_DTime*50.0;
 
-    next_butterfly_daya.position=next_pos;
-    next_butterfly_daya.velocity=nex_vel;
+    boids_data.position=next_pos;
+    boids_data.velocity=nex_vel;
 
-    _comouteBuffer_boids_write[DID.x]=next_butterfly_daya;
+    _boids_data_write[DID.x]=boids_data;
 } 
