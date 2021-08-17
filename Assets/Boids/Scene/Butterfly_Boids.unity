@@ -491,6 +491,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boids_cs: {fileID: 7200000, guid: 7d4283d52fd1cd34290625f19bcc96a1, type: 3}
+  maxBoidsDist: 100
 --- !u!114 &1319896582
 MonoBehaviour:
   m_ObjectHideFlags: 0

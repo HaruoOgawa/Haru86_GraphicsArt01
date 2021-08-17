@@ -42,11 +42,18 @@
             float _AnimSpeed;
             float _AWidth;
             float4 _BaseColor;  
-            StructuredBuffer<float4x4> _ButterflyBuffer;
+
+            struct Butterfly{
+                float3 position;
+                float3 velocity;
+            };
+                    // StructuredBuffer<float4x4> _ButterflyBuffer;
+            StructuredBuffer<Butterfly> _boidsBuffer;
 
             v2f vert (appdata v,uint id : SV_InstanceID)
             {
                 float4 p=v.vertex;
+               // p.xyz=_boidsBuffer[id].position;
                
 
                float t=sin(_Time.y*_AnimSpeed)*sign(p.x)*_AWidth;
@@ -55,8 +62,9 @@
                    float2(sin(t),cos(t))
                );
                p.xy=mul(rot,p.xy);
-
-                 p=mul(_ButterflyBuffer[id],p);
+               p.xyz+=_boidsBuffer[id].position;
+               
+                 //p=mul(_ButterflyBuffer[id],p);
                
 
                 v2f o;

@@ -20,20 +20,16 @@
         [SerializeField] Mesh plane_mesh;
         [SerializeField] float size=1.0f;
         Matrix4x4[] butterfly_TRS;
-        ComputeBuffer butterfly_buffer;
         
-         void OnDisable()
-        {
-           butterfly_buffer.Release();
-        }
 
         void Awake(){
+            count=Mathf.NextPowerOfTwo(count);
             if(instance==null)instance=this;
         }
 
         void Start()
         {
-                butterfly_TRS=new Matrix4x4[count];
+                /*butterfly_TRS=new Matrix4x4[count];
                 for(int i=0;i<count;i++){
                     butterfly_TRS[i]=Matrix4x4.TRS(
                         Random.insideUnitSphere*1000f,
@@ -44,11 +40,13 @@
 
                 butterfly_buffer=new ComputeBuffer(count,Marshal.SizeOf(typeof(Matrix4x4)));
                 butterfly_buffer.SetData(butterfly_TRS);
-                butterflyRender_mat.SetBuffer("_ButterflyBuffer",butterfly_buffer);
+                butterflyRender_mat.SetBuffer("_ButterflyBuffer",butterfly_buffer);*/
+                butterflyRender_mat.SetBuffer("_boidsBuffer",gPUBoids_Butterfly.comouteBuffer_boids_read);
         }
 
         void Update()
         {
+             butterflyRender_mat.SetBuffer("_boidsBuffer",gPUBoids_Butterfly.comouteBuffer_boids_read);
             Graphics.DrawMeshInstancedProcedural(plane_mesh,0,butterflyRender_mat,new Bounds(transform.position,Vector3.one*500),count);
         }
 

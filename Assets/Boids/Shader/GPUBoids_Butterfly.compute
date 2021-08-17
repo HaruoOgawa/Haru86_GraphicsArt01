@@ -10,7 +10,10 @@ struct Butterfly{
 
 RWStructuredBuffer<Butterfly> _comouteBuffer_boids_write;
 RWStructuredBuffer<Butterfly> _comouteBuffer_boids_read;
+
 int _butterfly_count;
+float _maxBoidsDist;
+float _DTime;
 
 groupshared Butterfly butterfly_data[NUMTHREADS_X_NUM];
 
@@ -31,21 +34,43 @@ void CalVector(
     float separateCount=0;
     float alignmentCount=0;
 
+    float3 joinPosSum=float3(0,0,0);
+    float3 separateVectorSum=float3(0,0,0);
+    float3 alignmentVectorSum=float3(0,0,0);
+
+    float3 joinForce=float3(0,0,0);
+    float3 separateForce=float3(0,0,0);
+    float3 alignmentForce=float3(0,0,0);
+    
     [loop]
-    for(int i=0;i<_butterfly_count;i+NUMTHREADS_X_NUM-1){
+    for(int i=0;i<_butterfly_count;i+=NUMTHREADS_X_NUM){
         butterfly_data[GID.x]=_comouteBuffer_boids_read[i+GID.x];
         
         GroupMemoryBarrierWithGroupSync();
-        
+
+//NUMTHREADS_X_NUM
         for(int q=0;q<NUMTHREADS_X_NUM;q++){
             float3 other_position=butterfly_data[q].position;
             float3 other_velocity=butterfly_data[q].velocity;
 
+            float dis=distance(my_position,other_position);
+
             //join
-
+            if(dis>0&&dis<_maxBoidsDist){
+                joinPosSum+=other_position;
+                joinCount++;
+            }
             //separate
-
+            if(dis>0&&dis<_maxBoidsDist){
+                float3 dirVector=other_position-my_position;
+                separateVectorSum+=dirVector;
+                separateCount++;
+            }
             //alignment
+            if(dis>0&&dis<_maxBoidsDist){
+                alignmentVectorSum+=other_velocity;
+                alignmentCount++;
+            }
             
         }
 
@@ -53,7 +78,29 @@ void CalVector(
 
     }
 
+
+    //joinForce
+    joinForce=joinPosSum/(float)joinCount;
+    joinForce=joinForce-my_position;
     
+    //separateForce
+    separateForce=separateVectorSum/(float)separateVectorSum;
+    separateForce= -1.0*separateForce;
+
+    //alignmentForce
+    alignmentForce=alignmentVectorSum/(float)alignmentCount;
+
+    float3 result_velocity=my_velocity;
+    result_velocity+=joinForce;
+    result_velocity+=separateForce;
+    result_velocity+=alignmentForce;
+
+    my_butterfly_data.velocity=result_velocity;
+    
+    _comouteBuffer_boids_write[DID.x]=my_butterfly_data;
+    //swap
+    _comouteBuffer_boids_read[DID.x]=_comouteBuffer_boids_write[DID.x];
+
 }
 
 [numthreads(NUMTHREADS_X_NUM,1,1)]
@@ -61,5 +108,16 @@ void ResultVector(
       uint3 GID : SV_GROUPTHREADID,
     uint3 DID : SV_DISPATCHTHREADID
 ){
+    Butterfly now_butterfly_data=_comouteBuffer_boids_read[DID.x];
+    float3 now_pos=now_butterfly_data.position;
+    float3 now_vel=now_butterfly_data.velocity;
 
+    Butterfly next_butterfly_daya=_comouteBuffer_boids_write[DID.x];
+    float3 nex_vel=now_vel+next_butterfly_daya.velocity;
+    float3 next_pos=now_pos+nex_vel*_DTime+_DTime;
+
+    next_butterfly_daya.position=next_pos;
+    next_butterfly_daya.velocity=nex_vel;
+
+    _comouteBuffer_boids_write[DID.x]=next_butterfly_daya;
 } 
