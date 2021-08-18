@@ -36,6 +36,7 @@
         void Update()
         {
              butterflyRender_mat.SetBuffer("_boidsBuffer",gPUBoids_Butterfly.comouteBuffer_boids_data);
+             butterflyRender_mat.SetBuffer("_boidsForce",gPUBoids_Butterfly.comouteBuffer_boids_force);
             Graphics.DrawMeshInstancedProcedural(plane_mesh,0,butterflyRender_mat,new Bounds(transform.position,Vector3.one*500),count);
         }
 

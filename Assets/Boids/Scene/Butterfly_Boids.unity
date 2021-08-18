@@ -508,8 +508,8 @@ MonoBehaviour:
   gPUTrail_Butterfly: {fileID: 1319896580}
   gPUBoids_Butterfly: {fileID: 1319896581}
   butterflyRender_mat: {fileID: 2100000, guid: 8eb4a58bb17c244479a3b51df63c65b9, type: 2}
-  count: 2000
-  maxBoidsField: 100
+  count: 10000
+  maxBoidsField: 200
   plane_mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
   size: 1
 --- !u!1 &1855535475

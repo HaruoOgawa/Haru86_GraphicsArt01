@@ -65,7 +65,9 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
             //prepare buffer
             for(int i=0;i<count;i++){
                 Vector3 initPos=Random.insideUnitSphere*1000f;
-                Vector3 initVec=Vector3.Normalize(Random.insideUnitSphere);
+                Vector3 initVec=Vector3.Normalize(new Vector3(Random.Range(-10.0f,10.0f),Random.Range(-10.0f,10.0f),Random.Range(-10.0f,10.0f)))-Vector3.Normalize(Random.insideUnitSphere);
+                initVec=Vector3.Normalize(initVec);
+                //initVec=new Vector3(0,0,0)-initVec;
                 butterflies[i]=new Butterfly(initPos,initVec);
                 initForce[i]=Vector3.zero;
                 initMatrix[i]=Matrix4x4.identity;
