@@ -354,7 +354,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 1, z: -389}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -491,7 +491,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boids_cs: {fileID: 7200000, guid: 7d4283d52fd1cd34290625f19bcc96a1, type: 3}
-  maxBoidsDist: 100
+  maxBoidsDist: 50
+  centerPosPower: 1000000
 --- !u!114 &1319896582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -507,7 +508,8 @@ MonoBehaviour:
   gPUTrail_Butterfly: {fileID: 1319896580}
   gPUBoids_Butterfly: {fileID: 1319896581}
   butterflyRender_mat: {fileID: 2100000, guid: 8eb4a58bb17c244479a3b51df63c65b9, type: 2}
-  count: 10000
+  count: 2000
+  maxBoidsField: 100
   plane_mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
   size: 1
 --- !u!1 &1855535475

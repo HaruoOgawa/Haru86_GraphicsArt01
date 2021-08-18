@@ -17,6 +17,7 @@
         [SerializeField] Material butterflyRender_mat;
         public int count=1000;
         public static GPUBase_Butterfly instance=null;
+        public  float maxBoidsField=500.0f;
         [SerializeField] Mesh plane_mesh;
         [SerializeField] float size=1.0f;
         Matrix4x4[] butterfly_TRS;
@@ -29,19 +30,7 @@
 
         void Start()
         {
-                /*butterfly_TRS=new Matrix4x4[count];
-                for(int i=0;i<count;i++){
-                    butterfly_TRS[i]=Matrix4x4.TRS(
-                        Random.insideUnitSphere*1000f,
-                        Quaternion.Euler(Random.Range(-360f,360f),Random.Range(-360f,360f),Random.Range(-360f,360f)),
-                        new Vector3(size,size,size)
-                    );
-                }
-
-                butterfly_buffer=new ComputeBuffer(count,Marshal.SizeOf(typeof(Matrix4x4)));
-                butterfly_buffer.SetData(butterfly_TRS);
-                butterflyRender_mat.SetBuffer("_ButterflyBuffer",butterfly_buffer);*/
-               // butterflyRender_mat.SetBuffer("_boidsBuffer",gPUBoids_Butterfly.comouteBuffer_boids_data);
+               
         }
 
         void Update()

@@ -13,11 +13,41 @@ RWStructuredBuffer<Butterfly> _boids_data_read;
 RWStructuredBuffer<float3> _boids_force_write;
 RWStructuredBuffer<float3> _boids_force_read;
 
+RWStructuredBuffer<float4x4> _debugBuffer;
+
 int _butterfly_count;
 float _maxBoidsDist;
 float _DTime;
+float _Time;
+float _maxBoidsField;
+float _centerPosPower;
 
 groupshared Butterfly butterfly_data[NUMTHREADS_X_NUM];
+
+float3 TurnButterfly(float3 pos,float3 vel){
+    float3 turnVel=float3(0,0,0);
+    /*pos=pos*2.0-_maxBoidsField;
+    if(pos.x<-_maxBoidsField||pos.x>_maxBoidsField){
+        vel.x=-vel.x;
+    }
+    if(pos.y<-_maxBoidsField||pos.y>_maxBoidsField){
+        vel.y=-vel.y;
+    }
+    if(pos.z<-_maxBoidsField||pos.z>_maxBoidsField){
+        vel.z=-vel.z;
+    }
+
+    return vel;*/
+    float turnPower=10.0;
+    turnVel.x+=(pos.x < -_maxBoidsField) ? turnPower : 0;
+    turnVel.x+=(pos.x > _maxBoidsField) ? -turnPower : 0;
+    turnVel.y+=(pos.y < -_maxBoidsField) ? turnPower : 0;
+    turnVel.y+=(pos.y > _maxBoidsField) ? -turnPower : 0;
+    turnVel.z+=(pos.z < -_maxBoidsField) ? turnPower : 0;
+    turnVel.z+=(pos.z > _maxBoidsField) ? -turnPower : 0;
+
+    return turnVel;
+}
 
 [numthreads(NUMTHREADS_X_NUM,1,1)]
 void CalVector(
@@ -43,36 +73,52 @@ void CalVector(
     float3 joinForce=float3(0,0,0);
     float3 separateForce=float3(0,0,0);
     float3 alignmentForce=float3(0,0,0);
+
+    float3 result_velocity=(float3)my_velocity;
+
+     float3 centerPos=float3(0,0,0);
+     float smallT=0.1;
+    centerPos=float3(cos(_Time*smallT)*_centerPosPower,0.,sin(_Time*smallT)*_centerPosPower);
+    //centerPos=float3(0,0,_Time*_centerPosPower);
+
+    float disMin=100000000.0;
+    float disMax=-10000000.0;
     
     [loop]
-    for(int i=0;i<_butterfly_count;i+=NUMTHREADS_X_NUM){
+    for(int i=0;i<_butterfly_count;i+=255){
         butterfly_data[GID.x]=_boids_data_read[i+GID.x];
         
         GroupMemoryBarrierWithGroupSync();
 
 //NUMTHREADS_X_NUM
-        for(int q=0;q<NUMTHREADS_X_NUM;q++){
+        for(int q=0;q<255;q++){
             float3 other_position=butterfly_data[q].position;
             float3 other_velocity=butterfly_data[q].velocity;
 
             float dis=length(other_position-my_position);
+            dis=abs(dis);
 
             //join
-            if(dis>0&&dis<_maxBoidsDist){
-                joinPosSum+=other_position;
+           
+            if(dis>0&&dis<=_maxBoidsDist){
+                // float3 dirPos=centerPos-other_position;
+                  float3 dirPos=other_position;
+                 joinPosSum+=dirPos*(1.0/dis);
                 joinCount++;
             }
             //separate
-            if(dis>0&&dis<_maxBoidsDist){
+            if(dis>0&&dis<=10.0){
                 float3 dirVector=other_position-my_position;
-                separateVectorSum-=dirVector;
+                separateVectorSum-=dirVector*(1.0/dis);
                 separateCount++;
             }
             //alignment
-            if(dis>0&&dis<_maxBoidsDist){
-                alignmentVectorSum+=other_velocity;
+            if(dis>0&&dis<=_maxBoidsDist){
+                alignmentVectorSum+=other_velocity*(1.0/dis);
                 alignmentCount++;
             }
+            disMin=min(disMin,dis);
+            disMax=max(disMax,dis);
             
         }
 
@@ -81,25 +127,61 @@ void CalVector(
     }
 
 
-    //joinForce
-    joinForce=joinPosSum/(float)joinCount;
-    joinForce=joinForce-my_position;
-    
-    //separateForce
-    separateForce=separateVectorSum/(float)separateVectorSum;
-   // separateForce= -1.0*separateForce;
-
-    //alignmentForce
-    alignmentForce=alignmentVectorSum/(float)alignmentCount;
-
-    float3 result_velocity=my_velocity;
-    result_velocity+=joinForce;
-    result_velocity+=separateForce;
-    result_velocity+=alignmentForce;
-  
-    _boids_force_write[DID.x]=result_velocity;
-    //swap
    
+
+     if(joinCount>0){
+          //joinForce
+        //joinForce=joinPosSum/(float)joinCount;
+        joinForce.x=joinPosSum.x/(float)joinCount;
+        joinForce.y=joinPosSum.y/(float)joinCount;
+        joinForce.z=joinPosSum.z/(float)joinCount;
+        joinForce=joinForce-my_position;
+        joinForce=normalize(joinForce);
+        
+        result_velocity+=(float3)joinForce;
+        
+       
+    }
+
+     if(separateCount>0){
+      
+        
+        //separateForce
+        //separateForce=separateVectorSum/(float)separateVectorSum;
+        separateForce.x=separateVectorSum.x/(float)separateVectorSum;
+        separateForce.y=separateVectorSum.y/(float)separateVectorSum;
+        separateForce.z=separateVectorSum.z/(float)separateVectorSum;
+        separateForce=separateForce-my_position;
+        separateForce=normalize(separateForce);
+
+      
+        result_velocity+=(float3)separateForce;
+        
+        
+    }
+
+     if(alignmentCount>0){
+        
+
+        //alignmentForce
+        //alignmentForce=alignmentVectorSum/(float)alignmentCount;
+        alignmentForce.x=alignmentVectorSum.x/(float)alignmentCount;
+        alignmentForce.y=alignmentVectorSum.y/(float)alignmentCount;
+        alignmentForce.z=alignmentVectorSum.z/(float)alignmentCount;
+        alignmentForce=alignmentForce-my_position;
+        alignmentForce=normalize(alignmentForce);
+
+        result_velocity+=(float3)alignmentForce;
+
+    
+    }
+
+    //result_velocity=TurnButterfly(my_position,result_velocity);
+    _boids_force_write[DID.x]=result_velocity;
+    
+   
+    //_debugBuffer[DID.x]=float3(joinCount,separateCount,alignmentCount);
+    _debugBuffer[DID.x]=float4x4(float4(joinPosSum,0),float4(separateVectorSum,0),float4(alignmentVectorSum,disMin),float4(joinCount,separateCount,alignmentCount,disMax));
 
 }
 
@@ -113,8 +195,12 @@ void ResultVector(
     float3 now_vel=boids_data.velocity;
 
     float3 force=_boids_force_read[DID.x];
-    float3 nex_vel=force-now_vel;
+    
+    float3 nex_vel=force;
+    // float3 nex_vel=force-now_vel;
+    //nex_vel+=TurnButterfly(now_pos);
     float3 next_pos=now_pos+normalize(nex_vel)*_DTime*50.0;
+    //float3 next_pos=now_pos;
 
     boids_data.position=next_pos;
     boids_data.velocity=nex_vel;
