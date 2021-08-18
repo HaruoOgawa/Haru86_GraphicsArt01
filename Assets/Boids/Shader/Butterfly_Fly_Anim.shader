@@ -58,6 +58,7 @@
             StructuredBuffer<float3> _boidsForce;
 
             #define rot(a) float2x2(cos(a),sin(a),-sin(a),cos(a))
+            #define PI 3.1415926535
 
             float4x4 GetRotMatrix(float3 angle){
                 //fai Φ
@@ -80,9 +81,7 @@
             v2f vert (appdata v,uint id : SV_InstanceID)
             {
                 float4 p=v.vertex;
-               // p.xyz=_boidsBuffer[id].position;
                
-
                float t=sin(_Time.y*_AnimSpeed+(float)id)*sign(p.x)*_AWidth;
                float2x2 rot=float2x2(
                    float2(cos(t),-sin(t)),
@@ -97,7 +96,7 @@
                 boids_objectToWorld._11_22_33_44=1.0;
 
                 //rotation
-                float3 force=normalize(_boidsForce[id]);
+                float3 force=normalize(_boidsForce[id])*2.0*PI-PI;
                 float theta_x=atan2(force.y,force.z);
                 float theta_y=atan2(force.x,force.z);
                 
@@ -107,13 +106,11 @@
                 //transform
                 boids_objectToWorld._14_24_34=_boidsBuffer[id].position;
 
-               //p.xyz+=_boidsBuffer[id].position;
                 p=mul(boids_objectToWorld,p);
                 
 
                 v2f o;
-               // o.vertex = UnityObjectToClipPos(p);
-                 o.vertex = mul(UNITY_MATRIX_VP,p);
+                o.vertex = mul(UNITY_MATRIX_VP,p);
                 o.uv = v.uv;
                 o.id=id;
                 o.col=float4(1.,1.,1.,1.);
@@ -127,9 +124,6 @@
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
                 col.rgb+=i.col.rgb;
-                //col.rgb+=_BaseColor.rgb;
-                
-                //col.rgb*=_BaseColor.rrr;
                 return col;
             }
             ENDCG
