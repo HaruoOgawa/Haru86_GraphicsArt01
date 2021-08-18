@@ -18,6 +18,7 @@
         public int count=1000;
         public static GPUBase_Butterfly instance=null;
         public  float maxBoidsField=500.0f;
+        public float initRadius=500.0f;
         [SerializeField] Mesh plane_mesh;
         [SerializeField] float size=1.0f;
         Matrix4x4[] butterfly_TRS;

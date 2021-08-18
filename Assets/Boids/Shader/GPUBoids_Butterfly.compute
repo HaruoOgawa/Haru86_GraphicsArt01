@@ -28,17 +28,32 @@ float3 TurnButterfly(float3 pos,float3 vel,float uid){
     float3 turnVel=float3(0,0,0);
    // pos=pos*2.0-_maxBoidsField;
     
-    if(pos.x<-_maxBoidsField||pos.x>_maxBoidsField){
-        vel.x=-vel.x;
+    float seed=2.5;
+    
+    if(pos.x<-1.0*_maxBoidsField){
+        vel.x+=seed*abs(vel.x);
     }
-    if(pos.y<-_maxBoidsField||pos.y>_maxBoidsField){
-        vel.y=-vel.y;
+     if(pos.x>_maxBoidsField){
+        vel.x-=seed*abs(vel.x);
     }
-    if(pos.z<-_maxBoidsField||pos.z>_maxBoidsField){
-        vel.z=-vel.z;
+    
+    if(pos.y<-1.0*_maxBoidsField){
+        vel.y+=seed*abs(vel.y);
+    }
+     if(pos.y>_maxBoidsField){
+        vel.y-=seed*abs(vel.y);
+    }
+
+    if(pos.z<-1.0*_maxBoidsField){
+        vel.z+=seed*abs(vel.z);
+    }
+     if(pos.z>_maxBoidsField){
+        vel.z-=seed*abs(vel.z);
     }
 
     return vel;
+
+
     /*float turnPower=1.0;
     turnVel.x+=(pos.x < -_maxBoidsField) ? turnPower : 0;
     turnVel.x+=(pos.x > _maxBoidsField) ? -turnPower : 0;

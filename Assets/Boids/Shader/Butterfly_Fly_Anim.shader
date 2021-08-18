@@ -98,6 +98,7 @@
                 //rotation
                 float3 force=normalize(_boidsForce[id])*2.0*PI-PI;
                 float theta_x=atan2(force.y,force.z);
+                theta_x=2.0*PI-theta_x;
                 float theta_y=atan2(force.x,force.z);
                 
                 float4x4 rotMat=GetRotMatrix(float3(theta_x,theta_y,0.0));

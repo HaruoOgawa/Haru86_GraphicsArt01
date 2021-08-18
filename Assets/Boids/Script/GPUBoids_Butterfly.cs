@@ -30,6 +30,7 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
         [SerializeField] float maxBoidsDist=1.0f;
         [SerializeField] float centerPosPower=1000.0f;
         
+        
         #endregion
 
         #region private_val
@@ -64,7 +65,7 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
 
             //prepare buffer
             for(int i=0;i<count;i++){
-                Vector3 initPos=Random.insideUnitSphere*1000f;
+                Vector3 initPos=Random.insideUnitSphere*GPUBase_Butterfly.instance.initRadius;
                 Vector3 initVec=Vector3.Normalize(new Vector3(Random.Range(-10.0f,10.0f),Random.Range(-10.0f,10.0f),Random.Range(-10.0f,10.0f)))-Vector3.Normalize(Random.insideUnitSphere);
                 initVec=Vector3.Normalize(initVec);
                 //initVec=new Vector3(0,0,0)-initVec;
