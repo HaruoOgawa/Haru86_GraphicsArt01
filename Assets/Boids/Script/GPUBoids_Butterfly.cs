@@ -26,6 +26,8 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
         [HideInInspector] public ComputeBuffer comouteBuffer_boids_force;
         ComputeBuffer debugBuffer;
         public ComputeShader boids_cs;
+        [SerializeField] float NoiseValue=10.0f;
+      
         
         [SerializeField] float maxBoidsDist=1.0f;
         [SerializeField] float centerPosPower=1000.0f;
@@ -87,6 +89,7 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
             boids_cs.SetFloat("_DTime",Time.deltaTime);
             boids_cs.SetFloat("_Time",Time.time);
             boids_cs.SetFloat("_centerPosPower",centerPosPower);
+            boids_cs.SetFloat("_NoiseValue",NoiseValue);
             boids_cs.SetBuffer(CalVector_Kernel,"_boids_force_write",comouteBuffer_boids_force);
             boids_cs.SetBuffer(CalVector_Kernel,"_boids_data_read",comouteBuffer_boids_data);
             boids_cs.SetBuffer(CalVector_Kernel,"_debugBuffer",debugBuffer);

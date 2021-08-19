@@ -48,6 +48,7 @@
             float4 _BaseColor;  
             float4 _SecondColor;
             float4 _ThirdColor;
+            float _boidsScale;
 
             struct Butterfly{
                 float3 position;
@@ -93,7 +94,7 @@
                 //boid matrix
                 float4x4 boids_objectToWorld=(float4x4)0;
                 //scale
-                boids_objectToWorld._11_22_33_44=1.0;
+                boids_objectToWorld._11_22_33_44=_boidsScale;
 
                 //rotation
                 float3 force=normalize(_boidsForce[id])*2.0*PI-PI;

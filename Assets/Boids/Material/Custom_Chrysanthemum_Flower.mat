@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Unlit_Butterfly_Fly_Anim
-  m_Shader: {fileID: 4800000, guid: 6be8fb07f3049dc4b92a7d8016ff18bb, type: 3}
+  m_Name: Custom_Chrysanthemum_Flower
+  m_Shader: {fileID: 4800000, guid: 9b8d82f2a84abc546a174b725c411d34, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -20,13 +20,11 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 6ee050941e11fef4cba7dfb9a3784b43, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AWidth: 1
-    - _AnimSpeed: 25
+    - _Glossiness: 0
+    - _Metallic: 0
     m_Colors:
-    - _BaseColor: {r: 13.745152, g: 1.4912196, b: 11.3071995, a: 1}
-    - _SecondColor: {r: 7.999999, g: 0.657489, b: 0.209424, a: 1}
-    - _ThirdColor: {r: 18.942997, g: 2.4125516, b: 2.4125516, a: 1}
+    - _Color: {r: 2.7169812, g: 0.3972944, b: 1.6333998, a: 1}

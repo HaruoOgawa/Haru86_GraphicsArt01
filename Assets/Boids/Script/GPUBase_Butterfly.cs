@@ -20,7 +20,7 @@
         public  float maxBoidsField=500.0f;
         public float initRadius=500.0f;
         [SerializeField] Mesh plane_mesh;
-        [SerializeField] float size=1.0f;
+         [SerializeField] float boidsScale=1.0f;
         Matrix4x4[] butterfly_TRS;
         
 
@@ -36,6 +36,7 @@
 
         void Update()
         {
+            butterflyRender_mat.SetFloat("_boidsScale",boidsScale);
              butterflyRender_mat.SetBuffer("_boidsBuffer",gPUBoids_Butterfly.comouteBuffer_boids_data);
              butterflyRender_mat.SetBuffer("_boidsForce",gPUBoids_Butterfly.comouteBuffer_boids_force);
             Graphics.DrawMeshInstancedProcedural(plane_mesh,0,butterflyRender_mat,new Bounds(transform.position,Vector3.one*500),count);

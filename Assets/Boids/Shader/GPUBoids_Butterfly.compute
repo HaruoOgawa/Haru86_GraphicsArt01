@@ -21,6 +21,7 @@ float _DTime;
 float _Time;
 float _maxBoidsField;
 float _centerPosPower;
+float _NoiseValue;
 
 groupshared Butterfly butterfly_data[NUMTHREADS_X_NUM];
 
@@ -198,13 +199,14 @@ void CalVector(
     
     }
     //float test=rand(float2((float)DID,0.123))*2.0-1.0;
-    result_velocity+=float3(rand(float2((float)DID.x,0.123))*2.0-1.0,rand(float2((float)DID,0.456))*2.0-1.0,rand(float2((float)DID,0.789))*2.0-1.0)*10.0;
+    float3 previous_result_velocity=result_velocity;
+    result_velocity+=float3(rand(float2((float)DID.x,0.123))*2.0-1.0,rand(float2((float)DID,0.456))*2.0-1.0,rand(float2((float)DID,0.789))*2.0-1.0)*_NoiseValue;
     result_velocity=TurnButterfly(my_position,result_velocity,(float)DID.x);
     _boids_force_write[DID.x]=result_velocity;
     
    
     //_debugBuffer[DID.x]=float3(joinCount,separateCount,alignmentCount);
-    _debugBuffer[DID.x]=float4x4(float4(joinPosSum,0),float4(separateVectorSum,0),float4(alignmentVectorSum,disMin),float4(joinCount,separateCount,alignmentCount,disMax));
+    _debugBuffer[DID.x]=float4x4(float4(joinPosSum,0),float4(result_velocity,0),float4(previous_result_velocity,disMin),float4(joinCount,separateCount,alignmentCount,disMax));
 
 }
 
