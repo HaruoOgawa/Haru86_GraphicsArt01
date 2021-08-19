@@ -432,85 +432,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39d18fad52fa22b44a57220cdebe5c86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1001 &1217416215
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: -4216859302048453862, guid: 8d70f049e59c1164384498ab6f4ac5e8,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.07
-      objectReference: {fileID: 0}
-    - target: {fileID: -4216859302048453862, guid: 8d70f049e59c1164384498ab6f4ac5e8,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.8
-      objectReference: {fileID: 0}
-    - target: {fileID: -4216859302048453862, guid: 8d70f049e59c1164384498ab6f4ac5e8,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -386.83
-      objectReference: {fileID: 0}
-    - target: {fileID: -4216859302048453862, guid: 8d70f049e59c1164384498ab6f4ac5e8,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.93227273
-      objectReference: {fileID: 0}
-    - target: {fileID: -4216859302048453862, guid: 8d70f049e59c1164384498ab6f4ac5e8,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -4216859302048453862, guid: 8d70f049e59c1164384498ab6f4ac5e8,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -4216859302048453862, guid: 8d70f049e59c1164384498ab6f4ac5e8,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.3617563
-      objectReference: {fileID: 0}
-    - target: {fileID: -4216859302048453862, guid: 8d70f049e59c1164384498ab6f4ac5e8,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: -4216859302048453862, guid: 8d70f049e59c1164384498ab6f4ac5e8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: -137.584
-      objectReference: {fileID: 0}
-    - target: {fileID: -4216859302048453862, guid: 8d70f049e59c1164384498ab6f4ac5e8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -4216859302048453862, guid: 8d70f049e59c1164384498ab6f4ac5e8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -1504981713932161579, guid: 8d70f049e59c1164384498ab6f4ac5e8,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: d0bd453d7a4674f4c8d5df7178af40f1, type: 2}
-    - target: {fileID: -927199367670048503, guid: 8d70f049e59c1164384498ab6f4ac5e8,
-        type: 3}
-      propertyPath: m_Name
-      value: Chrysanthemum_Flower
-      objectReference: {fileID: 0}
-    - target: {fileID: -927199367670048503, guid: 8d70f049e59c1164384498ab6f4ac5e8,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 8d70f049e59c1164384498ab6f4ac5e8, type: 3}
 --- !u!1 &1319896578
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,6 +444,8 @@ GameObject:
   - component: {fileID: 1319896582}
   - component: {fileID: 1319896581}
   - component: {fileID: 1319896580}
+  - component: {fileID: 1319896584}
+  - component: {fileID: 1319896583}
   m_Layer: 0
   m_Name: Butterfly_Simulation
   m_TagString: Untagged
@@ -557,6 +480,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trail_cs: {fileID: 7200000, guid: 981ed0425d2b8404fb4667ffccf6aeda, type: 3}
+  butterfly_trail_mat: {fileID: 0}
+  nodeSegment: 60
+  initNodeLife: 10
 --- !u!114 &1319896581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -593,6 +519,30 @@ MonoBehaviour:
   initRadius: 400
   plane_mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
   boidsScale: 1
+--- !u!114 &1319896583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1319896578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c7a377af0fcc1c48b8b9f5e23679df1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1319896584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1319896578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f89acb1067f034f42b8ce7ba0204b93d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1733118089
 GameObject:
   m_ObjectHideFlags: 0
