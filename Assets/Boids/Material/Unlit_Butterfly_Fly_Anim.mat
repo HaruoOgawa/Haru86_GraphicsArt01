@@ -28,5 +28,5 @@ Material:
     - _AnimSpeed: 25
     m_Colors:
     - _BaseColor: {r: 13.745152, g: 1.4912196, b: 11.3071995, a: 1}
-    - _SecondColor: {r: 7.999999, g: 0.657489, b: 0.209424, a: 1}
+    - _SecondColor: {r: 0, g: 0.71314687, b: 11.854938, a: 1}
     - _ThirdColor: {r: 18.942997, g: 2.4125516, b: 2.4125516, a: 1}

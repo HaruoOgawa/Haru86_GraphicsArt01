@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Custom_Chrysanthemum_Flower
-  m_Shader: {fileID: 4800000, guid: 9b8d82f2a84abc546a174b725c411d34, type: 3}
+  m_Shader: {fileID: 4800000, guid: 24a86e4b479cbea488d0ece5e812b024, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -28,3 +28,6 @@ Material:
     - _Metallic: 0
     m_Colors:
     - _Color: {r: 2.7169812, g: 0.3972944, b: 1.6333998, a: 1}
+    - _FirstColor: {r: 0.08254716, g: 0.10291069, b: 0.5, a: 1}
+    - _SecondColor: {r: 0.038892835, g: 0.311925, b: 0.4339623, a: 1}
+    - _ThirdColor: {r: 0, g: 4, b: 0.3764706, a: 1}

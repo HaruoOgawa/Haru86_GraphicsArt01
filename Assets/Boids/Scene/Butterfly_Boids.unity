@@ -504,6 +504,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Chrysanthemum_Flower
       objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 8d70f049e59c1164384498ab6f4ac5e8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8d70f049e59c1164384498ab6f4ac5e8, type: 3}
 --- !u!1 &1319896578
@@ -583,7 +588,7 @@ MonoBehaviour:
   gPUTrail_Butterfly: {fileID: 1319896580}
   gPUBoids_Butterfly: {fileID: 1319896581}
   butterflyRender_mat: {fileID: 2100000, guid: 8eb4a58bb17c244479a3b51df63c65b9, type: 2}
-  count: 10000
+  count: 5000
   maxBoidsField: 500
   initRadius: 500
   plane_mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
@@ -597,6 +602,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1733118090}
+  - component: {fileID: 1733118091}
   m_Layer: 0
   m_Name: Chrysanthemum_Flower_Instancing
   m_TagString: Untagged
@@ -612,12 +618,28 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1733118089}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -5.6, z: -296.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1855535476}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1733118091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1733118089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 620469e890d0e7f489d500eb12b301f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flower_mesh: {fileID: 5691666353457927829, guid: 8d70f049e59c1164384498ab6f4ac5e8,
+    type: 3}
+  flower_mat: {fileID: 2100000, guid: d0bd453d7a4674f4c8d5df7178af40f1, type: 2}
+  count: 5000
 --- !u!1 &1855535475
 GameObject:
   m_ObjectHideFlags: 0

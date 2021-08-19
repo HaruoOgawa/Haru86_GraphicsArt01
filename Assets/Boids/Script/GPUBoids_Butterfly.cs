@@ -61,7 +61,7 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
             CalVector_Kernel=boids_cs.FindKernel("CalVector");
             ResultVector_Kernel=boids_cs.FindKernel("ResultVector");
            
-            Debug.Log("count:"+count);
+            //Debug.Log("count:"+count);
             Vector3[] initForce=new Vector3[count];
             Matrix4x4[] initMatrix=new Matrix4x4[count];
 
@@ -104,13 +104,13 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
             boids_cs.SetBuffer(ResultVector_Kernel,"_boids_data_write",comouteBuffer_boids_data);
             boids_cs.Dispatch(ResultVector_Kernel,count/NUMTHREADS_X_NUM,1,1);
 
-            Vector3[] result=new Vector3[count];
+            /*Vector3[] result=new Vector3[count];
             comouteBuffer_boids_force.GetData(result);
             //Debug.Log("result[10]:"+result[10]);
 
             Matrix4x4[] debugResult=new Matrix4x4[count];
             debugBuffer.GetData(debugResult);
-            Debug.Log("debugResult[10]:"+debugResult[10]);
+            Debug.Log("debugResult[10]:"+debugResult[10]);*/
             
         }
 
