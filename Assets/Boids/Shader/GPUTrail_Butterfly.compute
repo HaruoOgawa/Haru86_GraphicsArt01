@@ -108,7 +108,8 @@ void NodeInfo(
             _node_data_write[myNodeIndexInBuffer]=now_node_data;
 
             nowCalNodeIndex=nowCalNodeIndex+1;
-            nowCalNodeIndex=(int)floor(fmod(nowCalNodeIndex,_nodeSegment));
+           // nowCalNodeIndex=(int)fmod(nowCalNodeIndex,_nodeSegment+2);
+          // nowCalNodeIndex=(nowCalNodeIndex>60) ? 0 : nowCalNodeIndex;
             trainIndex_val.nextCalNodeIndex=nowCalNodeIndex;
             _trailIndexData_read[trailIndex]=trainIndex_val;
 

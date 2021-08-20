@@ -536,7 +536,7 @@ MonoBehaviour:
   initNodeLife: 5
   count: 0
   nodeSum: 0
-  nodeDistanceMin: 10
+  nodeDistanceMin: 5
 --- !u!114 &1319896584
 MonoBehaviour:
   m_ObjectHideFlags: 0

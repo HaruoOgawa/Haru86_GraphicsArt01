@@ -102,19 +102,23 @@
 
                 g2f o;
                 
-                o.vertex=UnityObjectToClipPos(render_node_pos01);
+                // o.vertex=UnityObjectToClipPos(render_node_pos01);
+                o.vertex=UnityObjectToClipPos(Input[0].vertex+float4(-1.,-1.,0.,0.)*_TrailWidth);
                 o.uv=float2(0,0);
                 outputStream.Append(o);
 
-                o.vertex=UnityObjectToClipPos(render_node_pos0_1);
+                //o.vertex=UnityObjectToClipPos(render_node_pos0_1);
+                 o.vertex=UnityObjectToClipPos(Input[0].vertex+float4(1.,-1.,0.,0.)*_TrailWidth);
                 o.uv=float2(0,0);
                 outputStream.Append(o);
 
-                o.vertex=UnityObjectToClipPos(render_node_pos11);
+                //o.vertex=UnityObjectToClipPos(render_node_pos11);
+                 o.vertex=UnityObjectToClipPos(Input[0].vertex+float4(1.,1.,0.,0.)*_TrailWidth);
                 o.uv=float2(0,0);
                 outputStream.Append(o);
 
-                o.vertex=UnityObjectToClipPos(render_node_pos1_1);
+                //o.vertex=UnityObjectToClipPos(render_node_pos1_1);
+                 o.vertex=UnityObjectToClipPos(Input[0].vertex+float4(-1.,1.,0.,0.)*_TrailWidth);
                 o.uv=float2(0,0);
                 outputStream.Append(o);
                 
