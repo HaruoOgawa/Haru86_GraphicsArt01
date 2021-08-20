@@ -46,6 +46,7 @@
         [HideInInspector] public GPUBoids_Butterfly gPUBoids_Butterfly;
         public static GPUTrail_Butterfly instance=null;
         [SerializeField] Material butterfly_trail_mat;
+        [SerializeField] float trailWidth=1.0f;
         public int nodeSegment=60;
         [SerializeField] int initNodeLife=5;
         [HideInInspector] public int count=0;
@@ -79,7 +80,7 @@
             buffer_input=new ComputeBuffer(count,Marshal.SizeOf(typeof(input_data)));
 
             trail[] init_trail=new trail[count];
-            node[] init_node=new node[count];
+            node[] init_node=new node[nodeSum];
             input_data[] init_input_Data=new input_data[count];
 
 
@@ -102,8 +103,11 @@
 
         void Update()
         {
+            butterfly_trail_mat.SetBuffer("_node_data_read",buffer_node);
+            butterfly_trail_mat.SetFloat("_TrailWidth",trailWidth);
+            butterfly_trail_mat.SetInt("_nodeSegment",nodeSegment);
             butterfly_trail_mat.SetPass(0);
-            Graphics.DrawProceduralNow(MeshTopology.Points,nodeSegment,count);
+            Graphics.DrawProceduralNow(MeshTopology.Points,nodeSegment,nodeSum);
         }
 
         void OnDisable(){
