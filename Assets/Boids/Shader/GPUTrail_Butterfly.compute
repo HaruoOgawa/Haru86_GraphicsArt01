@@ -29,11 +29,13 @@ RWStructuredBuffer<trail> _trailIndexData_read;
 RWStructuredBuffer<node> _node_data_write;
 RWStructuredBuffer<node> _node_data_read;
 
+RWStructuredBuffer<float4x4> _debug_buffer_node_position;
+
 int _nodeSegment;
 float _nodeDistanceMin;
 float _DTime;
 
-
+//numthreads変えるかも?
 [numthreads(256,1,1)]
 void NextInputPos(
     uint3 DID : SV_DISPATCHTHREADID
@@ -59,41 +61,79 @@ void NodeInfo(
             //それぞれのスレッドでpositionとlifeを計算する
             //DIDをもとにinput_positionとtrail_nextIndexのインデックスを割り出す必要がある
     
-    
+    //debug///////////////////
+
+    /////////////////////////
+
     int myNodeIndexInBuffer=DID.x;
     int trailIndex=(int)(floor(DID.x/_nodeSegment));
-    int nowCalNodeIndex=_trailIndexData_read[trailIndex].nextCalNodeIndex;
-    int myNodeIndexInNodes=myNodeIndexInBuffer-trailIndex;
+    trail trainIndex_val=_trailIndexData_read[trailIndex];
+    int nowCalNodeIndex=trainIndex_val.nextCalNodeIndex;
+    int myNodeIndexInNodes=myNodeIndexInBuffer-trailIndex*_nodeSegment;
 
     input_data now_inputData=_nextCalTrailPosition_read[trailIndex];
     node now_node_data=_node_data_read[myNodeIndexInBuffer];
 
     int renderFlag=now_node_data.renderFlag;
+   
+    //if(false){
     if(renderFlag<0&&nowCalNodeIndex==myNodeIndexInNodes){
-        renderFlag+=1;
+        renderFlag=renderFlag+1;
         now_node_data.renderFlag=renderFlag;
-        _node_data_write[myNodeIndexInBuffer]=now_node_data;
+        _node_data_read[myNodeIndexInBuffer]=now_node_data;
+        // _node_data_write[myNodeIndexInBuffer]=now_node_data;
+
+
+    //     nowCalNodeIndex=nowCalNodeIndex+1;
+    // trainIndex_val.nextCalNodeIndex=nowCalNodeIndex;
+    // _trailIndexData_read[trailIndex]=trainIndex_val;
     }
 
+    //if(false){
     if(nowCalNodeIndex==myNodeIndexInNodes){
          int previousIndex=trailIndex+(int)floor(fmod(myNodeIndexInNodes-1,_nodeSegment));
         float3 previousPos=_node_data_read[previousIndex].node_position;
         float betweenNodesDis=length(now_inputData.nextInputPosition-previousPos);
+
+        // //debug
+        // nowCalNodeIndex=nowCalNodeIndex+1;
+        // trainIndex_val.nextCalNodeIndex=nowCalNodeIndex;
+        // _trailIndexData_read[trailIndex]=trainIndex_val;
         
-        if(betweenNodesDis<=_nodeDistanceMin){
+        //ここの条件に関するところがおかしい
+        if(betweenNodesDis>=_nodeDistanceMin){
             now_node_data.node_position=now_inputData.nextInputPosition;
             now_node_data.node_life-=_DTime;
 
             _node_data_write[myNodeIndexInBuffer]=now_node_data;
 
-            int nextIndex=(int)floor(fmod(myNodeIndexInNodes+1,_nodeSegment));
-            trail trainIndex_val;
-            trainIndex_val.nextCalNodeIndex=nextIndex;
-            _trailIndexData_write[trailIndex]=trainIndex_val;
+            nowCalNodeIndex=nowCalNodeIndex+1;
+            nowCalNodeIndex=(int)floor(fmod(nowCalNodeIndex,_nodeSegment));
+            trainIndex_val.nextCalNodeIndex=nowCalNodeIndex;
+            _trailIndexData_read[trailIndex]=trainIndex_val;
+
+            // //debug
+            // nowCalNodeIndex=nowCalNodeIndex+1;
+            // trainIndex_val.nextCalNodeIndex=nowCalNodeIndex;
+            // _trailIndexData_read[trailIndex]=trainIndex_val;
+            
         }
+
+       
     }
 
-   // _node_data_write[_nodeSegment*DID+nowCalNodeIndex].node_position=_nextCalTrailPosition_read[DID].nextInputPosition;
-    
+    // nowCalNodeIndex=nowCalNodeIndex+1;
+    // trainIndex_val.nextCalNodeIndex=nowCalNodeIndex;
+    // _trailIndexData_read[trailIndex]=trainIndex_val;
+
+
+     
+    float4x4 debug_matrix=float4x4(
+        float4(now_node_data.node_position,renderFlag),
+        float4(0.,0.,0.,0.),
+        float4(0.,0.,renderFlag,0.),
+        float4(myNodeIndexInBuffer,trailIndex,nowCalNodeIndex,myNodeIndexInNodes)
+    );
+    _debug_buffer_node_position[myNodeIndexInBuffer]=debug_matrix;
    
 }

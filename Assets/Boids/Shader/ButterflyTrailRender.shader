@@ -7,6 +7,9 @@
     SubShader
     {
         Tags { "RenderType"="Opaque" }
+        Cull Off
+        ZWrite Off
+        ZTest Off
         LOD 100
 
         Pass
@@ -121,6 +124,7 @@
             fixed4 frag (g2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
+                col=float4(1.,1.,1.,1.);
                 return col;
             }
             ENDCG

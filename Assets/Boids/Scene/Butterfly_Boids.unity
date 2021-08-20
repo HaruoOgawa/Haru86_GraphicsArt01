@@ -479,12 +479,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61f5db0ea41463740958254a6d850c45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trail_cs: {fileID: 7200000, guid: 981ed0425d2b8404fb4667ffccf6aeda, type: 3}
-  gPUBoids_Butterfly: {fileID: 0}
   butterfly_trail_mat: {fileID: 2100000, guid: fcf9ccb39bc992747852580d1654dbc1, type: 2}
-  nodeSegment: 60
-  initNodeLife: 5
-  count: 0
+  trailWidth: 100
+  butterflyTrailCalNode: {fileID: 1319896583}
 --- !u!114 &1319896581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -533,6 +530,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c7a377af0fcc1c48b8b9f5e23679df1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trail_cs: {fileID: 7200000, guid: 981ed0425d2b8404fb4667ffccf6aeda, type: 3}
+  gPUBoids_Butterfly: {fileID: 1319896581}
+  nodeSegment: 60
+  initNodeLife: 5
+  count: 0
+  nodeSum: 0
+  nodeDistanceMin: 10
 --- !u!114 &1319896584
 MonoBehaviour:
   m_ObjectHideFlags: 0
