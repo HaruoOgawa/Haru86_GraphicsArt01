@@ -1,14 +1,44 @@
-﻿// Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel CSMain
+﻿#pragma kernel NextInputPos
+#pragma kernel NodeInfo
 
-// Create a RenderTexture with enableRandomWrite flag and set it
-// with cs.SetTexture
-RWTexture2D<float4> Result;
+struct Butterfly{
+    float3 position;
+    float3 velocity;
+};
 
-[numthreads(8,8,1)]
-void CSMain (uint3 id : SV_DispatchThreadID)
-{
-    // TODO: insert actual code here!
+struct trail{
+    int nextCalNodeIndex;
+};
 
-    Result[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
+struct node{
+    float3 node_position;
+    float node_life;
+};
+
+ struct input_data{
+    float3 nextInputPosition;
+};
+
+RWStructuredBuffer<Butterfly> _boids_data_read;
+RWStructuredBuffer<input_data> _nextCalTrailPosition_write;
+RWStructuredBuffer<input_data> _nextCalTrailPosition_read;
+RWStructuredBuffer<trail> _trailIndexData_write;
+RWStructuredBuffer<trail> _trailIndexData_read;
+RWStructuredBuffer<node> _node_data_write;
+RWStructuredBuffer<node> _node_data_read;
+
+int _nodeSegment;
+
+[numthreads(256,1,1)]
+void NextInputPos(
+    uint3 DID : SV_DISPATCHTHREADID
+){
+    _nextCalTrailPosition_write[DID.x].nextInputPosition=_boids_data_read[DID.x].position;
+}
+
+[numthreads(256,1,1)]
+void NodeInfo(
+    uint3 DID : SV_DISPATCHTHREADID
+){
+
 }

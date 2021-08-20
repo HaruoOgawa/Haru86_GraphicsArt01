@@ -480,9 +480,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trail_cs: {fileID: 7200000, guid: 981ed0425d2b8404fb4667ffccf6aeda, type: 3}
-  butterfly_trail_mat: {fileID: 0}
+  gPUBoids_Butterfly: {fileID: 0}
+  butterfly_trail_mat: {fileID: 2100000, guid: fcf9ccb39bc992747852580d1654dbc1, type: 2}
   nodeSegment: 60
-  initNodeLife: 10
+  initNodeLife: 5
+  count: 0
 --- !u!114 &1319896581
 MonoBehaviour:
   m_ObjectHideFlags: 0
