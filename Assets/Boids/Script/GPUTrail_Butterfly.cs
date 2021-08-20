@@ -46,9 +46,11 @@
         [HideInInspector] public GPUBoids_Butterfly gPUBoids_Butterfly;
         public static GPUTrail_Butterfly instance=null;
         [SerializeField] Material butterfly_trail_mat;
-        [SerializeField] int nodeSegment=60;
+        public int nodeSegment=60;
         [SerializeField] int initNodeLife=5;
         [HideInInspector] public int count=0;
+        [HideInInspector] public int nodeSum=0;
+        [HideInInspector] public float nodeDistanceMin=1.0f;
         
         [HideInInspector] public ComputeBuffer buffer_trail;
         [HideInInspector] public ComputeBuffer buffer_node;
@@ -70,13 +72,15 @@
         void Start()
         {
             count=GPUBase_Butterfly.instance.count;
-        buffer_trail=new ComputeBuffer(count,Marshal.SizeOf(typeof(trail)));
-        buffer_node=new ComputeBuffer(count*nodeSegment,Marshal.SizeOf(typeof(node)));
-        buffer_input=new ComputeBuffer(count,Marshal.SizeOf(typeof(input_data)));
+            nodeSum=count*nodeSegment;
 
-        trail[] init_trail=new trail[count];
-        node[] init_node=new node[count];
-        input_data[] init_input_Data=new input_data[count];
+            buffer_trail=new ComputeBuffer(count,Marshal.SizeOf(typeof(trail)));
+            buffer_node=new ComputeBuffer(nodeSum,Marshal.SizeOf(typeof(node)));
+            buffer_input=new ComputeBuffer(count,Marshal.SizeOf(typeof(input_data)));
+
+            trail[] init_trail=new trail[count];
+            node[] init_node=new node[count];
+            input_data[] init_input_Data=new input_data[count];
 
 
 

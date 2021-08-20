@@ -22,6 +22,9 @@
             trail_instance.trail_cs.SetBuffer(kernel_NodeInfo,"_trailIndexData_read",trail_instance.buffer_trail);
             trail_instance.trail_cs.SetBuffer(kernel_NodeInfo,"_node_data_write",trail_instance.buffer_node);
             trail_instance.trail_cs.SetBuffer(kernel_NodeInfo,"_node_data_read",trail_instance.buffer_node);
+            trail_instance.trail_cs.SetInt("_nodeSegment",trail_instance.nodeSegment);
+            trail_instance.trail_cs.SetFloat("_nodeDistanceMin",trail_instance.nodeDistanceMin);
+            trail_instance.trail_cs.SetFloat("_DTime",Time.deltaTime);
             trail_instance.trail_cs.Dispatch(kernel_NodeInfo,trail_instance.count/256,1,1);
         }
     }

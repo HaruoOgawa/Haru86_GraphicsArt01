@@ -13,6 +13,7 @@ struct trail{
 struct node{
     float3 node_position;
     float node_life;
+    int renderFlag;
 };
 
  struct input_data{
@@ -20,6 +21,7 @@ struct node{
 };
 
 RWStructuredBuffer<Butterfly> _boids_data_read;
+
 RWStructuredBuffer<input_data> _nextCalTrailPosition_write;
 RWStructuredBuffer<input_data> _nextCalTrailPosition_read;
 RWStructuredBuffer<trail> _trailIndexData_write;
@@ -28,6 +30,9 @@ RWStructuredBuffer<node> _node_data_write;
 RWStructuredBuffer<node> _node_data_read;
 
 int _nodeSegment;
+float _nodeDistanceMin;
+float _DTime;
+
 
 [numthreads(256,1,1)]
 void NextInputPos(
@@ -36,9 +41,59 @@ void NextInputPos(
     _nextCalTrailPosition_write[DID.x].nextInputPosition=_boids_data_read[DID.x].position;
 }
 
-[numthreads(256,1,1)]
+[numthreads(512,1,1)]
 void NodeInfo(
     uint3 DID : SV_DISPATCHTHREADID
 ){
+    //DID is now trail number
+    // cal node index = _nodeSegment*DID+trail.nextCalNodeIndex
+    //考えること
+    //nextPositionの更新タイミング
+    //node_lifeの扱いをどうするか
+        //スレッド数を増やす？？ nodeの合計分のスレッド数??
+        //１つのスレッドにつき、１つのnodeを計算する
+        //スレッド数とグループ数について再考する
+        
+        //調査の結果、最大グループ数65535 グループ内の最大スレッド数が1024で　全体で約6700万スレッドを持てることがわかった
+            //結論: １つのスレッドにつき、１つのnodeを計算する
+            //それぞれのスレッドでpositionとlifeを計算する
+            //DIDをもとにinput_positionとtrail_nextIndexのインデックスを割り出す必要がある
+    
+    
+    int myNodeIndexInBuffer=DID.x;
+    int trailIndex=(int)(floor(DID.x/_nodeSegment));
+    int nowCalNodeIndex=_trailIndexData_read[trailIndex].nextCalNodeIndex;
+    int myNodeIndexInNodes=myNodeIndexInBuffer-trailIndex;
 
+    input_data now_inputData=_nextCalTrailPosition_read[trailIndex];
+    node now_node_data=_node_data_read[myNodeIndexInBuffer];
+
+    int renderFlag=now_node_data.renderFlag;
+    if(renderFlag<0&&nowCalNodeIndex==myNodeIndexInNodes){
+        renderFlag+=1;
+        now_node_data.renderFlag=renderFlag;
+        _node_data_write[myNodeIndexInBuffer]=now_node_data;
+    }
+
+    if(nowCalNodeIndex==myNodeIndexInNodes){
+         int previousIndex=trailIndex+(int)floor(fmod(myNodeIndexInNodes-1,_nodeSegment));
+        float3 previousPos=_node_data_read[previousIndex].node_position;
+        float betweenNodesDis=length(now_inputData.nextInputPosition-previousPos);
+        
+        if(betweenNodesDis<=_nodeDistanceMin){
+            now_node_data.node_position=now_inputData.nextInputPosition;
+            now_node_data.node_life-=_DTime;
+
+            _node_data_write[myNodeIndexInBuffer]=now_node_data;
+
+            int nextIndex=(int)floor(fmod(myNodeIndexInNodes+1,_nodeSegment));
+            trail trainIndex_val;
+            trainIndex_val.nextCalNodeIndex=nextIndex;
+            _trailIndexData_write[trailIndex]=trainIndex_val;
+        }
+    }
+
+   // _node_data_write[_nodeSegment*DID+nowCalNodeIndex].node_position=_nextCalTrailPosition_read[DID].nextInputPosition;
+    
+   
 }

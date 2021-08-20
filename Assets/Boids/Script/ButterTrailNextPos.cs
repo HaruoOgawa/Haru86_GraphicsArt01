@@ -18,7 +18,7 @@
         {
             trail_instance.trail_cs.SetBuffer(kernel_NextInputPos,"_nextCalTrailPosition_write",trail_instance.buffer_input);
             trail_instance.trail_cs.SetBuffer(kernel_NextInputPos,"_boids_data_read",trail_instance.gPUBoids_Butterfly.comouteBuffer_boids_data);
-            trail_instance.trail_cs.Dispatch(kernel_NextInputPos,trail_instance.count/256,1,1);
+            trail_instance.trail_cs.Dispatch(kernel_NextInputPos,trail_instance.nodeSum/512,1,1);
         }
     }
 
