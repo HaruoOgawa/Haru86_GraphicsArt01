@@ -77,14 +77,14 @@
         [HideInInspector] public ComputeBuffer buffer_node;
         [HideInInspector] public ComputeBuffer buffer_input;
 
-         // [HideInInspector] public ComputeBuffer debug_buffer_node_position;
+        //  [HideInInspector] public ComputeBuffer debug_buffer_node_position;
       
         #endregion
 
         #region private field
 
        
-       // Matrix4x4[] debug_position;
+    //    Matrix4x4[] debug_position;
         bool RenderTrailFlag=false;
 
         #endregion
@@ -196,7 +196,7 @@
             buffer_trail.Release();
             buffer_node.Release();
             buffer_input.Release();
-          //  debug_buffer_node_position.Release();
+            // debug_buffer_node_position.Release();
         }
     }
 

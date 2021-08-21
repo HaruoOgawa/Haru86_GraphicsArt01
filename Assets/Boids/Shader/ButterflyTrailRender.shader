@@ -60,6 +60,7 @@
 
             sampler2D _MainTex;
             StructuredBuffer<node> _node_data_read;
+            StructuredBuffer<trail> _trail_data_read;
             float _TrailWidth;
             float _nodeSegment;
             float _initNodeLife;
@@ -80,6 +81,7 @@
             {
                 int nodeIndex=id;
                 int trailIndex=(int)(floor(nodeIndex/_nodeSegment));
+                int nowIndexInNodes=id-trailIndex*_nodeSegment;
                
                 node node_data0_1=_node_data_read[CalCorrectIndex(trailIndex,(int)nodeIndex-1)];
                 node node_data00=_node_data_read[CalCorrectIndex(trailIndex,(int)nodeIndex)];
@@ -91,6 +93,14 @@
                 float3 node_dir=normalize(node_data01.node_position-node_data0_1.node_position);
                 float3 node_nextDir=normalize(node_data02.node_position-node_data00.node_position);
                 float node_life=node_data00.node_life;
+
+                trail now_trail_data=_trail_data_read[trailIndex];
+                if(nowIndexInNodes==now_trail_data.leftSideFirst||nowIndexInNodes==now_trail_data.rightSideFirst||nowIndexInNodes==now_trail_data.rightSideSecond){
+                    node_pos=node_pos;
+                    node_nextPos=node_pos;
+                    node_dir=node_pos;
+                    node_nextDir=node_pos;
+                }
 
                 v2g o;
                 o.vertex = v.vertex;

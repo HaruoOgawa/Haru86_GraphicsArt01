@@ -33,7 +33,7 @@ RWStructuredBuffer<node> _node_data_read;
 RWStructuredBuffer<node> _node_data_write;
 
 
-RWStructuredBuffer<float4x4> _debug_buffer_node_position;
+// RWStructuredBuffer<float4x4> _debug_buffer_node_position;
 
 int _nodeSegment;
 float _nodeDistanceMin;
@@ -62,15 +62,7 @@ void NodeInfo(
     float calNodeLength=length(input_next_data.nextInputPosition-node_data.node_position);
 
     if(calNodeLength>=_nodeDistanceMin){
-        //   //debug
-        // float4x4 debug_matrix=float4x4(
-        //     float4(node_data.node_position,node_data.renderFlag),
-        //     float4(myNodeIndex,trailIndex,nowCalNodeIndex,0),
-        //     float4(0.,0.,0.,0.),
-        //     float4(0.,0.,0,0.)
-            
-        // );
-        // _debug_buffer_node_position[trailIndex]=debug_matrix;
+       
        
         //cal node
         node_data.renderFlag++;
@@ -82,6 +74,18 @@ void NodeInfo(
         int leftSideFirst=nowCalNodeIndex;
         int rightSideFirst=(nowCalNodeIndex+(_nodeSegment-1))%_nodeSegment;
         int rightSideSecond=(nowCalNodeIndex+(_nodeSegment-2))%_nodeSegment;
+
+        //  //debug
+        //  float4x4 debug_matrix=float4x4(
+        //     float4(nowCalNodeIndex,leftSideFirst,rightSideFirst,rightSideSecond),
+        //     float4(myNodeIndex,trailIndex,nowCalNodeIndex,0),
+        //     float4(0.,0.,0.,0.),
+        //     float4(0.,0.,0,0.)
+            
+        // );
+        // _debug_buffer_node_position[trailIndex]=debug_matrix;
+        // //debug end
+
         nowCalNodeIndex++;
         nowCalNodeIndex=(uint)nowCalNodeIndex%_nodeSegment;
         trail_data.nextCalNodeIndex=nowCalNodeIndex;
@@ -92,6 +96,10 @@ void NodeInfo(
         //write to buffer
         _node_data_read[myNodeIndex]=node_data;
         _trailIndexData_read[trailIndex]=trail_data;
+
+
+          
+       
 
     }   
 }
