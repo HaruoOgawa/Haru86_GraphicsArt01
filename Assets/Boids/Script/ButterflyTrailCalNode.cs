@@ -142,8 +142,8 @@
              trail_cs.Dispatch(kernel_NodeInfo,count/256,1,1);
 
             //debug
-            //debug_buffer_node_position.GetData(debug_position);
-            //Debug.Log("debug trail data init_node[5]:"+debug_position[5]);
+            debug_buffer_node_position.GetData(debug_position);
+            Debug.Log("debug trail data init_node[5]:"+debug_position[5]);
           /*  for(int i=0;i<nodeSegment;i++){
                 Debug.Log("debug_position["+i+"]:"+debug_position[i]);
             }*/

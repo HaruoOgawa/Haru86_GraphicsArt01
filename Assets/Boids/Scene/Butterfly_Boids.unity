@@ -533,10 +533,10 @@ MonoBehaviour:
   trail_cs: {fileID: 7200000, guid: 981ed0425d2b8404fb4667ffccf6aeda, type: 3}
   gPUBoids_Butterfly: {fileID: 1319896581}
   nodeSegment: 60
-  initNodeLife: 5
+  initNodeLife: 1
   count: 0
   nodeSum: 0
-  nodeDistanceMin: 1
+  nodeDistanceMin: 10
 --- !u!1 &1733118089
 GameObject:
   m_ObjectHideFlags: 0

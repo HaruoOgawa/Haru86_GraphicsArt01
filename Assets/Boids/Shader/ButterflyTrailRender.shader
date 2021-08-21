@@ -6,7 +6,7 @@
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" "Queue"="Transparent+10000"}
+        Tags { "RenderType"="Transparent" "Queue"="Transparent+10000"}
         Cull Off
         ZWrite Off
         ZTest Off
@@ -66,15 +66,22 @@
                 return index;
             }
 
+            //idはnode_bufferのIndexになるはず
             v2g vert (appdata v, uint id : SV_INSTANCEID)
             {
                 // int myNodeIndexInBuffer=(int)id;
                 // int trailIndex=(int)(floor(myNodeIndexInBuffer/_nodeSegment));
                 // int myNodeIndexInNodes=myNodeIndexInBuffer-trailIndex;
 
-                int trailIndex=(int)id;
-                int nowCalNodeIndex=_trail_data_read[trailIndex].nextCalNodeIndex;
-                int nodeIndex=trailIndex*_nodeSegment+nowCalNodeIndex;
+                // int trailIndex=(int)id;
+                // int nowCalNodeIndex=_trail_data_read[trailIndex].nextCalNodeIndex;
+                // int nodeIndex=trailIndex*_nodeSegment+nowCalNodeIndex;
+
+               //
+                int nodeIndex=id;
+                int trailIndex=(int)(floor(nodeIndex/_nodeSegment));
+                //int nowCalNodeIndex=_trail_data_read[trailIndex].nextCalNodeIndex;
+                
 
 
                 node node_data0_1=_node_data_read[CalCorrectIndex(trailIndex,(int)nodeIndex-1)];
