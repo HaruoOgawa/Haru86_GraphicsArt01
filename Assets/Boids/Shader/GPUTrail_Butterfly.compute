@@ -35,6 +35,7 @@ RWStructuredBuffer<float4x4> _debug_buffer_node_position;
 int _nodeSegment;
 float _nodeDistanceMin;
 float _DTime;
+float _initNodeLife;
 
 [numthreads(256,1,1)]
 void NextInputPos(
@@ -53,6 +54,7 @@ void NodeInfo(
     int nowCalNodeIndex=trail_data.nextCalNodeIndex;
     int myNodeIndex=trailIndex*_nodeSegment+nowCalNodeIndex;
     node node_data=_node_data_read[myNodeIndex];
+    float node_life=node_data.node_life;
 
     float calNodeLength=length(input_next_data.nextInputPosition-node_data.node_position);
 
@@ -68,9 +70,22 @@ void NodeInfo(
         // _debug_buffer_node_position[trailIndex]=debug_matrix;
        
         //cal node
+       
+
+        if(node_data.renderFlag<1){
+             node_data.node_position=input_next_data.nextInputPosition;
+        }else{ 
+            if(nowCalNodeIndex==(_nodeSegment-1)){
+                node_data.node_position=input_next_data.nextInputPosition;
+            }else{
+                node_data.node_position=_node_data_read[myNodeIndex+1].node_position;
+            }
+        }
+       
         node_data.renderFlag++;
-        node_data.node_position=input_next_data.nextInputPosition;
-        node_data.node_life-=_DTime;
+        node_life-=_DTime;
+        node_life=node_life%_initNodeLife;
+        node_data.node_life=node_life;
         //cal trail
         nowCalNodeIndex++;
         nowCalNodeIndex=(uint)nowCalNodeIndex%_nodeSegment;

@@ -32,6 +32,7 @@
             butterfly_trail_mat.SetBuffer("_node_data_read",butterflyTrailCalNode.buffer_node);
             butterfly_trail_mat.SetBuffer("_trail_data_read",butterflyTrailCalNode.buffer_trail);
             butterfly_trail_mat.SetFloat("_TrailWidth",trailWidth);
+            butterfly_trail_mat.SetFloat("_initNodeLife",butterflyTrailCalNode.initNodeLife);
             butterfly_trail_mat.SetInt("_nodeSegment",butterflyTrailCalNode.nodeSegment);
            
             Mesh pointMesh=new Mesh();

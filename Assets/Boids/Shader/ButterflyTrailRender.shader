@@ -10,7 +10,7 @@
         Cull Off
         ZWrite Off
         ZTest Off
-        //Blend SrcAlpha OneMinusSrcAlpha
+        Blend SrcAlpha OneMinusSrcAlpha
         LOD 100
 
         Pass
@@ -41,7 +41,8 @@
             struct g2f{
                 float4 vertex : SV_POSITION;
                 float2 uv : TEXCOORD0;
-                float trail_ID : TEXCOORD5;
+                float node_life : TEXCOORD1;
+                float trail_ID : TEXCOORD2;
             };
 
             struct node{
@@ -58,6 +59,7 @@
             StructuredBuffer<node> _node_data_read;
             float _TrailWidth;
             float _nodeSegment;
+            float _initNodeLife;
            
             int CalCorrectIndex(int trailIndex,int calIndex){
                 //trailIndex*_nodeSegment+_nodeSegmentを-1したら治った
@@ -110,21 +112,25 @@
                 o.vertex=UnityObjectToClipPos(render_node_pos01);
                 o.uv=float2(0,0);
                 o.trail_ID=Input[0].trail_ID;
+                o.node_life=Input[0].node_life;
                 outputStream.Append(o);
 
                 o.vertex=UnityObjectToClipPos(render_node_pos0_1);
                 o.uv=float2(0,0);
                 o.trail_ID=Input[0].trail_ID;
+                o.node_life=Input[0].node_life;
                 outputStream.Append(o);
 
                 o.vertex=UnityObjectToClipPos(render_node_pos11);
                 o.uv=float2(0,0);
                 o.trail_ID=Input[0].trail_ID;
+                o.node_life=Input[0].node_life;
                 outputStream.Append(o);
 
                 o.vertex=UnityObjectToClipPos(render_node_pos1_1);
                 o.uv=float2(0,0);
                 o.trail_ID=Input[0].trail_ID;
+                o.node_life=Input[0].node_life;
                 outputStream.Append(o);
 
                 outputStream.RestartStrip();
@@ -134,7 +140,12 @@
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
                 col=float4(1.,1.,1.,1.);
-               // col.a=(i.trail_ID==50) ? 1.0 : 0.0;
+               
+                float node_life_rate=i.node_life/_initNodeLife;
+                col.a=node_life_rate; 
+                col.a*=(i.trail_ID==50) ? 1.0 : 0.0;
+
+
                 return col;
             }
             ENDCG

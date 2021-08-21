@@ -33,7 +33,8 @@
             public node(Vector3 node_position,float node_life){
                 this.node_position=node_position;
                 this.node_life=node_life;
-                this.renderFlag=-1;
+                this.renderFlag=0;
+                //this.renderFlag=-1;
             }
         }
 
@@ -61,7 +62,7 @@
         [SerializeField] GPUBoids_Butterfly gPUBoids_Butterfly;
         public static GPUTrail_Butterfly instance=null;
         public int nodeSegment=60;
-        [SerializeField] int initNodeLife=5;
+        public int initNodeLife=5;
         [HideInInspector] public int count=0;
         [HideInInspector] public int nodeSum=0;
         [SerializeField] float nodeDistanceMin=1.0f;
@@ -150,7 +151,11 @@
 
         void Update()
         {
-            StartCoroutine(RenderTrail());
+         
+        }
+
+        void LateUpdate(){
+               StartCoroutine(RenderTrail());
         }
 
         IEnumerator RenderTrail(){
@@ -173,6 +178,7 @@
             trail_cs.SetInt("_nodeSegment",nodeSegment);
             trail_cs.SetFloat("_nodeDistanceMin",nodeDistanceMin);
             trail_cs.SetFloat("_DTime",Time.deltaTime);
+            trail_cs.SetFloat("_initNodeLife",initNodeLife);
             trail_cs.Dispatch(kernel_NodeInfo,count/256,1,1);
 
             // //debug
