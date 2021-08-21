@@ -18,9 +18,15 @@
         
         struct trail{
             int nextCalNodeIndex;
+            int leftSideFirst;
+            int rightSideFirst;
+            int rightSideSecond;
 
-            public trail(int index){
+            public trail(int index,int nodeSegment){
                 this.nextCalNodeIndex=index;
+                this.leftSideFirst=0;
+                this.rightSideFirst=nodeSegment-1;
+                this.rightSideSecond=nodeSegment-2;
             }
         }
 
@@ -104,7 +110,7 @@
            
 
             for(int i=0;i<count;i++){
-                init_trail[i]=new trail(0);
+                init_trail[i]=new trail(0,nodeSegment);
                 init_input_Data[i]=new input_data(new Vector3(0,0,0));
 
             }
