@@ -36,7 +36,6 @@ int _nodeSegment;
 float _nodeDistanceMin;
 float _DTime;
 
-//numthreads変えるかも?
 [numthreads(256,1,1)]
 void NextInputPos(
     uint3 DID : SV_DISPATCHTHREADID
@@ -44,95 +43,10 @@ void NextInputPos(
     _input_data_write[DID.x].nextInputPosition=_boids_data_read[DID.x].position;
 }
 
-// //per node
-// [numthreads(512,1,1)]
-// void NodeInfo(
-//     uint3 DID : SV_DISPATCHTHREADID
-// ){
-//     //DID is now trail number
-//     // cal node index = _nodeSegment*DID+trail.nextCalNodeIndex
-//     //考えること
-//     //nextPositionの更新タイミング
-//     //node_lifeの扱いをどうするか
-//         //スレッド数を増やす？？ nodeの合計分のスレッド数??
-//         //１つのスレッドにつき、１つのnodeを計算する
-//         //スレッド数とグループ数について再考する
-        
-//         //調査の結果、最大グループ数65535 グループ内の最大スレッド数が1024で　全体で約6700万スレッドを持てることがわかった
-//             //結論: １つのスレッドにつき、１つのnodeを計算する
-//             //それぞれのスレッドでpositionとlifeを計算する
-//             //DIDをもとにinput_positionとtrail_nextIndexのインデックスを割り出す必要がある
-    
-   
-
-//     int myNodeIndexInBuffer=DID.x;
-//     int trailIndex=(int)(floor(DID.x/_nodeSegment));
-//     trail trainIndex_val=_trailIndexData_read[trailIndex];
-//     int nowCalNodeIndex=trainIndex_val.nextCalNodeIndex;
-//     int myNodeIndexInNodes=myNodeIndexInBuffer-trailIndex*_nodeSegment;
-
-//     input_data now_inputData=_input_data_read[trailIndex];
-//     node now_node_data=_node_data_read[myNodeIndexInBuffer];
-
-//     int renderFlag=now_node_data.renderFlag;
- 
-//     //if(false){
-//     if(renderFlag<0&&nowCalNodeIndex==myNodeIndexInNodes){
-//         renderFlag=renderFlag+1;
-//         now_node_data.renderFlag=renderFlag;
-//         _node_data_read[myNodeIndexInBuffer]=now_node_data;
-
-//     }
-
-//     //if(false){
-//     if(nowCalNodeIndex==myNodeIndexInNodes&&renderFlag>=0){
-//         float betweenNodesDis=length(now_inputData.nextInputPosition-now_node_data.node_position);
-//         if(betweenNodesDis>=_nodeDistanceMin){
-//             now_node_data.node_position=now_inputData.nextInputPosition;
-//             now_node_data.node_life-=_DTime;
-
-//             _node_data_write[myNodeIndexInBuffer]=now_node_data;
-
-//             nowCalNodeIndex++;
-//             nowCalNodeIndex=nowCalNodeIndex%_nodeSegment;
-//             trainIndex_val.nextCalNodeIndex=nowCalNodeIndex;
-//             _trailIndexData_read[trailIndex]=trainIndex_val;
-//         }
-//     }
-     
-//      //debug
-//     float4x4 debug_matrix=float4x4(
-//         float4(now_node_data.node_position,0),
-//         float4(0.,0.,0.,0.),
-//         float4(0.,0.,renderFlag,0.),
-//         float4(myNodeIndexInBuffer,trailIndex,nowCalNodeIndex,myNodeIndexInNodes)
-//     );
-//     _debug_buffer_node_position[myNodeIndexInBuffer]=debug_matrix;
-   
-// }
-
-
-//per trail
 [numthreads(256,1,1)]
 void NodeInfo(
     uint3 DID : SV_DISPATCHTHREADID
 ){
-    //DID is now trail number
-    // cal node index = _nodeSegment*DID+trail.nextCalNodeIndex
-    //考えること
-    //nextPositionの更新タイミング
-    //node_lifeの扱いをどうするか
-        //スレッド数を増やす？？ nodeの合計分のスレッド数??
-        //１つのスレッドにつき、１つのnodeを計算する
-        //スレッド数とグループ数について再考する
-        
-        //調査の結果、最大グループ数65535 グループ内の最大スレッド数が1024で　全体で約6700万スレッドを持てることがわかった
-            //結論: １つのスレッドにつき、１つのnodeを計算する
-            //それぞれのスレッドでpositionとlifeを計算する
-            //DIDをもとにinput_positionとtrail_nextIndexのインデックスを割り出す必要がある
-    
-   
-
     int trailIndex=(int)DID.x;
     trail trail_data=_trailIndexData_read[trailIndex];
     input_data input_next_data=_input_data_read[trailIndex];
@@ -143,15 +57,15 @@ void NodeInfo(
     float calNodeLength=length(input_next_data.nextInputPosition-node_data.node_position);
 
     if(calNodeLength>=_nodeDistanceMin){
-          //debug
-        float4x4 debug_matrix=float4x4(
-            float4(node_data.node_position,node_data.renderFlag),
-            float4(myNodeIndex,trailIndex,nowCalNodeIndex,0),
-            float4(0.,0.,0.,0.),
-            float4(0.,0.,0,0.)
+        //   //debug
+        // float4x4 debug_matrix=float4x4(
+        //     float4(node_data.node_position,node_data.renderFlag),
+        //     float4(myNodeIndex,trailIndex,nowCalNodeIndex,0),
+        //     float4(0.,0.,0.,0.),
+        //     float4(0.,0.,0,0.)
             
-        );
-        _debug_buffer_node_position[trailIndex]=debug_matrix;
+        // );
+        // _debug_buffer_node_position[trailIndex]=debug_matrix;
        
         //cal node
         node_data.renderFlag++;
@@ -166,15 +80,5 @@ void NodeInfo(
         _node_data_read[myNodeIndex]=node_data;
         _trailIndexData_read[trailIndex]=trail_data;
 
-    }
-    
-     
-  
-   
+    }   
 }
-
-
-//なぜか nowCalNodeIndex=myNodeIndexInNodes +1
-    // nowCalNodeIndex=nowCalNodeIndex+1;
-    // trainIndex_val.nextCalNodeIndex=nowCalNodeIndex;
-    // _trailIndexData_read[trailIndex]=trainIndex_val;

@@ -11,7 +11,7 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
     public class GPUBoids_Butterfly : MonoBehaviour
     {
         
-        struct Butterfly{
+         struct Butterfly{
             Vector3 position;
             Vector3 velocity;
             
@@ -24,6 +24,7 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
         #region public_val
         [HideInInspector] public ComputeBuffer comouteBuffer_boids_data;
         [HideInInspector] public ComputeBuffer comouteBuffer_boids_force;
+        [HideInInspector] public bool trailRenderStartFlag=false;
         ComputeBuffer debugBuffer;
         public ComputeShader boids_cs;
         [SerializeField] float NoiseValue=10.0f;
@@ -51,6 +52,7 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
         {
             count=GPUBase_Butterfly.instance.count;
             maxBoidsField=GPUBase_Butterfly.instance.maxBoidsField;
+            trailRenderStartFlag=false;
             //count=Mathf.NextPowerOfTwo(count);
             
             butterflies=new Butterfly[count];
@@ -78,6 +80,8 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
             comouteBuffer_boids_data.SetData(butterflies);
             comouteBuffer_boids_force.SetData(initForce);
             debugBuffer.SetData(initMatrix);
+
+            trailRenderStartFlag=true;
            
         }
 
@@ -104,19 +108,10 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
             boids_cs.SetBuffer(ResultVector_Kernel,"_boids_data_write",comouteBuffer_boids_data);
             boids_cs.Dispatch(ResultVector_Kernel,count/NUMTHREADS_X_NUM,1,1);
 
-            /*Vector3[] result=new Vector3[count];
-            comouteBuffer_boids_force.GetData(result);
-            //Debug.Log("result[10]:"+result[10]);
-
-            Matrix4x4[] debugResult=new Matrix4x4[count];
-            debugBuffer.GetData(debugResult);
-            Debug.Log("debugResult[10]:"+debugResult[10]);*/
             
         }
 
-       /* void LateUpdate(){
-        
-        }*/
+   
 
         void OnDisable(){
             comouteBuffer_boids_force.Release();

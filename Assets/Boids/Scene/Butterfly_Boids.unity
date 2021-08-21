@@ -494,6 +494,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dd8ae8ad9872af4299303a9cd0bc18c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trailRenderStartFlag: 0
   boids_cs: {fileID: 7200000, guid: 7d4283d52fd1cd34290625f19bcc96a1, type: 3}
   NoiseValue: 10
   maxBoidsDist: 50
@@ -513,7 +514,7 @@ MonoBehaviour:
   gPUTrail_Butterfly: {fileID: 1319896580}
   gPUBoids_Butterfly: {fileID: 1319896581}
   butterflyRender_mat: {fileID: 2100000, guid: 8eb4a58bb17c244479a3b51df63c65b9, type: 2}
-  count: 1000
+  count: 500
   maxBoidsField: 400
   initRadius: 400
   plane_mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
@@ -532,11 +533,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trail_cs: {fileID: 7200000, guid: 981ed0425d2b8404fb4667ffccf6aeda, type: 3}
   gPUBoids_Butterfly: {fileID: 1319896581}
-  nodeSegment: 60
+  nodeSegment: 600
   initNodeLife: 1
   count: 0
   nodeSum: 0
-  nodeDistanceMin: 10
+  nodeDistanceMin: 1
 --- !u!1 &1733118089
 GameObject:
   m_ObjectHideFlags: 0
@@ -553,7 +554,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1733118090
 Transform:
   m_ObjectHideFlags: 0

@@ -37,6 +37,16 @@
             }
         }
 
+        struct Butterfly{
+            public Vector3 position;
+            public Vector3 velocity;
+            
+            public Butterfly(Vector3 pos,Vector3 vec){
+                this.position=pos;
+                this.velocity=vec;
+            }
+        }
+
         struct input_data{
             Vector3 nextInputPosition;
             public input_data(Vector3 nextInputPosition){
@@ -60,24 +70,23 @@
         [HideInInspector] public ComputeBuffer buffer_node;
         [HideInInspector] public ComputeBuffer buffer_input;
 
-          [HideInInspector] public ComputeBuffer debug_buffer_node_position;
+         // [HideInInspector] public ComputeBuffer debug_buffer_node_position;
       
         #endregion
 
         #region private field
 
-        node[] init_node;
-        Matrix4x4[] debug_position;
+       
+       // Matrix4x4[] debug_position;
+        bool RenderTrailFlag=false;
 
         #endregion
         
         void Start()
         {
+            RenderTrailFlag=false;
             kernel_NextInputPos=trail_cs.FindKernel("NextInputPos");
             kernel_NodeInfo=trail_cs.FindKernel("NodeInfo");
-
-            //////
-             //gPUBoids_Butterfly=this.gameObject.GetComponent<GPUBoids_Butterfly>();
 
             count=GPUBase_Butterfly.instance.count;
             nodeSum=count*nodeSegment;
@@ -88,71 +97,94 @@
             
           
             trail[] init_trail=new trail[count];
-            init_node=new node[nodeSum];
             input_data[] init_input_Data=new input_data[count];
 
 
-            debug_position=new Matrix4x4[nodeSum];
+           
 
             for(int i=0;i<count;i++){
                 init_trail[i]=new trail(0);
                 init_input_Data[i]=new input_data(new Vector3(0,0,0));
 
-                for(int q=0;q<nodeSegment;q++){
-                        init_node[nodeSegment*i+q]=new node(new Vector3(0f,0f,0f),initNodeLife);
-                        debug_position[nodeSegment*i+q]=Matrix4x4.identity;
-                }
             }
 
             buffer_trail.SetData(init_trail);
-            buffer_node.SetData(init_node);
             buffer_input.SetData(init_input_Data);
 
-          //debug
-            debug_buffer_node_position=new ComputeBuffer(nodeSum,Marshal.SizeOf(typeof(Matrix4x4)));
-            debug_buffer_node_position.SetData(debug_position);
+      
 
+            StartCoroutine(TrailRenderFlag());
             
+        }
+
+        IEnumerator TrailRenderFlag(){
+
+            yield return new WaitUntil(()=>gPUBoids_Butterfly.trailRenderStartFlag);
+
+            //get node buffer init data
+            Butterfly[] butterfly_init_data=new Butterfly[count];
+            gPUBoids_Butterfly.comouteBuffer_boids_data.GetData(butterfly_init_data);
+
+            // //debug
+            // debug_position=new Matrix4x4[nodeSum];
+
+            node[] init_node=new node[nodeSum];
+            for(int i=0;i<count;i++){
+                for(int q=0;q<nodeSegment;q++){
+                        
+                        init_node[nodeSegment*i+q]=new node(butterfly_init_data[i].position,initNodeLife);
+                       
+                        // //debug
+                        // debug_position[nodeSegment*i+q]=Matrix4x4.identity;
+                }
+            }
+
+            buffer_node.SetData(init_node);
+
+            // //debug
+            // debug_buffer_node_position=new ComputeBuffer(nodeSum,Marshal.SizeOf(typeof(Matrix4x4)));
+            // debug_buffer_node_position.SetData(debug_position);
+           
+            RenderTrailFlag=true;
         }
 
         void Update()
         {
-            //NextInputPos
+            StartCoroutine(RenderTrail());
+        }
+
+        IEnumerator RenderTrail(){
+
+            yield return new WaitUntil(()=>RenderTrailFlag);
+
+             //NextInputPos
             trail_cs.SetBuffer(kernel_NextInputPos,"_input_data_write",buffer_input);
             trail_cs.SetBuffer(kernel_NextInputPos,"_boids_data_read",gPUBoids_Butterfly.comouteBuffer_boids_data);
             trail_cs.Dispatch(kernel_NextInputPos,count/256,1,1);
 
             //NodeInfo
             trail_cs.SetBuffer(kernel_NodeInfo,"_input_data_read",buffer_input);
-            //trail_cs.SetBuffer(kernel_NodeInfo,"_input_data_write",buffer_trail);
             trail_cs.SetBuffer(kernel_NodeInfo,"_trailIndexData_read",buffer_trail);
-            //trail_cs.SetBuffer(kernel_NodeInfo,"_node_data_write",buffer_node);
             trail_cs.SetBuffer(kernel_NodeInfo,"_node_data_read",buffer_node);
 
-            trail_cs.SetBuffer(kernel_NodeInfo,"_debug_buffer_node_position",debug_buffer_node_position);
+            // //debug
+            // trail_cs.SetBuffer(kernel_NodeInfo,"_debug_buffer_node_position",debug_buffer_node_position);
 
             trail_cs.SetInt("_nodeSegment",nodeSegment);
             trail_cs.SetFloat("_nodeDistanceMin",nodeDistanceMin);
             trail_cs.SetFloat("_DTime",Time.deltaTime);
-           
-            //per node
-            //trail_cs.Dispatch(kernel_NodeInfo,nodeSum/512,1,1);
+            trail_cs.Dispatch(kernel_NodeInfo,count/256,1,1);
 
-            //per trail
-             trail_cs.Dispatch(kernel_NodeInfo,count/256,1,1);
-
-            //debug
-            debug_buffer_node_position.GetData(debug_position);
-            Debug.Log("debug trail data init_node[5]:"+debug_position[5]);
-          /*  for(int i=0;i<nodeSegment;i++){
-                Debug.Log("debug_position["+i+"]:"+debug_position[i]);
-            }*/
+            // //debug
+            // debug_buffer_node_position.GetData(debug_position);
+            // Debug.Log("debug trail data init_node[5]:"+debug_position[5]);
         }
 
         void OnDisable(){
             buffer_trail.Release();
             buffer_node.Release();
             buffer_input.Release();
+          //  debug_buffer_node_position.Release();
         }
     }
 
