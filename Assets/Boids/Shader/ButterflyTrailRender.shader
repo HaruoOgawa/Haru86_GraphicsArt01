@@ -3,6 +3,7 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        [HDR] _HDRPower("_HDRPower",Color)=(1.,1.,1.,1.)
     }
     SubShader
     {
@@ -36,6 +37,7 @@
                float3 node_nextDir : TEXCOORD3;
                float node_life : TEXCOORD4;
                float trail_ID : TEXCOORD5;
+               float4 trail_color : COLOR;
             };
 
             struct g2f{
@@ -43,6 +45,7 @@
                 float2 uv : TEXCOORD0;
                 float node_life : TEXCOORD1;
                 float trail_ID : TEXCOORD2;
+                float4 trail_color : COLOR;
             };
 
             struct node{
@@ -56,6 +59,7 @@
                 int leftSideFirst;
                 int rightSideFirst;
                 int rightSideSecond;
+                float4 trail_color;
             };
 
             sampler2D _MainTex;
@@ -64,6 +68,8 @@
             float _TrailWidth;
             float _nodeSegment;
             float _initNodeLife;
+
+            float4 _HDRPower;
            
             int CalCorrectIndex(int trailIndex,int calIndex){
                 //trailIndex*_nodeSegment+_nodeSegmentを-1したら治った
@@ -95,6 +101,7 @@
                 float node_life=node_data00.node_life;
 
                 trail now_trail_data=_trail_data_read[trailIndex];
+                float4 trail_color=now_trail_data.trail_color;
                 if(nowIndexInNodes==now_trail_data.leftSideFirst||nowIndexInNodes==now_trail_data.rightSideFirst||nowIndexInNodes==now_trail_data.rightSideSecond){
                     node_pos=node_pos;
                     node_nextPos=node_pos;
@@ -110,6 +117,7 @@
                 o.node_nextDir=node_nextDir;
                 o.node_life=node_life;
                 o.trail_ID=trailIndex;
+                o.trail_color=trail_color;
                 return o;
             }
 
@@ -132,24 +140,28 @@
                 o.uv=float2(0,0);
                 o.trail_ID=Input[0].trail_ID;
                 o.node_life=Input[0].node_life;
+                o.trail_color=Input[0].trail_color;
                 outputStream.Append(o);
 
                 o.vertex=UnityObjectToClipPos(render_node_pos0_1);
                 o.uv=float2(0,0);
                 o.trail_ID=Input[0].trail_ID;
                 o.node_life=Input[0].node_life;
+                o.trail_color=Input[0].trail_color;
                 outputStream.Append(o);
 
                 o.vertex=UnityObjectToClipPos(render_node_pos11);
                 o.uv=float2(0,0);
                 o.trail_ID=Input[0].trail_ID;
                 o.node_life=Input[0].node_life;
+                o.trail_color=Input[0].trail_color;
                 outputStream.Append(o);
 
                 o.vertex=UnityObjectToClipPos(render_node_pos1_1);
                 o.uv=float2(0,0);
                 o.trail_ID=Input[0].trail_ID;
                 o.node_life=Input[0].node_life;
+                o.trail_color=Input[0].trail_color;
                 outputStream.Append(o);
 
                 outputStream.RestartStrip();
@@ -158,7 +170,8 @@
             fixed4 frag (g2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
-                col=float4(1.,1.,1.,1.);
+                col=i.trail_color;
+                col.rgb=_HDRPower.rgb;
                
                 float node_life_rate=i.node_life/_initNodeLife;
                 col.a=node_life_rate; 

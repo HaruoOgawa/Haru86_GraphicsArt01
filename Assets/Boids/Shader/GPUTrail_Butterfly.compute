@@ -11,6 +11,7 @@ struct trail{
     int leftSideFirst;
     int rightSideFirst;
     int rightSideSecond;
+    float4 trail_color;
 };
 
 struct node{
@@ -63,12 +64,14 @@ void NodeInfo(
 
     if(calNodeLength>=_nodeDistanceMin){
        
-       
+    
+        //  node_data.node_life+=(node_data.node_life<=0.0) ? _initNodeLife : 0
         //cal node
         node_data.renderFlag++;
         node_data.node_position=input_next_data.nextInputPosition;
         node_life-=_DTime;
-        node_life=node_life%_initNodeLife;
+        //node_life=node_life%_initNodeLife;
+        node_life=(node_life<=0.0) ? _initNodeLife : node_life;
         node_data.node_life=node_life;
         //cal trail
         int leftSideFirst=nowCalNodeIndex;

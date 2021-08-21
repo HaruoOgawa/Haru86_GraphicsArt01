@@ -21,12 +21,14 @@
             int leftSideFirst;
             int rightSideFirst;
             int rightSideSecond;
+            Vector4 trail_color;
 
             public trail(int index,int nodeSegment){
                 this.nextCalNodeIndex=index;
                 this.leftSideFirst=0;
                 this.rightSideFirst=nodeSegment-1;
                 this.rightSideSecond=nodeSegment-2;
+                this.trail_color=new Vector4(Random.Range(0.0f,1.0f),Random.Range(0.0f,1.0f),Random.Range(0.0f,1.0f),1.0f);
             }
         }
 
