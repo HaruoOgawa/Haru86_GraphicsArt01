@@ -118,15 +118,15 @@
         void Update()
         {
             //NextInputPos
-            trail_cs.SetBuffer(kernel_NextInputPos,"_nextCalTrailPosition_write",buffer_input);
+            trail_cs.SetBuffer(kernel_NextInputPos,"_input_data_write",buffer_input);
             trail_cs.SetBuffer(kernel_NextInputPos,"_boids_data_read",gPUBoids_Butterfly.comouteBuffer_boids_data);
             trail_cs.Dispatch(kernel_NextInputPos,count/256,1,1);
 
             //NodeInfo
-            trail_cs.SetBuffer(kernel_NodeInfo,"_nextCalTrailPosition_read",buffer_input);
-            trail_cs.SetBuffer(kernel_NodeInfo,"_trailIndexData_write",buffer_trail);
+            trail_cs.SetBuffer(kernel_NodeInfo,"_input_data_read",buffer_input);
+            //trail_cs.SetBuffer(kernel_NodeInfo,"_input_data_write",buffer_trail);
             trail_cs.SetBuffer(kernel_NodeInfo,"_trailIndexData_read",buffer_trail);
-            trail_cs.SetBuffer(kernel_NodeInfo,"_node_data_write",buffer_node);
+            //trail_cs.SetBuffer(kernel_NodeInfo,"_node_data_write",buffer_node);
             trail_cs.SetBuffer(kernel_NodeInfo,"_node_data_read",buffer_node);
 
             trail_cs.SetBuffer(kernel_NodeInfo,"_debug_buffer_node_position",debug_buffer_node_position);
@@ -134,10 +134,19 @@
             trail_cs.SetInt("_nodeSegment",nodeSegment);
             trail_cs.SetFloat("_nodeDistanceMin",nodeDistanceMin);
             trail_cs.SetFloat("_DTime",Time.deltaTime);
-            trail_cs.Dispatch(kernel_NodeInfo,nodeSum/512,1,1);
+           
+            //per node
+            //trail_cs.Dispatch(kernel_NodeInfo,nodeSum/512,1,1);
 
+            //per trail
+             trail_cs.Dispatch(kernel_NodeInfo,count/256,1,1);
+
+            //debug
             debug_buffer_node_position.GetData(debug_position);
-            Debug.Log("init_node[500-20]:"+debug_position[500-20]);
+            Debug.Log("debug trail data init_node[5]:"+debug_position[5]);
+          /*  for(int i=0;i<nodeSegment;i++){
+                Debug.Log("debug_position["+i+"]:"+debug_position[i]);
+            }*/
         }
 
         void OnDisable(){
