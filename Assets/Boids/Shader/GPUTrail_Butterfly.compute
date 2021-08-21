@@ -145,10 +145,11 @@ void NodeInfo(
     if(calNodeLength>=_nodeDistanceMin){
           //debug
         float4x4 debug_matrix=float4x4(
-            float4(node_data.node_position,0),
+            float4(node_data.node_position,node_data.renderFlag),
+            float4(myNodeIndex,trailIndex,nowCalNodeIndex,0),
             float4(0.,0.,0.,0.),
-            float4(0.,0.,node_data.renderFlag,0.),
-            float4(myNodeIndex,trailIndex,nowCalNodeIndex,0)
+            float4(0.,0.,0,0.)
+            
         );
         _debug_buffer_node_position[trailIndex]=debug_matrix;
        
@@ -158,7 +159,7 @@ void NodeInfo(
         node_data.node_life-=_DTime;
         //cal trail
         nowCalNodeIndex++;
-        nowCalNodeIndex=nowCalNodeIndex%_nodeSegment;
+        nowCalNodeIndex=(uint)nowCalNodeIndex%_nodeSegment;
         trail_data.nextCalNodeIndex=nowCalNodeIndex;
 
         //write to buffer

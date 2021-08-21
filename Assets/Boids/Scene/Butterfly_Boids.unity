@@ -444,7 +444,6 @@ GameObject:
   - component: {fileID: 1319896582}
   - component: {fileID: 1319896581}
   - component: {fileID: 1319896580}
-  - component: {fileID: 1319896584}
   - component: {fileID: 1319896583}
   m_Layer: 0
   m_Name: Butterfly_Simulation
@@ -480,8 +479,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   butterfly_trail_mat: {fileID: 2100000, guid: fcf9ccb39bc992747852580d1654dbc1, type: 2}
-  trailWidth: 100
+  trailWidth: 1
   butterflyTrailCalNode: {fileID: 1319896583}
+  debug_mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!114 &1319896581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -513,7 +513,7 @@ MonoBehaviour:
   gPUTrail_Butterfly: {fileID: 1319896580}
   gPUBoids_Butterfly: {fileID: 1319896581}
   butterflyRender_mat: {fileID: 2100000, guid: 8eb4a58bb17c244479a3b51df63c65b9, type: 2}
-  count: 5000
+  count: 1000
   maxBoidsField: 400
   initRadius: 400
   plane_mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
@@ -537,18 +537,6 @@ MonoBehaviour:
   count: 0
   nodeSum: 0
   nodeDistanceMin: 1
---- !u!114 &1319896584
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1319896578}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f89acb1067f034f42b8ce7ba0204b93d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1733118089
 GameObject:
   m_ObjectHideFlags: 0
