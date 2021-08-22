@@ -41,6 +41,7 @@
 
             sampler2D _MainTex;
             float4 _MainTex_TexelSize;
+
             float _BlurTexelSize;
 
             float _blurRange;
@@ -48,13 +49,26 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = float4(0.,0.,0.,1.);
-                float centerToDist=length(float2(0.,0.)-(i.uv*2.0-1.0))*_blurRange;
-                for(int x=-_BlurTexelSize;x<_BlurTexelSize;x++){
-                    for(int y=-_BlurTexelSize;y<_BlurTexelSize;y++){
-                        col.rgb+=tex2D(_MainTex,float2(i.uv.x+_MainTex_TexelSize.x*x , i.uv.y+_MainTex_TexelSize.y*y)).rgb*exp(centerToDist);
-                    }    
+
+                // float centerToDist=length(float2(0.,0.)-(i.uv*2.0-1.0))*_blurRange;
+                // for(int x=-_BlurTexelSize;x<_BlurTexelSize;x++){
+                //     for(int y=-_BlurTexelSize;y<_BlurTexelSize;y++){
+                //         col.rgb+=tex2D(_MainTex,float2(i.uv.x+_MainTex_TexelSize.x*x , i.uv.y+_MainTex_TexelSize.y*y)).rgb*exp(centerToDist);
+                //     }    
+                // }
+                // col.rgb/=pow(_BlurTexelSize+2,2);
+
+                float2 st=i.uv*2.0-1.0;
+                float dist=length(st);
+
+                for(int i=0;i<_BlurTexelSize;i++){
+                    //offset  i~大きく:offset~小さく , dist~大きく:offset~小さく 
+                    float offset= 1.0- _blurRange*(i/_BlurTexelSize)*dist;
+                    col.rgb+=tex2D(_MainTex,(st*offset+1.0)*0.5).rgb;
                 }
-                col.rgb/=pow(_BlurTexelSize+2,2);
+
+                col.rgb/=_BlurTexelSize;
+
                 return col;
             }
             ENDCG
@@ -209,9 +223,9 @@
                 float4 vignetteCol=tex2D(_vignetteRenderTexture,i.uv);
                 
                 float4 mainCol=tex2D(_MainTex,i.uv);
-                mainCol.rgb+=blurCol.rgb*_blurPower;
-                mainCol.rgb+=chromaticAberrationCol.rgb*_chromaticAberrationPower;
-                mainCol.rgb+=vignetteCol.rgb*_vignettePower;
+                // mainCol.rgb+=blurCol.rgb*_blurPower;
+                // mainCol.rgb+=chromaticAberrationCol.rgb*_chromaticAberrationPower;
+                // mainCol.rgb+=vignetteCol.rgb*_vignettePower;
 
                 return mainCol;
             }

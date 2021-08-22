@@ -56,7 +56,7 @@ public class ImageEffect_Butterfly_Render : MonoBehaviour
         burrerfly_image_effect_mat.SetFloat("_chromaticAberrationPower",_chromaticAberrationPower);
         burrerfly_image_effect_mat.SetTexture("_vignetteRenderTexture",vignetteRenderTexture);
         burrerfly_image_effect_mat.SetFloat("_vignettePower",_vignettePower);
-        Graphics.Blit(src,dest,burrerfly_image_effect_mat,3);
+        Graphics.Blit(blurRenderTexture,dest,burrerfly_image_effect_mat,3);
 
        //relese RenderTexture
        RenderTexture.ReleaseTemporary(blurRenderTexture);

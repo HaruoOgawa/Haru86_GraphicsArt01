@@ -16,7 +16,7 @@
         GrabPass{"_Butterfly_GrabPass_Texture"}
 
         //pass 0/////////////
-       /* Pass
+        Pass
         {
             CGPROGRAM
             #pragma vertex vert
@@ -60,13 +60,16 @@
             {
                 fixed4 col = float4(0.,0.,0.,1.);
                 float4 st=i.grabPos;
+                float2 uv=float2(i.grabPos.x/i.grabPos.w,i.grabPos.y/i.grabPos.w);
+                uv=uv*2.0-1.0;
 
-                float centerToDist=length(float2(0.,0.)-(st.xy*2.0-1.0))*_blurRange;
+                float centerToDist=length(uv)*_blurRange;
 
                 for(int x=-_BlurTexelSize;x<_BlurTexelSize;x++){
                     for(int y=-_BlurTexelSize;y<_BlurTexelSize;y++){
                        
-                        st.xy=float2(st.x+_Butterfly_GrabPass_Texture_TexelSize.x*x , st.y+_Butterfly_GrabPass_Texture_TexelSize.y*y);
+                        st.xy=float2(st.x/st.w+_Butterfly_GrabPass_Texture_TexelSize.x*x , st.y/st.w+_Butterfly_GrabPass_Texture_TexelSize.y*y);
+                        st.xy=st.xy*st.w;
 
                         col.rgb+=tex2D(_Butterfly_GrabPass_Texture,st).rgb*exp(centerToDist);
                     }    
@@ -75,7 +78,7 @@
                 return col;
             }
             ENDCG
-        }*/
+        }
 
         //pass 1/////////////
         /* Pass
@@ -145,7 +148,7 @@
         }*/
 
         //pass 2/////////////
-         Pass
+      /*   Pass
         {
             CGPROGRAM
             #pragma vertex vert
@@ -188,20 +191,22 @@
                 float2 uv=float2(i.grabPos.x/i.grabPos.w,i.grabPos.y/i.grabPos.w);
                 uv=uv*2.0-1.0;
 
-                fixed4 col = tex2Dproj(_Butterfly_GrabPass_Texture, st);
+                // fixed4 col = tex2Dproj(_Butterfly_GrabPass_Texture, st);
+                float4 col =float4(0.,0.,0.,1.);
                 float centerToDist=length(uv)*_vignetteRange;
                // col.rgb=col.rrr/centerToDist;
-                col.rgb=col.rgb*exp(-centerToDist);
+                //col.rgb=col.rgb*exp(-centerToDist);
 
                 // float2 test_st=float2(i.grabPos.x/i.grabPos.w,i.grabPos.y/i.grabPos.w);
                 // test_st=test_st*2.0-1.0;
                 // col.rgb=float3(test_st,0.);
 
-                col.a=_vignetteAlpha;
+                // col.a=_vignetteAlpha;
+                col.a=1.0-exp(-centerToDist);
                 return col;
             }
             ENDCG
-        } 
+        } */
 
         //pass 3//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
          /*Pass
