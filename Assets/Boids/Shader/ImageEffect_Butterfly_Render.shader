@@ -109,7 +109,7 @@
                 col.g+=tex2D(_MainTex,st_G).g;
                 col.b+=tex2D(_MainTex,st_B).b;
 
-                col.rgb/=3.0;
+                //col.rgb/=3.0;
 
                 return col;
             }
