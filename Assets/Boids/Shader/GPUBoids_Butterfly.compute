@@ -23,6 +23,14 @@ float _maxBoidsField;
 float _centerPosPower;
 float _NoiseValue;
 
+float _joinPower;
+float _separatePower;
+float _alignmentPower;
+
+float _joinDisMin;
+float _separateDistMin;
+float _alignmentDistMin;
+
 groupshared Butterfly butterfly_data[NUMTHREADS_X_NUM];
 
 float3 TurnButterfly(float3 pos,float3 vel,float uid){
@@ -123,20 +131,20 @@ void CalVector(
 
             //join
            
-            if(dis>0&&dis<=_maxBoidsDist){
+            if(dis>0&&dis<=_joinDisMin){
                 // float3 dirPos=centerPos-other_position;
                   float3 dirPos=other_position;
                  joinPosSum+=dirPos*(1.0/dis);
                 joinCount++;
             }
             //separate
-            if(dis>0&&dis<=10.0){
+            if(dis>0&&dis<=_separateDistMin){
                 float3 dirVector=other_position-my_position;
                 separateVectorSum-=dirVector*(1.0/dis);
                 separateCount++;
             }
             //alignment
-            if(dis>0&&dis<=_maxBoidsDist){
+            if(dis>0&&dis<=_alignmentDistMin){
                 alignmentVectorSum+=other_velocity*(1.0/dis);
                 alignmentCount++;
             }
@@ -161,7 +169,7 @@ void CalVector(
         joinForce=joinForce-my_position;
         joinForce=normalize(joinForce)*speed;
         
-        //result_velocity+=(float3)joinForce;
+        result_velocity+=(float3)joinForce*_joinPower;
         
        
     }
@@ -178,7 +186,7 @@ void CalVector(
         separateForce=normalize(separateForce)*speed;
 
       
-        result_velocity+=(float3)separateForce;
+        result_velocity+=(float3)separateForce*_separatePower;
         
         
     }
@@ -194,7 +202,7 @@ void CalVector(
         alignmentForce=alignmentForce-my_position;
         alignmentForce=normalize(alignmentForce)*speed;
 
-        result_velocity+=(float3)alignmentForce;
+        result_velocity+=(float3)alignmentForce*_alignmentPower;
 
     
     }

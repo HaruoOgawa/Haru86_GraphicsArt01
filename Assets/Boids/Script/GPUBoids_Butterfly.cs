@@ -32,6 +32,13 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
         
         [SerializeField] float maxBoidsDist=1.0f;
         [SerializeField] float centerPosPower=1000.0f;
+        [SerializeField] float joinPower=1.0f;
+        [SerializeField] float separatePower=1.0f;
+        [SerializeField] float alignmentPower=1.0f; 
+        [SerializeField] float joinDisMin=1.0f;
+        [SerializeField] float separateDistMin=1.0f;
+        [SerializeField] float alignmentDistMin=1.0f;
+        
         
         
         #endregion
@@ -94,6 +101,15 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
             boids_cs.SetFloat("_Time",Time.time);
             boids_cs.SetFloat("_centerPosPower",centerPosPower);
             boids_cs.SetFloat("_NoiseValue",NoiseValue);
+
+            boids_cs.SetFloat("_joinPower",joinPower);
+            boids_cs.SetFloat("_separatePower",separatePower);
+            boids_cs.SetFloat("_alignmentPower",alignmentPower);
+
+            boids_cs.SetFloat("_joinDisMin",joinDisMin);
+            boids_cs.SetFloat("_separateDistMin",separateDistMin);
+            boids_cs.SetFloat("_alignmentDistMin",alignmentDistMin);
+
             boids_cs.SetBuffer(CalVector_Kernel,"_boids_force_write",comouteBuffer_boids_force);
             boids_cs.SetBuffer(CalVector_Kernel,"_boids_data_read",comouteBuffer_boids_data);
             boids_cs.SetBuffer(CalVector_Kernel,"_debugBuffer",debugBuffer);

@@ -7,7 +7,7 @@
         _AWidth("_AWidth",Float)=1.0
         [HDR] _BaseColor("_BaseColor",Color)=(1.,1.,1.,1.)
         [HDR] _SecondColor("_SecondColor",Color)=(1.,1.,1.,1.)
-        [HDR] _ThirdColor("_ThirdColor",Color)=(1.,1.,1.,1.)
+      //  [HDR] _ThirdColor("_ThirdColor",Color)=(1.,1.,1.,1.)
     }
     SubShader
     {
@@ -50,7 +50,7 @@
             float _AWidth;
             float4 _BaseColor;  
             float4 _SecondColor;
-            float4 _ThirdColor;
+           // float4 _ThirdColor;
             float _boidsScale;
 
             struct Butterfly{
@@ -162,9 +162,9 @@
                 o.uv = v.uv;
                 o.id=id;
                 o.col=float4(1.,1.,1.,1.);
-                float uid=fmod(id,2.0);
-                uid=floor(uid);
-                o.col.rgb=(uid==0.0) ? _BaseColor.rgb : float3(0.,0.,0.) + (uid==1.0) ? _SecondColor.rgb : float3(0.,0.,0.) + (uid==2.0) ? _ThirdColor.rgb : float3(0.,0.,0.);
+                //float uid=fmod(id,2.0);
+                //uid=floor(uid);
+                o.col.rgb=(id%2==0) ? _BaseColor.rgb :  _SecondColor.rgb; 
                 o.normal=normal;
                 return o;
             }
