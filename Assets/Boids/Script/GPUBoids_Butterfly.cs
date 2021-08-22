@@ -60,7 +60,6 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
             count=GPUBase_Butterfly.instance.count;
             maxBoidsField=GPUBase_Butterfly.instance.maxBoidsField;
             trailRenderStartFlag=false;
-            //count=Mathf.NextPowerOfTwo(count);
             
             butterflies=new Butterfly[count];
             comouteBuffer_boids_data=new ComputeBuffer(count,Marshal.SizeOf(typeof(Butterfly)));
@@ -70,16 +69,13 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
             CalVector_Kernel=boids_cs.FindKernel("CalVector");
             ResultVector_Kernel=boids_cs.FindKernel("ResultVector");
            
-            //Debug.Log("count:"+count);
             Vector3[] initForce=new Vector3[count];
             Matrix4x4[] initMatrix=new Matrix4x4[count];
 
-            //prepare buffer
             for(int i=0;i<count;i++){
                 Vector3 initPos=Random.insideUnitSphere*GPUBase_Butterfly.instance.initRadius;
                 Vector3 initVec=Vector3.Normalize(new Vector3(Random.Range(-10.0f,10.0f),Random.Range(-10.0f,10.0f),Random.Range(-10.0f,10.0f)))-Vector3.Normalize(Random.insideUnitSphere);
                 initVec=Vector3.Normalize(initVec);
-                //initVec=new Vector3(0,0,0)-initVec;
                 butterflies[i]=new Butterfly(initPos,initVec);
                 initForce[i]=Vector3.zero;
                 initMatrix[i]=Matrix4x4.identity;
@@ -114,8 +110,7 @@ namespace GraphicsArt.Butterfly.GPUBoids_Butterfly{
             boids_cs.SetBuffer(CalVector_Kernel,"_boids_data_read",comouteBuffer_boids_data);
             boids_cs.SetBuffer(CalVector_Kernel,"_debugBuffer",debugBuffer);
             boids_cs.Dispatch(CalVector_Kernel,count/NUMTHREADS_X_NUM,1,1);
-            //comouteBuffer_boids_read=comouteBuffer_boids_write;
-
+           
             boids_cs.SetInt("_butterfly_count",count);
             boids_cs.SetFloat("_DTime",Time.deltaTime);
             boids_cs.SetFloat("_Time",Time.time);

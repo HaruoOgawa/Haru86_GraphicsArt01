@@ -26,7 +26,6 @@ public class Chrysanthemum_Flower_Instancing : MonoBehaviour
         flower_buffer.SetData(flower_TRS);
     }
 
-    // Update is called once per frame
     void Update()
     {
         flower_mat.SetBuffer("_flower_buffer",flower_buffer);

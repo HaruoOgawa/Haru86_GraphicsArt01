@@ -77,12 +77,6 @@
                 return index;
             }
 
-            //頂点が端かどうかを判断するためのisRender関数を定義する
-            // int leftSideFirst;
-            // int rightSideFirst;
-            // int rightSideSecond;
-            //の三つの情報を使うことで端とうまく計算できない部分を調査する
-
             v2g vert (appdata v, uint id : SV_INSTANCEID)
             {
                 int nodeIndex=id;
@@ -175,9 +169,6 @@
                
                 float node_life_rate=i.node_life/_initNodeLife;
                 col.a=node_life_rate; 
-                //col.a*=(i.trail_ID==50) ? 1.0 : 0.0;
-
-
                 return col;
             }
             ENDCG

@@ -12,8 +12,6 @@
          int kernel_NextInputPos;
          int kernel_NodeInfo;
 
-        /////////////////////////////
-
           #region define struct
         
         struct trail{
@@ -35,14 +33,12 @@
         struct node{
             Vector3 node_position;
             float node_life;
-            //自身が更新されてないときとnode のnode_positionが初期値のままの時にフラグを切る為の変数
             int renderFlag;
 
             public node(Vector3 node_position,float node_life){
                 this.node_position=node_position;
                 this.node_life=node_life;
                 this.renderFlag=0;
-                //this.renderFlag=-1;
             }
         }
 
@@ -79,14 +75,10 @@
         [HideInInspector] public ComputeBuffer buffer_node;
         [HideInInspector] public ComputeBuffer buffer_input;
 
-        //  [HideInInspector] public ComputeBuffer debug_buffer_node_position;
-      
         #endregion
 
         #region private field
-
        
-    //    Matrix4x4[] debug_position;
         bool RenderTrailFlag=false;
 
         #endregion
@@ -108,9 +100,6 @@
             trail[] init_trail=new trail[count];
             input_data[] init_input_Data=new input_data[count];
 
-
-           
-
             for(int i=0;i<count;i++){
                 init_trail[i]=new trail(0,nodeSegment);
                 init_input_Data[i]=new input_data(new Vector3(0,0,0));
@@ -119,8 +108,6 @@
 
             buffer_trail.SetData(init_trail);
             buffer_input.SetData(init_input_Data);
-
-      
 
             StartCoroutine(TrailRenderFlag());
             
@@ -134,25 +121,15 @@
             Butterfly[] butterfly_init_data=new Butterfly[count];
             gPUBoids_Butterfly.comouteBuffer_boids_data.GetData(butterfly_init_data);
 
-            // //debug
-            // debug_position=new Matrix4x4[nodeSum];
-
             node[] init_node=new node[nodeSum];
             for(int i=0;i<count;i++){
                 for(int q=0;q<nodeSegment;q++){
                         
                         init_node[nodeSegment*i+q]=new node(butterfly_init_data[i].position,initNodeLife);
-                       
-                        // //debug
-                        // debug_position[nodeSegment*i+q]=Matrix4x4.identity;
                 }
             }
 
             buffer_node.SetData(init_node);
-
-            // //debug
-            // debug_buffer_node_position=new ComputeBuffer(nodeSum,Marshal.SizeOf(typeof(Matrix4x4)));
-            // debug_buffer_node_position.SetData(debug_position);
            
             RenderTrailFlag=true;
         }
@@ -180,25 +157,18 @@
             trail_cs.SetBuffer(kernel_NodeInfo,"_trailIndexData_read",buffer_trail);
             trail_cs.SetBuffer(kernel_NodeInfo,"_node_data_read",buffer_node);
 
-            // //debug
-            // trail_cs.SetBuffer(kernel_NodeInfo,"_debug_buffer_node_position",debug_buffer_node_position);
-
             trail_cs.SetInt("_nodeSegment",nodeSegment);
             trail_cs.SetFloat("_nodeDistanceMin",nodeDistanceMin);
             trail_cs.SetFloat("_DTime",Time.deltaTime);
             trail_cs.SetFloat("_initNodeLife",initNodeLife);
             trail_cs.Dispatch(kernel_NodeInfo,count/256,1,1);
 
-            // //debug
-            // debug_buffer_node_position.GetData(debug_position);
-            // Debug.Log("debug trail data init_node[5]:"+debug_position[5]);
         }
 
         void OnDisable(){
             buffer_trail.Release();
             buffer_node.Release();
             buffer_input.Release();
-            // debug_buffer_node_position.Release();
         }
     }
 
