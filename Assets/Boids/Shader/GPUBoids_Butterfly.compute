@@ -66,6 +66,32 @@ float rand(float2 st){
     return frac(sin(dot(st,float2(12.9898,78.233)))*43758.5453);
 }
 
+float perlinNoise(float2 seeds)
+{
+    float2 i = floor(seeds);
+    float2 f = frac (seeds);
+    float2 i00 = i + float2(0, 0);
+    float2 i10 = i + float2(1, 0);
+    float2 i01 = i + float2(0, 1);
+    float2 i11 = i + float2(1, 1);
+    float2 f00 = f - float2(0, 0);
+    float2 f10 = f - float2(1, 0);
+    float2 f01 = f - float2(0, 1);
+    float2 f11 = f - float2(1, 1);
+    float2 g00 = normalize(-1 + 2 * rand(i00));
+    float2 g10 = normalize(-1 + 2 * rand(i10));
+    float2 g01 = normalize(-1 + 2 * rand(i01));
+    float2 g11 = normalize(-1 + 2 * rand(i11));
+    float2 v00 = dot(g00, f00);
+    float2 v10 = dot(g10, f10);
+    float2 v01 = dot(g01, f01);
+    float2 v11 = dot(g11, f11);
+    float2 p = smoothstep(0, 1, f);
+    float v00v10 = lerp(v00, v10, p.x);
+    float v01v11 = lerp(v01, v11, p.x);
+    return lerp(v00v10, v01v11, p.y) * 0.5 + 0.5;
+}
+
 [numthreads(NUMTHREADS_X_NUM,1,1)]
 void CalVector(
     uint3 GID : SV_GROUPTHREADID,
@@ -186,6 +212,11 @@ void CalVector(
     float3 previous_result_velocity=result_velocity;
     result_velocity+=float3(rand(float2((float)DID.x,0.123))*2.0-1.0,rand(float2((float)DID,0.456))*2.0-1.0,rand(float2((float)DID,0.789))*2.0-1.0)*_NoiseValue;
     result_velocity=TurnButterfly(my_position,result_velocity,(float)DID.x);
+
+    float3 noiseVector=normalize(cross(result_velocity,float3(0.,0.,1.)));
+    noiseVector=noiseVector*perlinNoise(float2(_DTime,(float)DID.x))*0.2;
+    result_velocity+=noiseVector;
+
     _boids_force_write[DID.x]=result_velocity;
     
     _debugBuffer[DID.x]=float4x4(float4(joinPosSum,0),float4(result_velocity,0),float4(previous_result_velocity,disMin),float4(joinCount,separateCount,alignmentCount,disMax));
