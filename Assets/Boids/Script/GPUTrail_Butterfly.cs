@@ -34,7 +34,8 @@
             butterfly_trail_mat.SetFloat("_TrailWidth",trailWidth);
             butterfly_trail_mat.SetFloat("_initNodeLife",butterflyTrailCalNode.initNodeLife);
             butterfly_trail_mat.SetInt("_nodeSegment",butterflyTrailCalNode.nodeSegment);
-           
+            butterfly_trail_mat.SetFloat("_DTime",Time.time);
+            
             Mesh pointMesh=new Mesh();
             
             Vector3[] vertex=new Vector3[1];

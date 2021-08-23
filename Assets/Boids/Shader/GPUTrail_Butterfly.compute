@@ -55,17 +55,14 @@ void NodeInfo(
     int nowCalNodeIndex=trail_data.nextCalNodeIndex;
     int myNodeIndex=trailIndex*_nodeSegment+nowCalNodeIndex;
     node node_data=_node_data_read[myNodeIndex];
-    float node_life=node_data.node_life;
-
+    
     float calNodeLength=length(input_next_data.nextInputPosition-node_data.node_position);
 
     if(calNodeLength>=_nodeDistanceMin){
        //cal node
         node_data.renderFlag++;
         node_data.node_position=input_next_data.nextInputPosition;
-        node_life-=_DTime;
-        node_life=(node_life<=0.0) ? _initNodeLife : node_life;
-        node_data.node_life=node_life;
+        node_data.node_life=_DTime;
         //cal trail
         int leftSideFirst=nowCalNodeIndex;
         int rightSideFirst=(nowCalNodeIndex+(_nodeSegment-1))%_nodeSegment;
@@ -81,10 +78,5 @@ void NodeInfo(
         //write to buffer
         _node_data_read[myNodeIndex]=node_data;
         _trailIndexData_read[trailIndex]=trail_data;
-
-
-          
-       
-
     }   
 }

@@ -68,6 +68,7 @@
             float _TrailWidth;
             float _nodeSegment;
             float _initNodeLife;
+            float _DTime;
 
             float4 _HDRPower;
            
@@ -167,8 +168,8 @@
                 col=i.trail_color;
                 col.rgb=_HDRPower.rgb;
                
-                float node_life_rate=i.node_life/_initNodeLife;
-                col.a=node_life_rate; 
+                float node_life=1.0-clamp(_DTime-i.node_life,0.0,_initNodeLife)/_initNodeLife;
+                col.a=node_life; 
                 return col;
             }
             ENDCG

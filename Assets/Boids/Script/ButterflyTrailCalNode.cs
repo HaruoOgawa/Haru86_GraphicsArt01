@@ -159,7 +159,7 @@
 
             trail_cs.SetInt("_nodeSegment",nodeSegment);
             trail_cs.SetFloat("_nodeDistanceMin",nodeDistanceMin);
-            trail_cs.SetFloat("_DTime",Time.deltaTime);
+            trail_cs.SetFloat("_DTime",Time.time);
             trail_cs.SetFloat("_initNodeLife",initNodeLife);
             trail_cs.Dispatch(kernel_NodeInfo,count/256,1,1);
 
