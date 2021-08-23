@@ -66,6 +66,7 @@ float rand(float2 st){
     return frac(sin(dot(st,float2(12.9898,78.233)))*43758.5453);
 }
 
+
 float perlinNoise(float2 seeds)
 {
     float2 i = floor(seeds);
