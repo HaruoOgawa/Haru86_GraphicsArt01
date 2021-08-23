@@ -37,6 +37,7 @@
                float3 node_nextDir : TEXCOORD3;
                float node_life : TEXCOORD4;
                float trail_ID : TEXCOORD5;
+               int nowIndexInNodes : TEXCOORD6;
                float4 trail_color : COLOR;
             };
 
@@ -113,6 +114,7 @@
                 o.node_life=node_life;
                 o.trail_ID=trailIndex;
                 o.trail_color=trail_color;
+                o.nowIndexInNodes=nowIndexInNodes;
                 return o;
             }
 
@@ -128,32 +130,39 @@
                 float4 render_node_pos11=float4(Input[0].node_nextPos+node_cam_nextSideDir*_TrailWidth,1.0);
                 float4 render_node_pos1_1=float4(Input[0].node_nextPos-node_cam_nextSideDir*_TrailWidth,1.0);
 
+                float nowIndexInNodes=(float)Input[0].nowIndexInNodes;
 
                 g2f o;
                 
                 o.vertex=UnityObjectToClipPos(render_node_pos01);
-                o.uv=float2(0,0);
+                o.uv=float2(nowIndexInNodes/_nodeSegment,1.0);
                 o.trail_ID=Input[0].trail_ID;
                 o.node_life=Input[0].node_life;
                 o.trail_color=Input[0].trail_color;
                 outputStream.Append(o);
 
                 o.vertex=UnityObjectToClipPos(render_node_pos0_1);
-                o.uv=float2(0,0);
+                o.uv=float2(nowIndexInNodes/_nodeSegment,0.0);
                 o.trail_ID=Input[0].trail_ID;
                 o.node_life=Input[0].node_life;
                 o.trail_color=Input[0].trail_color;
                 outputStream.Append(o);
 
+                float nextUVx=(nowIndexInNodes+1)/_nodeSegment;
+                
                 o.vertex=UnityObjectToClipPos(render_node_pos11);
-                o.uv=float2(0,0);
+                o.uv=float2(
+                    (nextUVx>1.0) ? 0.0 : nextUVx
+                    ,1.0);
                 o.trail_ID=Input[0].trail_ID;
                 o.node_life=Input[0].node_life;
                 o.trail_color=Input[0].trail_color;
                 outputStream.Append(o);
 
                 o.vertex=UnityObjectToClipPos(render_node_pos1_1);
-                o.uv=float2(0,0);
+                o.uv=float2(
+                    (nextUVx>1.0) ? 0.0 : nextUVx
+                    ,0.0);
                 o.trail_ID=Input[0].trail_ID;
                 o.node_life=Input[0].node_life;
                 o.trail_color=Input[0].trail_color;
@@ -164,8 +173,7 @@
 
             fixed4 frag (g2f i) : SV_Target
             {
-                fixed4 col = tex2D(_MainTex, i.uv);
-                col=i.trail_color;
+                fixed4 col = float4(0.,0.,0.,1.);
                 col.rgb=_HDRPower.rgb;
                
                 float node_life=1.0-clamp(_DTime-i.node_life,0.0,_initNodeLife)/_initNodeLife;
