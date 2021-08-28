@@ -341,7 +341,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1bd6eeb24cde8b4aada62aec501890a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: c682fd62571a8d148adaf505ee7d233a, type: 2}
+  material: {fileID: 2100000, guid: a1ad244d6327b3f429e8f213b3d5cee8, type: 2}
   mesh_segment: 20
   bezierPoints:
   - {x: 0, y: 0, z: 0}

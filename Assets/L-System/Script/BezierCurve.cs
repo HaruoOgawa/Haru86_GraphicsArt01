@@ -23,7 +23,7 @@ public class BezierCurve : MonoBehaviour
         
         List<Vector3> mesh_vertices=new List<Vector3>();
         List<int> mesh_indices=new List<int>();
-        // List<Vector3> mesh_triangles=new List<Vector3>();
+         List<int> mesh_triangles=new List<int>();
         // List<Vector3> mesh_uv=new List<Vector3>();
 
         int indice=0;
@@ -44,16 +44,43 @@ public class BezierCurve : MonoBehaviour
             Vector3 h=Vector3.Lerp(q0,q1,t);
 
             mesh_vertices.Add(h);
-            mesh_indices.Add(indice);
-            if(i<mesh_segment-1){
-                mesh_indices.Add(indice+1);
-            }
+            // mesh_indices.Add(indice);
+            // if(i<mesh_segment-1){
+            //     mesh_indices.Add(indice+1);
+            // }
+           
             indice++;
         }
 
+        int tri_num=mesh_segment-2;
+        int nex_num=tri_num/2;
+        int pre_num=tri_num-nex_num;
+
+        Debug.Log("tri_num:"+tri_num);
+        Debug.Log("pre_num:"+pre_num);
+        Debug.Log("nex_num:"+nex_num);
+
+        for(int i=0;i<mesh_segment-2;i++){
+            mesh_triangles.Add(0);
+            mesh_triangles.Add(i+1);
+            mesh_triangles.Add(i+2);
+        }
+
+        // for(int i=0;i<pre_num;i++){
+        //     mesh_triangles.Add(i);
+        //     mesh_triangles.Add(i+1);
+        //     mesh_triangles.Add(mesh_segment-i);
+        // }
+
+        // for(int i=0;i<nex_num;i++){
+        //     mesh_triangles.Add(mesh_segment-1);
+        //     mesh_triangles.Add(mesh_segment-2);
+        //     mesh_triangles.Add(i+1);
+        // }
 
         bezierCurveMesh.vertices=mesh_vertices.ToArray();
-        bezierCurveMesh.SetIndices(mesh_indices.ToArray(),MeshTopology.Lines,0);
+        bezierCurveMesh.triangles=mesh_triangles.ToArray();
+        //bezierCurveMesh.SetIndices(mesh_indices.ToArray(),MeshTopology.Lines,0);
         filter.sharedMesh=bezierCurveMesh;
     }
 
