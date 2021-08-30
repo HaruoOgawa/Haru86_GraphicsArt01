@@ -5,6 +5,7 @@
     using System.Runtime.InteropServices;
 
     public struct L_System_Data{
+        Vector3 jointPos;
     }
     public class GPU_LSystem_Calculator : MonoBehaviour
     {
