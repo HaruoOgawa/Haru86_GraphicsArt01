@@ -1,0 +1,15 @@
+﻿#pragma kernel CalLSystemPoint
+
+#define NUM_THREADS 256
+
+
+struct L_System_Data{
+    float3 position;
+};
+
+RWStructuredBuffer<L_System_Data> _lsystem_data_buffer_write;
+
+[numthreads(NUM_THREADS,1,1)]
+void CalLSystemPoint(){
+
+} 

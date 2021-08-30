@@ -499,6 +499,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5d76606d1744aa4199cf7d7e366f88d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  count: 1000
+  lsystem_cs: {fileID: 7200000, guid: dcb81f0e6c6240a4d995ecd6d4e575e9, type: 3}
 --- !u!114 &1651903015
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -511,6 +513,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e1def47be6b9184488352f30198328a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  l_system_mat: {fileID: 2100000, guid: c3785dc6377bd154bac97a1810cb9a4e, type: 2}
+  gPU_LSystem_Calculator: {fileID: 1651903014}
 --- !u!1 &2087355945
 GameObject:
   m_ObjectHideFlags: 0
