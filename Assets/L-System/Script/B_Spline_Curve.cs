@@ -8,30 +8,11 @@ public class B_Spline_Curve : MonoBehaviour
     [SerializeField] MeshFilter filter;
     [SerializeField] Material b_spline_mat;
     [SerializeField] int meshCount=10;
-    [SerializeField] Vector3 p1=new Vector3(0,0,0);
-    [SerializeField] Vector3 p2=new Vector3(0,0,0);
-    [SerializeField] Vector3 p3=new Vector3(0,0,0);
+    
+    [SerializeField] List<Vector3> controlPoints=new List<Vector3>();
     void Start()
     {
-        Mesh bSpline_mesh=new Mesh();
-        
-        List<Vector3> bspline_points=new List<Vector3>();
-        List<int> bspline_index=new List<int>();
-
-        for(int i=0;i<meshCount;i++){
-            Vector3 point=new Vector3(0,0,0);
-            float t=(int)(i/meshCount-1);
-            
-            point=CalBSpline(p1,p2,p3,t);
-            bspline_points.Add(point);
-            bspline_index.Add(i);
-        }
-
-        bSpline_mesh.vertices=bspline_points.ToArray();
-        bSpline_mesh.SetIndices(bspline_index.ToArray(),MeshTopology.Lines,0);
-
-        meshRenderer.material=b_spline_mat;
-        filter.mesh=bSpline_mesh;
+      
     }
 
     void Update()
@@ -39,17 +20,45 @@ public class B_Spline_Curve : MonoBehaviour
         
     }
 
-    Vector3 CalBSpline(Vector2 p1,Vector2 p2,Vector2 p3,float t){
-        float x=BSplineX(p1.x,p2.x,p3.x,t);
-        float y=BSplineY(p1.y,p2.y,p3.y,t);
-        return new Vector3(x,y,0);
+    void Cal_BSplineCurve(){
+        int p=controlPoints.Count;
+        //12
+        int n=3;
+        //3
+        int m=p+n+1;
+        //16
+
+        float[] u=GetKnotVector(m,n);
+
+        for(int i=0;i<p-1;i++){
+
+        }
+
     }
 
-    float BSplineX(float x1,float x2,float x3,float t){
-        return Mathf.Pow((1-t),2)*x1+2.0f*(1-t)*x2+Mathf.Pow(t,2)*x3;
+    float[] GetKnotVector(int m,int n,float knotMin=0.0f,float knotMax=1.0f){
+        List<float> knotVector=new List<float>();
+        int knotN=n+1;
+        //4
+
+        for(int i=0;i<m;i++){
+            if(i>=0&&i<knotN){
+                knotVector.Add(knotMin);
+            }else if(i>=knotN&&i<(m-knotN)){
+                int knotWidth=m-knotN*2;
+                float knotVal=(knotMax-knotMin)/(float)knotWidth;
+                knotVal=knotVal*(float)(i-knotN+1);
+                knotVector.Add(knotVal);
+            }else if(i>=(m-knotN)&&i<m){
+                knotVector.Add(knotMax);
+            }
+        }
+
+        return knotVector.ToArray();
     }
 
-    float BSplineY(float y1,float y2,float y3,float t){
-         return Mathf.Pow((1-t),2)*y1+2.0f*(1-t)*y2+Mathf.Pow(t,2)*y3;
+    void GetBasisFunction(){
+
     }
+    
 }
