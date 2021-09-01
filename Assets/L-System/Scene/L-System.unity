@@ -599,9 +599,19 @@ MonoBehaviour:
   filter: {fileID: 1561469211}
   b_spline_mat: {fileID: 2100000, guid: c682fd62571a8d148adaf505ee7d233a, type: 2}
   meshCount: 10
-  p1: {x: 0, y: 1, z: 0}
-  p2: {x: 2, y: 4, z: 0}
-  p3: {x: 1, y: 8, z: 0}
+  controlPoints:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
 --- !u!33 &1561469211
 MeshFilter:
   m_ObjectHideFlags: 0
