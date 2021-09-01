@@ -29,6 +29,13 @@ public class B_Spline_Curve : MonoBehaviour
         Point
     } 
     [SerializeField] MeshType meshType=MeshType.Lines;
+
+    enum RenderFlag{
+        surface,
+        reverse
+    }
+
+    [SerializeField] RenderFlag renderFlag=RenderFlag.reverse;
     void Start()
     {
         Render_BSplineCurve();
@@ -39,26 +46,57 @@ public class B_Spline_Curve : MonoBehaviour
          Render_BSplineCurve();
     }
 
-
+    
 
     void Render_BSplineCurve(){
         Mesh B_Spline_Mesh=new Mesh();
-        List<B_Spline_Data> data=Cal_BSplineCurve();
+        List<B_Spline_Data> data=new List<B_Spline_Data>();
+        data.Clear();
+        data=Cal_BSplineCurve();
 
 
         List<Vector3> pos=new List<Vector3>();
+        pos.Clear();
         List<int> index=new List<int>();
+        index.Clear();
+
         for(int i=0;i<data.Count;i++){
-            pos.Add(data[i].position);
-            //pos[i].y=-pos[i].y;
+            Vector3 p=data[i].position;
+            pos.Add(p);
             
-            index.Add(data[i].index);
-            if(i<data.Count-1){
-                index.Add(data[i+1].index);
-            }
+             index.Add(i);
 
-
+             if(renderFlag==RenderFlag.reverse){
+                if(i<data.Count-1){
+                    index.Add(i+1);
+                }else{
+                    index.Add(data.Count*2-1);
+                }
+             }else{
+                 if(i<data.Count-1){
+                    index.Add(i+1);
+                }
+             }
+           
         }
+
+        if(renderFlag==RenderFlag.reverse){
+            for(int i=0;i<data.Count;i++){
+                Vector3 p=data[i].position;
+                p.y=-p.y;
+                pos.Add(p);
+
+                index.Add(data.Count+i);
+                if(i<data.Count-1){
+                index.Add(data.Count+i+1);
+                }
+
+            }
+        }
+
+       
+
+     
         B_Spline_Mesh.vertices=pos.ToArray();
         
         if(meshType==MeshType.Lines){
@@ -69,6 +107,18 @@ public class B_Spline_Curve : MonoBehaviour
         
         meshRenderer.material=b_spline_mat;
         filter.mesh=B_Spline_Mesh;
+    }
+
+    List<Vector3> ReverseCurvePos(List<Vector3> pos){
+        List<Vector3> posWithReverse=pos;
+        for(int i=0;i<pos.Count;i++){
+            Vector3 p=pos[i];
+            p.y=-p.y;
+            posWithReverse.Add(p);
+        }
+
+
+        return posWithReverse;
     }
 
     List<B_Spline_Data> Cal_BSplineCurve(){
@@ -91,6 +141,7 @@ public class B_Spline_Curve : MonoBehaviour
         }
         
         S[0]=new B_Spline_Data(controlPoints[0],S[0].index);
+       // S[S.Count-1]=new B_Spline_Data(controlPoints[0],S[S.Count-1].index);
       
         //各TにおけるBスプラインの値を求めている
         for(int i=1;i<tDelta.Count;i++){
@@ -144,7 +195,7 @@ public class B_Spline_Curve : MonoBehaviour
             if((u[j+k]-u[j])!=0.0f){
                 w2=GetBasisFunction(u,j,k-1,t)*(t-u[j])/(u[j+k]-u[j]);
             }
-               
+
             return w1+w2;
         }
        
