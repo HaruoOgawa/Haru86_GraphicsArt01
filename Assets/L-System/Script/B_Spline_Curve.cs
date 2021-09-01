@@ -26,7 +26,8 @@ public class B_Spline_Curve : MonoBehaviour
 
     enum MeshType{
         Lines,
-        Point
+        Point,
+        triangles
     } 
     [SerializeField] MeshType meshType=MeshType.Lines;
 
@@ -59,6 +60,8 @@ public class B_Spline_Curve : MonoBehaviour
         pos.Clear();
         List<int> index=new List<int>();
         index.Clear();
+        List<int> triangles=new List<int>();
+        triangles.Clear();
 
         for(int i=0;i<data.Count;i++){
             Vector3 p=data[i].position;
@@ -88,12 +91,47 @@ public class B_Spline_Curve : MonoBehaviour
 
                 index.Add(data.Count+i);
                 if(i<data.Count-1){
-                index.Add(data.Count+i+1);
+                    index.Add(data.Count+i+1); 
                 }
 
             }
         }
 
+        //Debug.Log("11/2:"+11/2);
+        int posCount=pos.Count-2;
+        int rightCount=(posCount)/2;
+        int leftCount=posCount-rightCount;
+
+        for(int i=0;i<rightCount;i++){
+            //rightTriangles 
+            triangles.Add(i);
+            //ここで超える??
+            triangles.Add(i+1);
+            triangles.Add(pos.Count-i-1); 
+        }
+
+        for(int i=0;i<leftCount;i++){
+            //lefyTriangles
+            triangles.Add(pos.Count-i-1);
+            triangles.Add(pos.Count-i-2);
+            triangles.Add(i+1);
+        }
+
+        
+        // for(int i=0;i<posCount;i++){
+        //     triangles.Add(i);
+        // }
+
+        // for(int i=0;i<posCount/3;i+=3){
+        //     triangles.Add(0);
+        //     triangles.Add(i+1);
+        //     triangles.Add(i+2);
+        // }
+
+        Debug.Log("triangles.Count:"+triangles.Count);
+        Debug.Log("posCount:"+posCount);
+        Debug.Log("rightCount:"+rightCount);
+        Debug.Log("leftCount:"+leftCount);
        
 
      
@@ -103,6 +141,8 @@ public class B_Spline_Curve : MonoBehaviour
             B_Spline_Mesh.SetIndices(index.ToArray(),MeshTopology.Lines,0);
         }else if(meshType==MeshType.Point){
             B_Spline_Mesh.SetIndices(index.ToArray(),MeshTopology.Points,0);
+        }else if(meshType==MeshType.triangles){
+            B_Spline_Mesh.triangles=triangles.ToArray();
         }
         
         meshRenderer.material=b_spline_mat;

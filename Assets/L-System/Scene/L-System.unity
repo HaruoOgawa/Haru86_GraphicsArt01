@@ -605,7 +605,7 @@ MonoBehaviour:
   - {x: 2.95, y: 0.45, z: 0}
   - {x: 3.26, y: 1.39, z: 0}
   - {x: 5.68, y: 2, z: 0}
-  - {x: 8.6, y: -0.17, z: 0}
+  - {x: 8.6, y: -0.2, z: 0}
   knotMin: 0
   knotMax: 1
   tWidth: 0.01
