@@ -25,27 +25,42 @@ public class B_Spline_Curve : MonoBehaviour
     [SerializeField] float tWidth=0.01f;
     void Start()
     {
+        Render_BSplineCurve();
+    }
+
+    void Update()
+    {
+         Render_BSplineCurve();
+    }
+
+
+
+    void Render_BSplineCurve(){
         Mesh B_Spline_Mesh=new Mesh();
-        B_Spline_Data[] data=Cal_BSplineCurve();
-        Vector3[] pos=new Vector3[t];
-        int[] index=new int[t];
-        for(int i=0;i<t;i++){
-            pos[i]=data[i].position;
-            index[i]=data[i].index;
+        List<B_Spline_Data> data=Cal_BSplineCurve();
+
+
+        List<Vector3> pos=new List<Vector3>();
+        List<int> index=new List<int>();
+        for(int i=0;i<data.Count;i++){
+            pos.Add(data[i].position);
+            //pos[i].y=-pos[i].y;
+            
+            index.Add(data[i].index);
+            if(i<data.Count-1){
+                index.Add(data[i+1].index);
+            }
+
+
         }
-        B_Spline_Mesh.vertices=pos;
-        B_Spline_Mesh.SetIndices(index,MeshTopology.Lines,0);
+        B_Spline_Mesh.vertices=pos.ToArray();
+        B_Spline_Mesh.SetIndices(index.ToArray(),MeshTopology.Lines,0);
         
         meshRenderer.material=b_spline_mat;
         filter.mesh=B_Spline_Mesh;
     }
 
-    void Update()
-    {
-        
-    }
-
-    B_Spline_Data[] Cal_BSplineCurve(){
+    List<B_Spline_Data> Cal_BSplineCurve(){
         int p=controlPoints.Count;
         //12
         int n=3;
@@ -60,19 +75,20 @@ public class B_Spline_Curve : MonoBehaviour
             tDelta.Add((float)(tWidth*i));
         }
 
-        //このSを頂点座標として利用する
-        B_Spline_Data[] S=new B_Spline_Data[tDelta.Count];
+        //このSを頂点座標として利用する //tDelta.Count
+        List<B_Spline_Data> S=new List<B_Spline_Data>();
         for(int i=0;i<tDelta.Count;i++){
-            S[i]=new B_Spline_Data(new Vector3(0,0,0),i);
+            S.Add(new B_Spline_Data(new Vector3(0,0,0),i));
         }
         
-        S[0].position=controlPoints[0];
+        S[0]=new B_Spline_Data(controlPoints[0],S[0].index);
+        S[S.Count-1]=new B_Spline_Data(controlPoints[controlPoints.Count-1],S[S.Count-1].index);
 
         //各TにおけるBスプラインの値を求めている
-        for(int i=1;i<tDelta.Count;i++){
+        for(int i=1;i<tDelta.Count-1;i++){
             for(int j=0;j<p;j++){
                 float b=GetBasisFunction(u,j,n,tDelta[i]);
-                S[i].position=S[i].position+controlPoints[j]*b;
+                S[i]=new B_Spline_Data(S[i].position+controlPoints[j]*b,S[i].index);
             }
         }
         return S;
@@ -111,10 +127,12 @@ public class B_Spline_Curve : MonoBehaviour
                 return 0.0f;
             }
         }else{
+            //ここのifでk=0になった時は、この計算ではなくk=0の時の基底関数の公式(上記)を行うことを保証する
             if(u[j+k+1]-u[j+1]!=0.0f){
                 w1=GetBasisFunction(u,j+1,k-1,t)*(u[j+k+1]-t)/(u[j+k+1]-u[j+1]);
             }
 
+            //ここのifでk=0になった時は、この計算ではなくk=0の時の基底関数の公式(上記)を行うことを保証する
             if((u[j+k]-u[j])!=0.0f){
                 w2=GetBasisFunction(u,j,k-1,t)*(t-u[j])/(u[j+k]-u[j]);
             }
