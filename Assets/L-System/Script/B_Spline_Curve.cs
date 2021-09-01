@@ -23,6 +23,12 @@ public class B_Spline_Curve : MonoBehaviour
     [SerializeField] float knotMin=0.0f;
     [SerializeField] float knotMax=1.0f;
     [SerializeField] float tWidth=0.01f;
+
+    enum MeshType{
+        Lines,
+        Point
+    } 
+    [SerializeField] MeshType meshType=MeshType.Lines;
     void Start()
     {
         Render_BSplineCurve();
@@ -54,7 +60,12 @@ public class B_Spline_Curve : MonoBehaviour
 
         }
         B_Spline_Mesh.vertices=pos.ToArray();
-        B_Spline_Mesh.SetIndices(index.ToArray(),MeshTopology.Lines,0);
+        
+        if(meshType==MeshType.Lines){
+            B_Spline_Mesh.SetIndices(index.ToArray(),MeshTopology.Lines,0);
+        }else if(meshType==MeshType.Point){
+            B_Spline_Mesh.SetIndices(index.ToArray(),MeshTopology.Points,0);
+        }
         
         meshRenderer.material=b_spline_mat;
         filter.mesh=B_Spline_Mesh;
@@ -69,6 +80,11 @@ public class B_Spline_Curve : MonoBehaviour
         //16
 
         float[] u=GetKnotVector(m,n);
+        // for(int i=0;i<u.Length;i++){
+        //     Debug.Log("u["+i+"] :"+u[i]);
+        // }
+        // Debug.Log("u.Length: "+u.Length);
+
         List<float> tDelta=new List<float>();
         int num=(int)(u[u.Length-1]/tWidth);
         for(int i=0;i<num;i++){
@@ -82,15 +98,22 @@ public class B_Spline_Curve : MonoBehaviour
         }
         
         S[0]=new B_Spline_Data(controlPoints[0],S[0].index);
-        S[S.Count-1]=new B_Spline_Data(controlPoints[controlPoints.Count-1],S[S.Count-1].index);
+       // S[S.Count-1]=S[0];
+        //S[S.Count-1]=new B_Spline_Data(controlPoints[controlPoints.Count-1],S[S.Count-1].index);
 
         //各TにおけるBスプラインの値を求めている
-        for(int i=1;i<tDelta.Count-1;i++){
+        for(int i=1;i<tDelta.Count;i++){
             for(int j=0;j<p;j++){
                 float b=GetBasisFunction(u,j,n,tDelta[i]);
                 S[i]=new B_Spline_Data(S[i].position+controlPoints[j]*b,S[i].index);
+                //Debug.Log("controlPoints["+j+"]:"+controlPoints[j]);
+                //controlPoint[5]の影響が0だから動かないと予測(b=0)
+                //Debug.Log("controlPoints["+j+"]*b:"+controlPoints[j]*b);
+                //Debug.Log(j+":"+b);
             }
         }
+
+
         return S;
 
     }
@@ -105,7 +128,7 @@ public class B_Spline_Curve : MonoBehaviour
                 knotVector.Add(knotMin);
             }else if(i>=knotN&&i<(m-knotN)){
                 int knotWidth=m-knotN*2;
-                float knotVal=(knotMax-knotMin)/(float)knotWidth;
+                float knotVal=(knotMax-knotMin)/(float)(knotWidth+1);
                 knotVal=knotVal*(float)(i-knotN+1);
                 knotVector.Add(knotVal);
             }else if(i>=(m-knotN)&&i<m){
@@ -122,20 +145,41 @@ public class B_Spline_Curve : MonoBehaviour
 
         if(k==0){
             if(u[j]<t&&t<=u[j+1]){
+                // if(j==5){
+                //     Debug.Log("if true");
+                // }
                 return 1.0f;
             }else{
+            //    if(j==5){
+            //         Debug.Log("FALSE!!");
+            //    }
                 return 0.0f;
             }
         }else{
             //ここのifでk=0になった時は、この計算ではなくk=0の時の基底関数の公式(上記)を行うことを保証する
+            //ここが一回もtrueになっていないから進まない
             if(u[j+k+1]-u[j+1]!=0.0f){
+                // if(j==5){
+                //     Debug.Log("if true w1");
+                // }
                 w1=GetBasisFunction(u,j+1,k-1,t)*(u[j+k+1]-t)/(u[j+k+1]-u[j+1]);
             }
 
             //ここのifでk=0になった時は、この計算ではなくk=0の時の基底関数の公式(上記)を行うことを保証する
             if((u[j+k]-u[j])!=0.0f){
+            //    if(j==5){
+            //         Debug.Log("if true w2");
+            //    }
                 w2=GetBasisFunction(u,j,k-1,t)*(t-u[j])/(u[j+k]-u[j]);
             }
+
+            // if(j==5){
+            //     Debug.Log("w1:  "+w1);
+            //     Debug.Log("w2:  "+w2);
+            //     Debug.Log("j: "+j+"  /  "+"k: "+k);
+            //     Debug.Log("w1 (u[j+k+1]-u[j+1]): "+(u[j+k+1]-u[j+1]));
+            //     Debug.Log("w2 (u[j+k]-u[j]): "+(u[j+k]-u[j]));
+            // }
             
             return w1+w2;
         }
