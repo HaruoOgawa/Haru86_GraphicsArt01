@@ -609,7 +609,7 @@ MonoBehaviour:
   knotMin: 0
   knotMax: 1
   tWidth: 0.01
-  meshType: 0
+  meshType: 2
   renderFlag: 1
 --- !u!33 &1561469211
 MeshFilter:

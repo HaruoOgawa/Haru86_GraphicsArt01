@@ -47,8 +47,6 @@ public class B_Spline_Curve : MonoBehaviour
          Render_BSplineCurve();
     }
 
-    
-
     void Render_BSplineCurve(){
         Mesh B_Spline_Mesh=new Mesh();
         List<B_Spline_Data> data=new List<B_Spline_Data>();
@@ -97,44 +95,24 @@ public class B_Spline_Curve : MonoBehaviour
             }
         }
 
-        //Debug.Log("11/2:"+11/2);
         int posCount=pos.Count-2;
         int rightCount=(posCount)/2;
         int leftCount=posCount-rightCount;
 
+        //rightTriangles 
         for(int i=0;i<rightCount;i++){
-            //rightTriangles 
             triangles.Add(i);
-            //ここで超える??
             triangles.Add(i+1);
             triangles.Add(pos.Count-i-1); 
         }
 
+        //lefyTriangles
         for(int i=0;i<leftCount;i++){
-            //lefyTriangles
             triangles.Add(pos.Count-i-1);
             triangles.Add(pos.Count-i-2);
             triangles.Add(i+1);
         }
 
-        
-        // for(int i=0;i<posCount;i++){
-        //     triangles.Add(i);
-        // }
-
-        // for(int i=0;i<posCount/3;i+=3){
-        //     triangles.Add(0);
-        //     triangles.Add(i+1);
-        //     triangles.Add(i+2);
-        // }
-
-        Debug.Log("triangles.Count:"+triangles.Count);
-        Debug.Log("posCount:"+posCount);
-        Debug.Log("rightCount:"+rightCount);
-        Debug.Log("leftCount:"+leftCount);
-       
-
-     
         B_Spline_Mesh.vertices=pos.ToArray();
         
         if(meshType==MeshType.Lines){
@@ -174,23 +152,19 @@ public class B_Spline_Curve : MonoBehaviour
             tDelta.Add((float)(tWidth*i));
         }
 
-        //このSを頂点座標として利用する //tDelta.Count
         List<B_Spline_Data> S=new List<B_Spline_Data>();
         for(int i=0;i<tDelta.Count;i++){
             S.Add(new B_Spline_Data(new Vector3(0,0,0),i));
         }
         
         S[0]=new B_Spline_Data(controlPoints[0],S[0].index);
-       // S[S.Count-1]=new B_Spline_Data(controlPoints[0],S[S.Count-1].index);
-      
-        //各TにおけるBスプラインの値を求めている
+       
         for(int i=1;i<tDelta.Count;i++){
             for(int j=0;j<p;j++){
                 float b=GetBasisFunction(u,j,n,tDelta[i]);
                 S[i]=new B_Spline_Data(S[i].position+controlPoints[j]*b,S[i].index);
             }
         }
-
 
         return S;
 
@@ -199,8 +173,7 @@ public class B_Spline_Curve : MonoBehaviour
     float[] GetKnotVector(int m,int n){
         List<float> knotVector=new List<float>();
         int knotN=n+1;
-        //4
-
+        
         for(int i=0;i<m;i++){
             if(i>=0&&i<knotN){
                 knotVector.Add(knotMin);
