@@ -104,6 +104,7 @@ public class B_Spline_Curve : MonoBehaviour
 
         for(int i=0;i<data.Count;i++){
             Vector3 p=data[i].position;
+            p=Quaternion.Euler(0,0,90)*p;
             pos.Add(p);
             
              index.Add(i);
@@ -126,6 +127,7 @@ public class B_Spline_Curve : MonoBehaviour
             for(int i=0;i<data.Count;i++){
                 Vector3 p=data[i].position;
                 p.y=-p.y;
+                p=Quaternion.Euler(0,0,90)*p;
                 pos.Add(p);
 
                 index.Add(data.Count+i);
