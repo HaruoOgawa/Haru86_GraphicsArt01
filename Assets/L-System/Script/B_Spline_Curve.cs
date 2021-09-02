@@ -290,16 +290,46 @@ public class B_Spline_Curve : MonoBehaviour
         List<Vector3> fibonacciVertices=new List<Vector3>();
         List<int> fibonacciIndices=new List<int>();
 
-        fibonacciVertices=FibonacciPosition;
-        for(int i=0;i<fibonacciVertices.Count;i++){
-            fibonacciIndices.Add(i);
-            if(i<fibonacciVertices.Count-1){
-                fibonacciIndices.Add(i+1);
+        // fibonacciVertices=FibonacciPosition;
+        // for(int i=0;i<fibonacciVertices.Count;i++){
+        //     fibonacciIndices.Add(i);
+        //     if(i<fibonacciVertices.Count-1){
+        //         fibonacciIndices.Add(i+1);
+        //     }
+        // }
+
+        for(int i=0;i<FibonacciPosition.Count;i++){
+            Vector3 fibPos=FibonacciPosition[i];
+            //fibonacciVertices.Add(fibPos);
+            for(int q=0;q<baseFlower_Data.vertices.Count;q++){
+                fibonacciVertices.Add(baseFlower_Data.vertices[q]+fibPos);
             }
         }
+
+          for(int i=0;i<FibonacciPosition.Count;i++){
+            for(int p=0;p<baseFlower_Data.indices.Count;p++){
+                fibonacciIndices.Add(i*(baseFlower_Data.vertices.Count)+baseFlower_Data.indices[p]);
+               //fibonacciIndices.Add(p);
+               
+            //    Debug.Log("i: "+i);
+            //    Debug.Log("baseFlower_Data.vertices.Count: "+baseFlower_Data.vertices.Count);
+            //    Debug.Log("FibonacciPosition.Count: "+FibonacciPosition.Count);
+            //    //Debug.Log("baseFlower_Data.indices.Count: "+baseFlower_Data.indices.Count);
+            //    Debug.Log("fibonacciVertices.Count: "+fibonacciVertices.Count);
+            //    Debug.Log("baseFlower_Data.indices[p]: "+baseFlower_Data.indices[p]);
+            //    Debug.Log("p: "+p);
+
+            //    Debug.Log("i*(baseFlower_Data.vertices.Count)+baseFlower_Data.indices[p]: "+(i*(baseFlower_Data.vertices.Count)+baseFlower_Data.indices[p]));
+            }
+        }
+
+        
+
+        
         
         fibonacciMesh.vertices=fibonacciVertices.ToArray();
-        fibonacciMesh.SetIndices(fibonacciIndices.ToArray(),MeshTopology.Lines,0);
+        //fibonacciMesh.SetIndices(fibonacciIndices.ToArray(),MeshTopology.Lines,0);
+        fibonacciMesh.triangles=fibonacciIndices.ToArray();
 
         meshRenderer.material=b_spline_mat;
         filter.mesh=fibonacciMesh;

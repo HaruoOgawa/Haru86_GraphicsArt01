@@ -597,7 +597,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   meshRenderer: {fileID: 1561469212}
   filter: {fileID: 1561469211}
-  b_spline_mat: {fileID: 2100000, guid: c682fd62571a8d148adaf505ee7d233a, type: 2}
+  b_spline_mat: {fileID: 2100000, guid: c5dabec01f2b06943a4c5543435ffecd, type: 2}
   t: 10
   controlPoints:
   - {x: 0, y: 0, z: 0}
