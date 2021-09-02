@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class B_Spline_Curve : MonoBehaviour
 {
+
+    #region BaseFlowerField
+    
     struct B_Spline_Data{
         public Vector3 position;
         public int index;
@@ -13,7 +16,25 @@ public class B_Spline_Curve : MonoBehaviour
             this.index=i;
         }
     }
+    struct BaseFlower_Data{
+        public List<Vector3> vertices;
+        public List<int> indices;
+    }
 
+     enum MeshType{
+        Lines,
+        Point,
+        triangles
+    } 
+
+    enum RenderFlag{
+        surface,
+        reverse
+    }
+
+    BaseFlower_Data baseFlower_Data;
+  
+    [Header("BaseFlowerModeling")]
     [SerializeField] MeshRenderer meshRenderer;
     [SerializeField] MeshFilter filter;
     [SerializeField] Material b_spline_mat;
@@ -23,31 +44,51 @@ public class B_Spline_Curve : MonoBehaviour
     [SerializeField] float knotMin=0.0f;
     [SerializeField] float knotMax=1.0f;
     [SerializeField] float tWidth=0.01f;
-
-    enum MeshType{
-        Lines,
-        Point,
-        triangles
-    } 
     [SerializeField] MeshType meshType=MeshType.Lines;
+    [SerializeField] RenderFlag renderFlag=RenderFlag.reverse;
+    
 
-    enum RenderFlag{
-        surface,
-        reverse
+    #endregion
+
+    #region MultiFlowerField
+    enum FlowerType{
+        BaseFlower,
+        MultiFlower
     }
 
-    [SerializeField] RenderFlag renderFlag=RenderFlag.reverse;
+    List<Vector3> FibonacciPosition=new List<Vector3>();
+
+    [Space(1)]
+    [Header("MultiFlower")]
+    [SerializeField] int N=1;
+
+    #endregion
+
     void Start()
     {
-        Render_BSplineCurve();
+        Init();
+        CalFibonacciPosition();
+        RenderMultiFlower();
     }
 
     void Update()
     {
-         Render_BSplineCurve();
+        //  Debug.Log("baseFlower_Data.vertices.Count:"+baseFlower_Data.vertices.Count);
+        // Debug.Log("baseFlower_Data.indices.Count:"+baseFlower_Data.indices.Count);
+        //RenderMultiFlower();
     }
 
-    void Render_BSplineCurve(){
+    Vector3 rot(Vector3 pos){
+        
+        return new Vector3(0,0,0);
+    }
+    //BaseFlower//////////////////////////////////////////////////////////////////////////
+    #region BaseFlower
+    void Init(){
+        baseFlower_Data=new BaseFlower_Data();
+        baseFlower_Data.vertices=new List<Vector3>();
+        baseFlower_Data.indices=new List<int>();
+
         Mesh B_Spline_Mesh=new Mesh();
         List<B_Spline_Data> data=new List<B_Spline_Data>();
         data.Clear();
@@ -125,6 +166,19 @@ public class B_Spline_Curve : MonoBehaviour
         
         meshRenderer.material=b_spline_mat;
         filter.mesh=B_Spline_Mesh;
+
+        for(int i=0;i<pos.Count;i++){
+            baseFlower_Data.vertices.Add(pos[i]);
+        }
+
+        for(int i =0;i<index.Count;i++){
+            baseFlower_Data.indices.Add(index[i]);
+        }
+
+        Debug.Log("baseFlower_Data.vertices.Count:"+baseFlower_Data.vertices.Count);
+        Debug.Log("baseFlower_Data.indices.Count:"+baseFlower_Data.indices.Count);
+        Debug.Log("pos.Count:"+pos.Count);
+        Debug.Log("index.Count:"+index.Count);
     }
 
     List<Vector3> ReverseCurvePos(List<Vector3> pos){
@@ -213,5 +267,42 @@ public class B_Spline_Curve : MonoBehaviour
         }
        
     }
+
+    #endregion
+
+    //MultiFlower/////////////////////////////////////////////////////////
+    #region  MultiFlower
+    void CalFibonacciPosition(){
+        float goldenAngle=137.509f;
+        for(int i=1;i<N+1;i++){
+            Vector3 pos=new Vector3(0,0,0);
+            pos.x=Mathf.Sqrt((float)i);
+            float ang=(float)(i-1)*goldenAngle;
+            pos=Quaternion.Euler(0,ang,0)*pos;
+            FibonacciPosition.Add(pos);
+        }
+    }
+
+    void RenderMultiFlower(){
+        Mesh fibonacciMesh=new Mesh();
+        List<Vector3> fibonacciVertices=new List<Vector3>();
+        List<int> fibonacciIndices=new List<int>();
+
+        fibonacciVertices=FibonacciPosition;
+        for(int i=0;i<fibonacciVertices.Count;i++){
+            fibonacciIndices.Add(i);
+            if(i<fibonacciVertices.Count-1){
+                fibonacciIndices.Add(i+1);
+            }
+        }
+        
+        fibonacciMesh.vertices=fibonacciVertices.ToArray();
+        fibonacciMesh.SetIndices(fibonacciIndices.ToArray(),MeshTopology.Lines,0);
+
+        meshRenderer.material=b_spline_mat;
+        filter.mesh=fibonacciMesh;
+    }
+
+    #endregion
     
 }
