@@ -58,7 +58,7 @@ public class B_Spline_Curve : MonoBehaviour
     }
 
     List<Vector3> FibonacciPosition=new List<Vector3>();
-    List<float> FibonacciRotation=new List<float>();
+    List<Quaternion> FibonacciRotation=new List<Quaternion>();
 
     [Space(1)]
     [Header("MultiFlower")]
@@ -322,14 +322,18 @@ public class B_Spline_Curve : MonoBehaviour
         float goldenAngle=137.509f;
         for(int i=1;i<N+1;i++){
             Vector3 pos=new Vector3(0,0,0);
-            //pos.x=Mathf.Sqrt((float)i);
             float r=Mathf.Sqrt((float)i);
             float ang=(float)(i-1)*goldenAngle*Mathf.Deg2Rad;
             pos.x=r*Mathf.Sin(ang);
             pos.z=r*Mathf.Cos(ang);
+
+            Vector3 crossVec=Vector3.Cross(new Vector3(0,1,0),Vector3.Normalize(pos));
+            Quaternion fibRot=Quaternion.Euler(0,(ang*(180.0f/Mathf.PI)),0);
+            float angVal=Mathf.Pow((float)(i-1)*0.175f,2.0f);
+            fibRot=Quaternion.AngleAxis(angVal,crossVec)*fibRot;
             
             FibonacciPosition.Add(pos);
-            FibonacciRotation.Add((ang*(180.0f/Mathf.PI)));
+            FibonacciRotation.Add(fibRot);
         }
     }
 
@@ -341,9 +345,10 @@ public class B_Spline_Curve : MonoBehaviour
 
         for(int i=0;i<FibonacciPosition.Count;i++){
             Vector3 fibPos=FibonacciPosition[i];
-            Quaternion fibRot=Quaternion.Euler(0,FibonacciRotation[i],0);
+            Quaternion fibRot=FibonacciRotation[i];
             for(int q=0;q<baseFlower_Data.vertices.Count;q++){
-                fibonacciVertices.Add((fibRot*baseFlower_Data.vertices[q]+fibPos));
+                float size=(float)(i+1)*0.02f;
+                fibonacciVertices.Add(size*(fibRot*baseFlower_Data.vertices[q]+fibPos*(1.0f/(float)(i+1.0f))));
             }
 
             for(int p=0;p<baseFlower_Data.normals.Count;p++){
