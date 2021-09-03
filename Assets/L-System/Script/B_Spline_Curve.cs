@@ -68,6 +68,13 @@ public class B_Spline_Curve : MonoBehaviour
 
     void Start()
     {
+        for(int i=0;i<controlPoints.Count;i++){
+            controlPoints[i]+=new Vector3(0,0,2.0f*(
+                    Mathf.PerlinNoise((float)i,controlPoints[i].x+controlPoints[i].y)*2.0f-1.0f
+                )
+            );
+        }
+
         Init();
         CalFibonacciPosition();
         RenderMultiFlower();
@@ -75,7 +82,7 @@ public class B_Spline_Curve : MonoBehaviour
 
     void Update()
     {
-     
+        //Init();
     }
 
    
@@ -175,21 +182,49 @@ public class B_Spline_Curve : MonoBehaviour
             baseFlower_Data.indices.Add(triangles[i]);
         }        
 
-        for(int i=0;i<baseFlower_Data.vertices.Count;i++){
-            // Vector3 p0=baseFlower_Data.vertices[baseFlower_Data.indices[i]];
-            // Vector3 p1=baseFlower_Data.vertices[baseFlower_Data.indices[i+1]];
-            // Vector3 p2=baseFlower_Data.vertices[baseFlower_Data.indices[i+2]];
+        // for(int i=0;i<baseFlower_Data.vertices.Count;i++){
+        //     // Vector3 p0=baseFlower_Data.vertices[baseFlower_Data.indices[i]];
+        //     // Vector3 p1=baseFlower_Data.vertices[baseFlower_Data.indices[i+1]];
+        //     // Vector3 p2=baseFlower_Data.vertices[baseFlower_Data.indices[i+2]];
 
-            // Vector3 v0=Vector3.Normalize(p1-p0);
-            // Vector3 v1=Vector3.Normalize(p2-p0);
+        //     // Vector3 v0=Vector3.Normalize(p1-p0);
+        //     // Vector3 v1=Vector3.Normalize(p2-p0);
 
-            // Vector3 normal=Vector3.Normalize(Vector3.Cross(v0,v1));
+        //     // Vector3 normal=Vector3.Normalize(Vector3.Cross(v0,v1));
 
-            baseFlower_Data.normals.Add(new Vector3(0,0,1));
+        //     baseFlower_Data.normals.Add(new Vector3(0,0,1));
+        // }
+
+        //rightNormals 
+        for(int i=0;i<rightCount;i++){
+            Vector3 p0=baseFlower_Data.vertices[i];
+            Vector3 p1=baseFlower_Data.vertices[i+1];
+            Vector3 p2=baseFlower_Data.vertices[pos.Count-i-1]; 
+
+            Vector3 v0=Vector3.Normalize(p1-p0);
+            Vector3 v1=Vector3.Normalize(p2-p0);
+
+            Vector3 normal=Vector3.Normalize(Vector3.Cross(v0,v1));
+
+            baseFlower_Data.normals.Add(normal);
         }
+        baseFlower_Data.normals.Add(baseFlower_Data.normals[baseFlower_Data.normals.Count-1]);
 
-        // Debug.Log("baseFlower_Data.vertices.Count: "+baseFlower_Data.vertices.Count);
-        // Debug.Log("baseFlower_Data.indices.Count: "+baseFlower_Data.indices.Count);
+        //lefyNormals
+        for(int i=0;i<leftCount;i++){
+            Vector3 p0=baseFlower_Data.vertices[pos.Count-i-1];
+            Vector3 p1=baseFlower_Data.vertices[pos.Count-i-2];
+            Vector3 p2=baseFlower_Data.vertices[i+1];
+
+            Vector3 v0=Vector3.Normalize(p1-p0);
+            Vector3 v1=Vector3.Normalize(p2-p0);
+
+            Vector3 normal=Vector3.Normalize(Vector3.Cross(v0,v1));
+
+            baseFlower_Data.normals.Add(normal);
+
+        }
+        baseFlower_Data.normals.Add(baseFlower_Data.normals[baseFlower_Data.normals.Count-1]);
     }
 
     List<Vector3> ReverseCurvePos(List<Vector3> pos){
@@ -293,21 +328,8 @@ public class B_Spline_Curve : MonoBehaviour
             pos.x=r*Mathf.Sin(ang);
             pos.z=r*Mathf.Cos(ang);
             
-            // Debug.Log("ang: "+ang);
-            // Debug.Log("ang*Mathf.Deg2Rad: "+ang*Mathf.Deg2Rad);
-            //Debug.Log("pos: "+pos*(1.0f/r));
-        
-
-            //pos=Quaternion.Euler(0,ang,0)*pos;
             FibonacciPosition.Add(pos);
             FibonacciRotation.Add((ang*(180.0f/Mathf.PI)));
-
-            //  Vector3 crossVec=Vector3.Cross(Vector3.Normalize(pos),new Vector3(0,1,0));
-            // float attAng=Vector3.Angle(crossVec,new Vector3(1,0,0));
-            // FibonacciRotation.Add(180.0f-attAng);
-            
-            // Debug.Log("attAng: "+attAng);
-            // Debug.Log("180.0f-attAng: "+(180.0f-attAng));
         }
     }
 

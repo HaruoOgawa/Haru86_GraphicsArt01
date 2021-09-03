@@ -53,7 +53,7 @@
                 float3 lightDir=normalize(i.worldPos-_WorldSpaceLightPos0.xyz);
                 float diff=dot(i.normal,lightDir);
                 diff=(diff+1.0)*0.5;
-                diff+=0.2;
+                diff+=0.05;
                 col.rgb*=diff;
                 return col;
             }
