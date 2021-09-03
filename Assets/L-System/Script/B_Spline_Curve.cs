@@ -19,6 +19,7 @@ public class B_Spline_Curve : MonoBehaviour
     struct BaseFlower_Data{
         public List<Vector3> vertices;
         public List<int> indices;
+        public List<Vector3> normals;
     }
 
      enum MeshType{
@@ -77,16 +78,14 @@ public class B_Spline_Curve : MonoBehaviour
      
     }
 
-    Vector3 rot(Vector3 pos){
-        
-        return new Vector3(0,0,0);
-    }
+   
     //BaseFlower//////////////////////////////////////////////////////////////////////////
     #region BaseFlower
     void Init(){
         baseFlower_Data=new BaseFlower_Data();
         baseFlower_Data.vertices=new List<Vector3>();
         baseFlower_Data.indices=new List<int>();
+        baseFlower_Data.normals=new List<Vector3>();
 
         Mesh B_Spline_Mesh=new Mesh();
         List<B_Spline_Data> data=new List<B_Spline_Data>();
@@ -175,6 +174,22 @@ public class B_Spline_Curve : MonoBehaviour
         for(int i =0;i<triangles.Count;i++){
             baseFlower_Data.indices.Add(triangles[i]);
         }        
+
+        for(int i=0;i<baseFlower_Data.vertices.Count;i++){
+            // Vector3 p0=baseFlower_Data.vertices[baseFlower_Data.indices[i]];
+            // Vector3 p1=baseFlower_Data.vertices[baseFlower_Data.indices[i+1]];
+            // Vector3 p2=baseFlower_Data.vertices[baseFlower_Data.indices[i+2]];
+
+            // Vector3 v0=Vector3.Normalize(p1-p0);
+            // Vector3 v1=Vector3.Normalize(p2-p0);
+
+            // Vector3 normal=Vector3.Normalize(Vector3.Cross(v0,v1));
+
+            baseFlower_Data.normals.Add(new Vector3(0,0,1));
+        }
+
+        // Debug.Log("baseFlower_Data.vertices.Count: "+baseFlower_Data.vertices.Count);
+        // Debug.Log("baseFlower_Data.indices.Count: "+baseFlower_Data.indices.Count);
     }
 
     List<Vector3> ReverseCurvePos(List<Vector3> pos){
@@ -284,12 +299,17 @@ public class B_Spline_Curve : MonoBehaviour
         Mesh fibonacciMesh=new Mesh();
         List<Vector3> fibonacciVertices=new List<Vector3>();
         List<int> fibonacciIndices=new List<int>();
+        List<Vector3> fibonacciNormals=new List<Vector3>();
 
         for(int i=0;i<FibonacciPosition.Count;i++){
             Vector3 fibPos=FibonacciPosition[i];
             Quaternion fibRot=Quaternion.Euler(0,FibonacciRotation[i],0);
             for(int q=0;q<baseFlower_Data.vertices.Count;q++){
                 fibonacciVertices.Add(fibRot*(baseFlower_Data.vertices[q]+fibPos));
+            }
+
+            for(int p=0;p<baseFlower_Data.normals.Count;p++){
+                fibonacciNormals.Add((fibRot*baseFlower_Data.normals[p]));
             }
         }
 
@@ -299,16 +319,23 @@ public class B_Spline_Curve : MonoBehaviour
             }
         }
 
-        List<int> indices=new List<int>();
-        for(int i=0;i<fibonacciVertices.Count;i++){
-            indices.Add(i);
-            if(i<fibonacciVertices.Count-1){
-                indices.Add(i+1);
-            }
-        }
+        // Debug.Log("fibonacciVertices.Count: "+fibonacciVertices.Count);       
+        // Debug.Log("fibonacciNormals.Count: "+fibonacciNormals.Count); 
+
+        // List<int> indices=new List<int>();
+        // for(int i=0;i<fibonacciVertices.Count;i++){
+        //     indices.Add(i);
+        //     if(i<fibonacciVertices.Count-1){
+        //         indices.Add(i+1);
+        //     }
+        // }
+
+
         
         fibonacciMesh.vertices=fibonacciVertices.ToArray();
         fibonacciMesh.triangles=fibonacciIndices.ToArray();
+        fibonacciMesh.normals=fibonacciNormals.ToArray();
+        fibonacciMesh.RecalculateNormals();
 
         meshRenderer.material=b_spline_mat;
         filter.mesh=fibonacciMesh;
