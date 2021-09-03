@@ -73,9 +73,7 @@ public class B_Spline_Curve : MonoBehaviour
 
     void Update()
     {
-        //  Debug.Log("baseFlower_Data.vertices.Count:"+baseFlower_Data.vertices.Count);
-        // Debug.Log("baseFlower_Data.indices.Count:"+baseFlower_Data.indices.Count);
-        //RenderMultiFlower();
+     
     }
 
     Vector3 rot(Vector3 pos){
@@ -157,7 +155,7 @@ public class B_Spline_Curve : MonoBehaviour
         }
 
         B_Spline_Mesh.vertices=pos.ToArray();
-        
+
         if(meshType==MeshType.Lines){
             B_Spline_Mesh.SetIndices(index.ToArray(),MeshTopology.Lines,0);
         }else if(meshType==MeshType.Point){
@@ -173,14 +171,9 @@ public class B_Spline_Curve : MonoBehaviour
             baseFlower_Data.vertices.Add(pos[i]);
         }
 
-        for(int i =0;i<index.Count;i++){
-            baseFlower_Data.indices.Add(index[i]);
-        }
-
-        Debug.Log("baseFlower_Data.vertices.Count:"+baseFlower_Data.vertices.Count);
-        Debug.Log("baseFlower_Data.indices.Count:"+baseFlower_Data.indices.Count);
-        Debug.Log("pos.Count:"+pos.Count);
-        Debug.Log("index.Count:"+index.Count);
+        for(int i =0;i<triangles.Count;i++){
+            baseFlower_Data.indices.Add(triangles[i]);
+        }        
     }
 
     List<Vector3> ReverseCurvePos(List<Vector3> pos){
@@ -290,45 +283,31 @@ public class B_Spline_Curve : MonoBehaviour
         List<Vector3> fibonacciVertices=new List<Vector3>();
         List<int> fibonacciIndices=new List<int>();
 
-        // fibonacciVertices=FibonacciPosition;
-        // for(int i=0;i<fibonacciVertices.Count;i++){
-        //     fibonacciIndices.Add(i);
-        //     if(i<fibonacciVertices.Count-1){
-        //         fibonacciIndices.Add(i+1);
-        //     }
-        // }
-
         for(int i=0;i<FibonacciPosition.Count;i++){
             Vector3 fibPos=FibonacciPosition[i];
-            //fibonacciVertices.Add(fibPos);
             for(int q=0;q<baseFlower_Data.vertices.Count;q++){
                 fibonacciVertices.Add(baseFlower_Data.vertices[q]+fibPos);
             }
         }
 
-          for(int i=0;i<FibonacciPosition.Count;i++){
+        for(int i=0;i<FibonacciPosition.Count;i++){
             for(int p=0;p<baseFlower_Data.indices.Count;p++){
                 fibonacciIndices.Add(i*(baseFlower_Data.vertices.Count)+baseFlower_Data.indices[p]);
-               //fibonacciIndices.Add(p);
-               
-            //    Debug.Log("i: "+i);
-            //    Debug.Log("baseFlower_Data.vertices.Count: "+baseFlower_Data.vertices.Count);
-            //    Debug.Log("FibonacciPosition.Count: "+FibonacciPosition.Count);
-            //    //Debug.Log("baseFlower_Data.indices.Count: "+baseFlower_Data.indices.Count);
-            //    Debug.Log("fibonacciVertices.Count: "+fibonacciVertices.Count);
-            //    Debug.Log("baseFlower_Data.indices[p]: "+baseFlower_Data.indices[p]);
-            //    Debug.Log("p: "+p);
-
-            //    Debug.Log("i*(baseFlower_Data.vertices.Count)+baseFlower_Data.indices[p]: "+(i*(baseFlower_Data.vertices.Count)+baseFlower_Data.indices[p]));
             }
         }
 
-        
+        List<int> indices=new List<int>();
+        for(int i=0;i<fibonacciVertices.Count;i++){
+            indices.Add(i);
+            if(i<fibonacciVertices.Count-1){
+                indices.Add(i+1);
+            }
+        }
 
-        
+   
         
         fibonacciMesh.vertices=fibonacciVertices.ToArray();
-        //fibonacciMesh.SetIndices(fibonacciIndices.ToArray(),MeshTopology.Lines,0);
+        //fibonacciMesh.SetIndices(indices.ToArray(),MeshTopology.Points,0);
         fibonacciMesh.triangles=fibonacciIndices.ToArray();
 
         meshRenderer.material=b_spline_mat;
