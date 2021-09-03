@@ -59,10 +59,12 @@ public class B_Spline_Curve : MonoBehaviour
 
     List<Vector3> FibonacciPosition=new List<Vector3>();
     List<Quaternion> FibonacciRotation=new List<Quaternion>();
+    
 
     [Space(1)]
     [Header("MultiFlower")]
     [SerializeField] int N=1;
+    [SerializeField] CPU_Flower_Simulation cPU_Flower_Simulation;
 
     #endregion
 
@@ -171,8 +173,8 @@ public class B_Spline_Curve : MonoBehaviour
             B_Spline_Mesh.triangles=triangles.ToArray();
         }
         
-        meshRenderer.material=b_spline_mat;
-        filter.mesh=B_Spline_Mesh;
+        // meshRenderer.material=b_spline_mat;
+        // filter.mesh=B_Spline_Mesh;
 
         for(int i=0;i<pos.Count;i++){
             baseFlower_Data.vertices.Add(pos[i]);
@@ -369,6 +371,9 @@ public class B_Spline_Curve : MonoBehaviour
 
         meshRenderer.material=b_spline_mat;
         filter.mesh=fibonacciMesh;
+        
+        cPU_Flower_Simulation.multiFlowerMesh=fibonacciMesh;
+        cPU_Flower_Simulation.isDone=true;
     }
 
     #endregion

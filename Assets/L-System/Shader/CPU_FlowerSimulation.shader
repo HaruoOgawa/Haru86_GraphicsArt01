@@ -1,4 +1,4 @@
-﻿Shader "Unlit/Flower"
+﻿Shader "Unlit/CPU_FlowerSimulation"
 {
     Properties
     {
@@ -7,16 +7,15 @@
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" "LightMode"="ForwardBase"}
+        Tags { "RenderType"="Opaque"  "LightMode"="ForwardBase"}
         LOD 100
-        Cull Off
 
         Pass
         {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-           
+          
             #include "UnityCG.cginc"
             #include "Lighting.cginc"
 
@@ -35,12 +34,19 @@
                 float3 normal : NORMAL;
             };
 
+
+            struct MultiFlower_Data{
+                float3 position;
+            };
+
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            StructuredBuffer<float4x4> _multiFlower_Data;
             float4 _Color;
 
-            v2f vert (appdata v)
+            v2f vert (appdata v,uint id:SV_INSTANCEID)
             {
+                v.vertex=mul(_multiFlower_Data[id],v.vertex);
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
@@ -57,6 +63,11 @@
                 diff=(diff+1.0)*0.5;
                 diff+=0.05;
                 col.rgb*=diff*_Color.rgb;
+                
+                //col.rgb=float3(1,0,0);
+                // float3 n=normalize(i.normal);
+                // col.rgb=n;
+
                 return col;
             }
             ENDCG
