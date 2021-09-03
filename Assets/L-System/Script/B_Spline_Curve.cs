@@ -287,11 +287,20 @@ public class B_Spline_Curve : MonoBehaviour
         float goldenAngle=137.509f;
         for(int i=1;i<N+1;i++){
             Vector3 pos=new Vector3(0,0,0);
-            pos.x=Mathf.Sqrt((float)i);
-            float ang=(float)(i-1)*goldenAngle;
-            pos=Quaternion.Euler(0,ang,0)*pos;
+            //pos.x=Mathf.Sqrt((float)i);
+            float r=Mathf.Sqrt((float)i);
+            float ang=(float)(i-1)*goldenAngle*Mathf.Deg2Rad;
+            pos.x=r*Mathf.Sin(ang);
+            pos.z=r*Mathf.Cos(ang);
+            
+            // Debug.Log("ang: "+ang);
+            // Debug.Log("ang*Mathf.Deg2Rad: "+ang*Mathf.Deg2Rad);
+            //Debug.Log("pos: "+pos*(1.0f/r));
+        
+
+            //pos=Quaternion.Euler(0,ang,0)*pos;
             FibonacciPosition.Add(pos);
-            FibonacciRotation.Add(90.0f-(180.0f-ang));
+            FibonacciRotation.Add(90.0f-(ang));
         }
     }
 
@@ -305,7 +314,7 @@ public class B_Spline_Curve : MonoBehaviour
             Vector3 fibPos=FibonacciPosition[i];
             Quaternion fibRot=Quaternion.Euler(0,FibonacciRotation[i],0);
             for(int q=0;q<baseFlower_Data.vertices.Count;q++){
-                fibonacciVertices.Add(fibRot*(baseFlower_Data.vertices[q]+fibPos));
+                fibonacciVertices.Add((fibRot*baseFlower_Data.vertices[q]+fibPos));
             }
 
             for(int p=0;p<baseFlower_Data.normals.Count;p++){
@@ -318,20 +327,7 @@ public class B_Spline_Curve : MonoBehaviour
                 fibonacciIndices.Add(i*(baseFlower_Data.vertices.Count)+baseFlower_Data.indices[p]);
             }
         }
-
-        // Debug.Log("fibonacciVertices.Count: "+fibonacciVertices.Count);       
-        // Debug.Log("fibonacciNormals.Count: "+fibonacciNormals.Count); 
-
-        // List<int> indices=new List<int>();
-        // for(int i=0;i<fibonacciVertices.Count;i++){
-        //     indices.Add(i);
-        //     if(i<fibonacciVertices.Count-1){
-        //         indices.Add(i+1);
-        //     }
-        // }
-
-
-        
+       
         fibonacciMesh.vertices=fibonacciVertices.ToArray();
         fibonacciMesh.triangles=fibonacciIndices.ToArray();
         fibonacciMesh.normals=fibonacciNormals.ToArray();
