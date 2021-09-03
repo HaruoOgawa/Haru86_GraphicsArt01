@@ -300,7 +300,14 @@ public class B_Spline_Curve : MonoBehaviour
 
             //pos=Quaternion.Euler(0,ang,0)*pos;
             FibonacciPosition.Add(pos);
-            FibonacciRotation.Add(90.0f-(ang));
+            FibonacciRotation.Add((ang*(180.0f/Mathf.PI)));
+
+            //  Vector3 crossVec=Vector3.Cross(Vector3.Normalize(pos),new Vector3(0,1,0));
+            // float attAng=Vector3.Angle(crossVec,new Vector3(1,0,0));
+            // FibonacciRotation.Add(180.0f-attAng);
+            
+            // Debug.Log("attAng: "+attAng);
+            // Debug.Log("180.0f-attAng: "+(180.0f-attAng));
         }
     }
 
