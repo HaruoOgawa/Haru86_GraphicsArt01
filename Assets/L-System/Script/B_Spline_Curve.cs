@@ -68,6 +68,10 @@ public class B_Spline_Curve : MonoBehaviour
     [SerializeField] int N=1;
     [SerializeField] CPU_Flower_Simulation cPU_Flower_Simulation;
 
+    Vector3 flowerPosition;
+    Vector3 flowerTangent;
+    int flowerPoint;
+
     #endregion
 
     #region  Leaf Field
@@ -76,6 +80,15 @@ public class B_Spline_Curve : MonoBehaviour
      [SerializeField] MeshRenderer secondLealMeshRenderer;
     [SerializeField] MeshFilter secondLeafFilter;
     [SerializeField] Material leafMat;
+
+    Vector3 firstLeafPosition=new Vector3(0,0,0);
+    Vector3 firstLeafTangent=new Vector3(0,0,0);
+    bool fisrtLeafCal_Flag=false;
+    [SerializeField] int firstLeafPoint=5;
+    Vector3 secondLeafPosition=new Vector3(0,0,0);
+    Vector3 secondLeafTangent=new Vector3(0,0,0);
+    bool secondLeafCal_Flag=false;
+    [SerializeField] int secondLeafPoint=6;
 
     #endregion
 
@@ -97,11 +110,16 @@ public class B_Spline_Curve : MonoBehaviour
             );
         }
 
-        Init();
-        // CalFibonacciPosition();
-        // RenderMultiFlower();
-        CalLeaf();
+        fisrtLeafCal_Flag=false;
+        secondLeafCal_Flag=false;
+
         CalStem();
+        Init();
+        CalFibonacciPosition();
+        flowerTime=1.0f;
+        RenderMultiFlower();
+        CalLeaf();
+       
     }
 
     void Update()
@@ -402,10 +420,16 @@ public class B_Spline_Curve : MonoBehaviour
          Mesh secondLeafMesh=new Mesh();
          List<Vector3> firstVirtices=new List<Vector3>();
          List<Vector3> secondVirtices=new List<Vector3>();
+         float size=0.5f;
+
+        Debug.Log("firstLeafPosition: "+firstLeafPosition);
+        Debug.Log("secondLeafPosition: "+secondLeafPosition);
 
          for(int i=0;i<baseFlower_Data.vertices.Count;i++){
-             firstVirtices.Add(Quaternion.AngleAxis(90.0f,new Vector3(0,1,0))*baseFlower_Data.vertices[i]);
-             secondVirtices.Add(Quaternion.AngleAxis(-90.0f,new Vector3(0,1,0))*baseFlower_Data.vertices[i]);
+             firstVirtices.Add(size*(Quaternion.AngleAxis(90.0f,firstLeafTangent)*Quaternion.AngleAxis(90.0f,new Vector3(0,1,0))*((baseFlower_Data.vertices[i]*Mathf.Min(i,1.0f)+firstLeafPosition))));
+             secondVirtices.Add(size*(Quaternion.AngleAxis(90.0f,secondLeafTangent)*Quaternion.AngleAxis(-90.0f,new Vector3(0,1,0))*((baseFlower_Data.vertices[i]*Mathf.Min(i,1.0f)+secondLeafPosition))));
+
+             
          }
 
          firstLeafMesh.vertices=firstVirtices.ToArray();
@@ -456,11 +480,31 @@ public class B_Spline_Curve : MonoBehaviour
                 triangles.Add((i-1)*segments+p);
                 triangles.Add((i-1)*segments+(p+1)%segments+segments);
                 triangles.Add((i-1)*segments+p+segments);
+
+                 if(((i-1)*segments+p)==firstLeafPoint){
+                     Debug.Log("firstLeafPoint is Done !!");
+                     firstLeafPosition=pos;
+                     firstLeafTangent=bionormal;
+                 }
+
+                 if(((i-1)*segments+p)==secondLeafPoint){
+                      Debug.Log("secondLeafPoint is Done !!");
+                      secondLeafPosition=pos;
+                      secondLeafTangent=bionormal;
+                 }   
+
+                 //Debug.Log("(i-1)*segments+p: "+((i-1)*segments+p));
+
                }
             }
+
+            
         }
 
-     
+         flowerPosition=vertices[vertices.Count-1];
+        flowerTangent=Vector3.Normalize(data[data.Count-1].position-data[data.Count-2].position);
+  
+        Debug.Log("vertices.Count: "+vertices.Count);
 
         stemMesh.vertices=vertices.ToArray();
         stemMesh.triangles=triangles.ToArray();

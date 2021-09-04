@@ -1035,6 +1035,8 @@ MonoBehaviour:
   secondLealMeshRenderer: {fileID: 631387474}
   secondLeafFilter: {fileID: 631387475}
   leafMat: {fileID: 2100000, guid: 6e84e0fab009b6d45be2e68a79342e41, type: 2}
+  firstLeafPoint: 1000
+  secondLeafPoint: 500
   stemMeshRenderer: {fileID: 363049245}
   stemFilter: {fileID: 363049246}
   stemMat: {fileID: 2100000, guid: c07a143813d45b4408ecb812f8c0b865, type: 2}

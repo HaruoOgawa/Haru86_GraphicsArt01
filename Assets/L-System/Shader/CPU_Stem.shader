@@ -43,7 +43,7 @@
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float4 col =float4(1,0,0,1); 
+                float4 col =float4(1,1,1,1); 
                 return col;
             }
             ENDCG
