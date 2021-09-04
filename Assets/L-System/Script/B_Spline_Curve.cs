@@ -97,7 +97,7 @@ public class B_Spline_Curve : MonoBehaviour
             );
         }
 
-        //Init();
+        Init();
         // CalFibonacciPosition();
         // RenderMultiFlower();
         CalLeaf();
@@ -197,8 +197,8 @@ public class B_Spline_Curve : MonoBehaviour
             B_Spline_Mesh.triangles=triangles.ToArray();
         }
         
-        meshRenderer.material=b_spline_mat;
-        filter.mesh=B_Spline_Mesh;
+        // meshRenderer.material=b_spline_mat;
+        // filter.mesh=B_Spline_Mesh;
 
         for(int i=0;i<pos.Count;i++){
             baseFlower_Data.vertices.Add(pos[i]);
@@ -398,7 +398,26 @@ public class B_Spline_Curve : MonoBehaviour
     #region leaf
 
     void CalLeaf(){
+         Mesh firstLeafMesh=new Mesh();
+         Mesh secondLeafMesh=new Mesh();
+         List<Vector3> firstVirtices=new List<Vector3>();
+         List<Vector3> secondVirtices=new List<Vector3>();
 
+         for(int i=0;i<baseFlower_Data.vertices.Count;i++){
+             firstVirtices.Add(Quaternion.AngleAxis(90.0f,new Vector3(0,1,0))*baseFlower_Data.vertices[i]);
+             secondVirtices.Add(Quaternion.AngleAxis(-90.0f,new Vector3(0,1,0))*baseFlower_Data.vertices[i]);
+         }
+
+         firstLeafMesh.vertices=firstVirtices.ToArray();
+         firstLeafMesh.triangles=baseFlower_Data.indices.ToArray();
+         firstLeafFilter.mesh=firstLeafMesh;
+         firstLealMeshRenderer.material=leafMat;
+
+         secondLeafMesh.vertices=secondVirtices.ToArray();
+         secondLeafMesh.triangles=baseFlower_Data.indices.ToArray();
+        secondLeafFilter.mesh=secondLeafMesh;
+        secondLealMeshRenderer.material=leafMat;
+        
     }
 
     #endregion
