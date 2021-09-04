@@ -70,6 +70,24 @@ public class B_Spline_Curve : MonoBehaviour
 
     #endregion
 
+    #region  Leaf Field
+    [SerializeField] MeshRenderer firstLealMeshRenderer;
+    [SerializeField] MeshFilter firstLeafFilter;
+     [SerializeField] MeshRenderer secondLealMeshRenderer;
+    [SerializeField] MeshFilter secondLeafFilter;
+    [SerializeField] Material leafMat;
+
+    #endregion
+
+    #region Stem Field
+     [SerializeField] MeshRenderer stemMeshRenderer;
+    [SerializeField] MeshFilter stemFilter;
+    [SerializeField] Material stemMat;
+    [SerializeField] float radius=1.0f;
+    [SerializeField] int segments=6;
+
+    #endregion
+
     void Start()
     {
         for(int i=0;i<controlPoints.Count;i++){
@@ -79,15 +97,18 @@ public class B_Spline_Curve : MonoBehaviour
             );
         }
 
-        Init();
-        CalFibonacciPosition();
-        RenderMultiFlower();
+        //Init();
+        // CalFibonacciPosition();
+        // RenderMultiFlower();
+        CalLeaf();
+        CalStem();
     }
 
     void Update()
     {
         flowerTime=(Mathf.Sin(Time.time)+1.0f)*0.5f;
-        RenderMultiFlower();
+        //RenderMultiFlower();
+        //Init();
     }
 
    
@@ -176,8 +197,8 @@ public class B_Spline_Curve : MonoBehaviour
             B_Spline_Mesh.triangles=triangles.ToArray();
         }
         
-        // meshRenderer.material=b_spline_mat;
-        // filter.mesh=B_Spline_Mesh;
+        meshRenderer.material=b_spline_mat;
+        filter.mesh=B_Spline_Mesh;
 
         for(int i=0;i<pos.Count;i++){
             baseFlower_Data.vertices.Add(pos[i]);
@@ -370,7 +391,6 @@ public class B_Spline_Curve : MonoBehaviour
         cPU_Flower_Simulation.multiFlowerMesh=fibonacciMesh;
         cPU_Flower_Simulation.isDone=true;
 
-        Debug.Log("fibonacciVertices.Count: "+fibonacciVertices.Count);
     }
 
     #endregion
@@ -386,7 +406,49 @@ public class B_Spline_Curve : MonoBehaviour
     #region Stem
 
     void CalStem(){
-        
+        Mesh stemMesh=new Mesh();
+        List<B_Spline_Data> data=Cal_BSplineCurve();
+        List<Vector3> vertices=new List<Vector3>();
+        List<int> triangles=new List<int>();
+
+        for(int i=+1;i<data.Count-1;i++){
+            Vector3 tangent=Vector3.Normalize(data[i+1].position-data[i-1].position);
+            Vector3 normal=Vector3.Cross(tangent,new Vector3(0,1,0));
+            Vector3 bionormal=Vector3.Cross(tangent,normal);
+
+            Vector3 pointPosition=data[i].position;
+
+            for(int p=0;p<segments;p++){
+                float angRate=(2.0f*Mathf.PI)*(p/(float)(segments-1));
+                float xVal=Mathf.Cos(angRate);
+                float zVal=Mathf.Sin(angRate);
+                Vector3 pos=pointPosition;
+                pos+=radius*Vector3.Normalize(normal*xVal+bionormal*zVal);
+                pos=Quaternion.AngleAxis(90.0f,new Vector3(0,0,1))*pos;
+                vertices.Add(pos);
+
+                if(i<data.Count-1-1){
+               //if((i-1)*segments+p<((data.Count-2)*segments-1)){
+                 //index
+                triangles.Add((i-1)*segments+p);
+                triangles.Add((i-1)*segments+(p+1)%segments);
+                triangles.Add((i-1)*segments+(p+1)%segments+segments);
+
+                triangles.Add((i-1)*segments+p);
+                triangles.Add((i-1)*segments+(p+1)%segments+segments);
+                triangles.Add((i-1)*segments+p+segments);
+               }
+            }
+        }
+
+     
+
+        stemMesh.vertices=vertices.ToArray();
+        stemMesh.triangles=triangles.ToArray();
+
+        stemFilter.mesh=stemMesh;
+        stemMeshRenderer.material=stemMat;
+
     }
 
     #endregion
