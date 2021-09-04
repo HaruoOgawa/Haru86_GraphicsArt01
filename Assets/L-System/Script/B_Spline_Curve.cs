@@ -59,6 +59,8 @@ public class B_Spline_Curve : MonoBehaviour
 
     List<Vector3> FibonacciPosition=new List<Vector3>();
     List<Quaternion> FibonacciRotation=new List<Quaternion>();
+    List<Vector4> FibonacciGrothData=new List<Vector4>();
+    float flowerTime=0.0f;
     
 
     [Space(1)]
@@ -84,7 +86,8 @@ public class B_Spline_Curve : MonoBehaviour
 
     void Update()
     {
-        //Init();
+        flowerTime=(Mathf.Sin(Time.time)+1.0f)*0.5f;
+        RenderMultiFlower();
     }
 
    
@@ -183,19 +186,6 @@ public class B_Spline_Curve : MonoBehaviour
         for(int i =0;i<triangles.Count;i++){
             baseFlower_Data.indices.Add(triangles[i]);
         }        
-
-        // for(int i=0;i<baseFlower_Data.vertices.Count;i++){
-        //     // Vector3 p0=baseFlower_Data.vertices[baseFlower_Data.indices[i]];
-        //     // Vector3 p1=baseFlower_Data.vertices[baseFlower_Data.indices[i+1]];
-        //     // Vector3 p2=baseFlower_Data.vertices[baseFlower_Data.indices[i+2]];
-
-        //     // Vector3 v0=Vector3.Normalize(p1-p0);
-        //     // Vector3 v1=Vector3.Normalize(p2-p0);
-
-        //     // Vector3 normal=Vector3.Normalize(Vector3.Cross(v0,v1));
-
-        //     baseFlower_Data.normals.Add(new Vector3(0,0,1));
-        // }
 
         //rightNormals 
         for(int i=0;i<rightCount;i++){
@@ -332,10 +322,11 @@ public class B_Spline_Curve : MonoBehaviour
             Vector3 crossVec=Vector3.Cross(new Vector3(0,1,0),Vector3.Normalize(pos));
             Quaternion fibRot=Quaternion.Euler(0,(ang*(180.0f/Mathf.PI)),0);
             float angVal=Mathf.Pow((float)(i-1)*0.175f,2.0f);
-            fibRot=Quaternion.AngleAxis(angVal,crossVec)*fibRot;
+            //fibRot=Quaternion.AngleAxis(angVal,crossVec)*fibRot;
             
             FibonacciPosition.Add(pos);
             FibonacciRotation.Add(fibRot);
+            FibonacciGrothData.Add(new Vector4(crossVec.x,crossVec.y,crossVec.z,angVal));
         }
     }
 
@@ -347,10 +338,14 @@ public class B_Spline_Curve : MonoBehaviour
 
         for(int i=0;i<FibonacciPosition.Count;i++){
             Vector3 fibPos=FibonacciPosition[i];
-            Quaternion fibRot=FibonacciRotation[i];
+            
+            //Quaternion fibRot=FibonacciRotation[i];
+            Vector4 fibGroth=FibonacciGrothData[i];
+            Quaternion fibRot=Quaternion.AngleAxis(flowerTime*fibGroth.w,new Vector3(fibGroth.x,fibGroth.y,fibGroth.z))*FibonacciRotation[i];
+
             for(int q=0;q<baseFlower_Data.vertices.Count;q++){
                 float size=(float)(i+1)*0.02f;
-                fibonacciVertices.Add(size*(fibRot*baseFlower_Data.vertices[q]+fibPos*(1.0f/(float)(i+1.0f))));
+                fibonacciVertices.Add(flowerTime*size*(fibRot*baseFlower_Data.vertices[q]+fibPos*(1.0f/(float)(i+1.0f))));
             }
 
             for(int p=0;p<baseFlower_Data.normals.Count;p++){
@@ -374,8 +369,25 @@ public class B_Spline_Curve : MonoBehaviour
         
         cPU_Flower_Simulation.multiFlowerMesh=fibonacciMesh;
         cPU_Flower_Simulation.isDone=true;
+
+        Debug.Log("fibonacciVertices.Count: "+fibonacciVertices.Count);
     }
 
     #endregion
     
+    #region leaf
+
+    void CalLeaf(){
+
+    }
+
+    #endregion
+
+    #region Stem
+
+    void CalStem(){
+        
+    }
+
+    #endregion
 }

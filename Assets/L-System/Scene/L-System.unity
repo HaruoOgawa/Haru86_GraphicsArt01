@@ -356,7 +356,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &420722489
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -372,7 +372,7 @@ MonoBehaviour:
   multiFlowerMesh: {fileID: 0}
   isDone: 0
   multiFlowerMat: {fileID: 2100000, guid: cb68d727925dc3848b5e90384863ea58, type: 2}
-  count: 1000
+  count: 500
 --- !u!4 &420722490
 Transform:
   m_ObjectHideFlags: 0
@@ -778,7 +778,7 @@ MonoBehaviour:
   - {x: 8.6, y: -0.2, z: 0}
   knotMin: 0
   knotMax: 1
-  tWidth: 0.01
+  tWidth: 0.05
   meshType: 2
   renderFlag: 1
   N: 50
