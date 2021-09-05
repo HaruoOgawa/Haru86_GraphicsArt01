@@ -617,7 +617,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &631387473
 Transform:
   m_ObjectHideFlags: 0
@@ -757,7 +757,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1051134619}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 6.77, z: -10}
+  m_LocalPosition: {x: 0, y: 6.06, z: -12.05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1017,12 +1017,12 @@ MonoBehaviour:
   b_spline_mat: {fileID: 2100000, guid: c5dabec01f2b06943a4c5543435ffecd, type: 2}
   t: 10
   controlPoints:
-  - {x: 0, y: 0, z: 0}
-  - {x: 1.16, y: 0.5, z: 0}
-  - {x: 2.95, y: 0.45, z: 0}
-  - {x: 3.26, y: 1.39, z: 0}
-  - {x: 5.68, y: 2, z: 0}
-  - {x: 8.6, y: -0.2, z: 0}
+  - {x: 0, y: 0, z: -0.13890767}
+  - {x: 1.16, y: 0.5, z: 0.2524655}
+  - {x: 2.95, y: 0.45, z: -0.13890767}
+  - {x: 3.26, y: 1.39, z: 0.27339172}
+  - {x: 5.68, y: 2, z: 0.9092102}
+  - {x: 8.6, y: -0.2, z: 0.08377504}
   knotMin: 0
   knotMax: 1
   tWidth: 0.01
@@ -1035,6 +1035,12 @@ MonoBehaviour:
   secondLealMeshRenderer: {fileID: 631387474}
   secondLeafFilter: {fileID: 631387475}
   leafMat: {fileID: 2100000, guid: 6e84e0fab009b6d45be2e68a79342e41, type: 2}
+  leafTangentVal: -25.8
+  leafNormalVal: 58.8
+  leafBioNormalVal: 10
+  secondLeafTangentVal: -86.1
+  secondLeafNormalVal: 229.6
+  secondLeafBioNormalVal: 197.7
   firstLeafPoint: 1000
   secondLeafPoint: 500
   stemMeshRenderer: {fileID: 363049245}

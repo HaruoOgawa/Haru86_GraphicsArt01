@@ -80,18 +80,26 @@ public class B_Spline_Curve : MonoBehaviour
      [SerializeField] MeshRenderer secondLealMeshRenderer;
     [SerializeField] MeshFilter secondLeafFilter;
     [SerializeField] Material leafMat;
+    [SerializeField] float leafTangentVal=10.0f;
+    [SerializeField] float leafNormalVal=180.0f;
+    [SerializeField] float leafBioNormalVal=10.0f;
+    [SerializeField] float secondLeafTangentVal=10.0f;
+    [SerializeField] float secondLeafNormalVal=180.0f;
+    [SerializeField] float secondLeafBioNormalVal=10.0f;
 
     Vector3 firstLeafPosition=new Vector3(0,0,0);
     Vector3 firstLeafTangent=new Vector3(0,0,0);
-    Matrix4x4 firstLeafMatrix=Matrix4x4.identity;
+    Vector3 firstLeafNormal=new Vector3(0,0,0);
+    Vector3 firstLeafBioNormal=new Vector3(0,0,0);
     bool fisrtLeafCal_Flag=false;
     [SerializeField] int firstLeafPoint=5;
     Vector3 secondLeafPosition=new Vector3(0,0,0);
     Vector3 secondLeafTangent=new Vector3(0,0,0);
+    Vector3 secondLeafNormal=new Vector3(0,0,0);
+    Vector3 secondLeafBioNormal=new Vector3(0,0,0);
     bool secondLeafCal_Flag=false;
     [SerializeField] int secondLeafPoint=6;
-    [SerializeField] float leaf_angle=90.0f;
-
+    
     #endregion
 
     #region Stem Field
@@ -424,22 +432,21 @@ public class B_Spline_Curve : MonoBehaviour
          List<Vector3> firstVirtices=new List<Vector3>();
          List<Vector3> secondVirtices=new List<Vector3>();
          float size=0.5f;
-
-        // Debug.Log("firstLeafPosition: "+firstLeafPosition);
-        // Debug.Log("secondLeafPosition: "+secondLeafPosition);
+        
 
          for(int i=0;i<baseFlower_Data.vertices.Count;i++){
-            //  firstVirtices.Add(size*(Quaternion.AngleAxis(90.0f,new Vector3(0,1,0))*((baseFlower_Data.vertices[i]))));
-            
-             firstVirtices.Add(size*((Quaternion.AngleAxis(leaf_angle,firstLeafTangent)*Quaternion.AngleAxis(90.0f,new Vector3(0,1,0))*baseFlower_Data.vertices[i]*Mathf.Min(i,1.0f)+firstLeafPosition)));
+             firstVirtices.Add(size*((
+                 
+                 Quaternion.AngleAxis(leafTangentVal,firstLeafTangent)*
+                 Quaternion.AngleAxis(leafNormalVal,firstLeafNormal)*
+                 Quaternion.AngleAxis(leafBioNormalVal,firstLeafBioNormal)*
+             Quaternion.AngleAxis(90.0f,new Vector3(0,1,0))*baseFlower_Data.vertices[i]*Mathf.Min(i,1.0f)+firstLeafPosition)));
 
-            // Vector4 leafPos=(firstLeafMatrix*new Vector4(firstLeafPosition.x,firstLeafPosition.y,firstLeafPosition.z,0.0f));
-            // Vector3 pos=size*(Quaternion.AngleAxis(90.0f,new Vector3(0,1,0))*(baseFlower_Data.vertices[i]));
-            // firstVirtices.Add((new Vector4(pos.x,pos.y,pos.z,0.0f)));
-
-             secondVirtices.Add(size*(((Quaternion.AngleAxis(90.0f,secondLeafTangent)*Quaternion.AngleAxis(-90.0f,new Vector3(0,1,0))*baseFlower_Data.vertices[i]*Mathf.Min(i,1.0f)+secondLeafPosition))));
-
-             
+             secondVirtices.Add(size*(((
+                 Quaternion.AngleAxis(secondLeafTangentVal,secondLeafTangent)*
+                 Quaternion.AngleAxis(secondLeafNormalVal,secondLeafNormal)*
+                 Quaternion.AngleAxis(secondLeafBioNormalVal,secondLeafBioNormal)*
+                 Quaternion.AngleAxis(-90.0f,new Vector3(0,1,0))*baseFlower_Data.vertices[i]*Mathf.Min(i,1.0f)+secondLeafPosition))));             
          }
 
          firstLeafMesh.vertices=firstVirtices.ToArray();
@@ -449,8 +456,8 @@ public class B_Spline_Curve : MonoBehaviour
 
          secondLeafMesh.vertices=secondVirtices.ToArray();
          secondLeafMesh.triangles=baseFlower_Data.indices.ToArray();
-        secondLeafFilter.mesh=secondLeafMesh;
-        secondLealMeshRenderer.material=leafMat;
+         secondLeafFilter.mesh=secondLeafMesh;
+         secondLealMeshRenderer.material=leafMat;
         
     }
 
@@ -481,56 +488,33 @@ public class B_Spline_Curve : MonoBehaviour
                 vertices.Add(pos);
 
                 if(i<data.Count-1-1){
-               //if((i-1)*segments+p<((data.Count-2)*segments-1)){
-                 //index
-                triangles.Add((i-1)*segments+p);
-                triangles.Add((i-1)*segments+(p+1)%segments);
-                triangles.Add((i-1)*segments+(p+1)%segments+segments);
+                    triangles.Add((i-1)*segments+p);
+                    triangles.Add((i-1)*segments+(p+1)%segments);
+                    triangles.Add((i-1)*segments+(p+1)%segments+segments);
 
-                triangles.Add((i-1)*segments+p);
-                triangles.Add((i-1)*segments+(p+1)%segments+segments);
-                triangles.Add((i-1)*segments+p+segments);
+                    triangles.Add((i-1)*segments+p);
+                    triangles.Add((i-1)*segments+(p+1)%segments+segments);
+                    triangles.Add((i-1)*segments+p+segments);
 
                  if(((i-1)*segments+p)==firstLeafPoint){
-                     Debug.Log("firstLeafPoint is Done !!");
                      firstLeafPosition=pos;
                      firstLeafTangent=tangent;
-
-                     firstLeafMatrix.m03=firstLeafMatrix.m13=firstLeafMatrix.m23=firstLeafMatrix.m30=firstLeafMatrix.m31=firstLeafMatrix.m32=firstLeafMatrix.m33=0.0f;
-                     
-                     firstLeafMatrix.m00=tangent.x;
-                     firstLeafMatrix.m10=tangent.y;
-                     firstLeafMatrix.m20=tangent.z;
-
-                     firstLeafMatrix.m01=normal.x;
-                     firstLeafMatrix.m11=normal.y;
-                     firstLeafMatrix.m21=normal.z;
-
-                     firstLeafMatrix.m02=bionormal.x;
-                     firstLeafMatrix.m12=bionormal.y;
-                     firstLeafMatrix.m22=bionormal.z;
-
+                     firstLeafNormal=normal;
                  }
 
                  if(((i-1)*segments+p)==secondLeafPoint){
-                      Debug.Log("secondLeafPoint is Done !!");
                       secondLeafPosition=pos;
-                      secondLeafTangent=bionormal;
+                      secondLeafTangent=tangent;
+                      secondLeafNormal=normal;
+                      secondLeafBioNormal=bionormal;
                  }   
-
-                 //Debug.Log("(i-1)*segments+p: "+((i-1)*segments+p));
-
                }
             }
-
-            
         }
 
-         flowerPosition=vertices[vertices.Count-1];
+        flowerPosition=vertices[vertices.Count-1];
         flowerTangent=Vector3.Normalize(data[data.Count-1].position-data[data.Count-2].position);
   
-       // Debug.Log("vertices.Count: "+vertices.Count);
-
         stemMesh.vertices=vertices.ToArray();
         stemMesh.triangles=triangles.ToArray();
 
