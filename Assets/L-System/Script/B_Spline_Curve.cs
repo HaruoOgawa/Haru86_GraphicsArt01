@@ -128,7 +128,7 @@ public class B_Spline_Curve : MonoBehaviour
         CalStem();
         Init();
         CalFibonacciPosition();
-        flowerTime=1.0f;
+        //flowerTime=1.0f;
         RenderMultiFlower();
         CalLeaf();
        
@@ -136,10 +136,11 @@ public class B_Spline_Curve : MonoBehaviour
 
     void Update()
     {
-        flowerTime=(Mathf.Sin(Time.time)+1.0f)*0.5f;
-        //RenderMultiFlower();
-        //Init();
-          //CalLeaf();
+        flowerTime=(Mathf.Sin(Time.time*0.01f)+1.0f)*0.5f;
+        CalStem();
+        CalLeaf();
+        RenderMultiFlower();
+        
     }
 
    
@@ -434,31 +435,51 @@ public class B_Spline_Curve : MonoBehaviour
          Mesh secondLeafMesh=new Mesh();
          List<Vector3> firstVirtices=new List<Vector3>();
          List<Vector3> secondVirtices=new List<Vector3>();
+         List<Vector3> firstNormals=new List<Vector3>();
+         List<Vector3> secondNormals=new List<Vector3>();
          float size=0.5f;
-        
+         float ft=flowerTime;
 
          for(int i=0;i<baseFlower_Data.vertices.Count;i++){
-             firstVirtices.Add(size*((
+             firstVirtices.Add(ft*size*((
                  
                  Quaternion.AngleAxis(leafTangentVal,firstLeafTangent)*
                  Quaternion.AngleAxis(leafNormalVal,firstLeafNormal)*
                  Quaternion.AngleAxis(leafBioNormalVal,firstLeafBioNormal)*
              Quaternion.AngleAxis(90.0f,new Vector3(0,1,0))*baseFlower_Data.vertices[i]*Mathf.Min(i,1.0f)+firstLeafPosition)));
 
-             secondVirtices.Add(size*(((
+             firstNormals.Add(
+                  Quaternion.AngleAxis(leafTangentVal,firstLeafTangent)*
+                 Quaternion.AngleAxis(leafNormalVal,firstLeafNormal)*
+                 Quaternion.AngleAxis(leafBioNormalVal,firstLeafBioNormal)*
+                Quaternion.AngleAxis(90.0f,new Vector3(0,1,0))*
+                baseFlower_Data.normals[i]
+             );
+
+             secondVirtices.Add(ft*size*(((
                  Quaternion.AngleAxis(secondLeafTangentVal,secondLeafTangent)*
                  Quaternion.AngleAxis(secondLeafNormalVal,secondLeafNormal)*
                  Quaternion.AngleAxis(secondLeafBioNormalVal,secondLeafBioNormal)*
-                 Quaternion.AngleAxis(-90.0f,new Vector3(0,1,0))*baseFlower_Data.vertices[i]*Mathf.Min(i,1.0f)+secondLeafPosition))));             
+                 Quaternion.AngleAxis(-90.0f,new Vector3(0,1,0))*baseFlower_Data.vertices[i]*Mathf.Min(i,1.0f)+secondLeafPosition))));          
+
+            secondNormals.Add(
+                  Quaternion.AngleAxis(secondLeafTangentVal,secondLeafTangent)*
+                 Quaternion.AngleAxis(secondLeafNormalVal,secondLeafNormal)*
+                 Quaternion.AngleAxis(secondLeafBioNormalVal,secondLeafBioNormal)*
+                 Quaternion.AngleAxis(-90.0f,new Vector3(0,1,0))*
+                baseFlower_Data.normals[i]
+            );   
          }
 
          firstLeafMesh.vertices=firstVirtices.ToArray();
          firstLeafMesh.triangles=baseFlower_Data.indices.ToArray();
+         firstLeafMesh.normals=firstNormals.ToArray();
          firstLeafFilter.mesh=firstLeafMesh;
          firstLealMeshRenderer.material=leafMat;
 
          secondLeafMesh.vertices=secondVirtices.ToArray();
          secondLeafMesh.triangles=baseFlower_Data.indices.ToArray();
+         secondLeafMesh.normals=secondNormals.ToArray();
          secondLeafFilter.mesh=secondLeafMesh;
          secondLealMeshRenderer.material=leafMat;
         
@@ -472,6 +493,7 @@ public class B_Spline_Curve : MonoBehaviour
         Mesh stemMesh=new Mesh();
         List<B_Spline_Data> data=Cal_BSplineCurve();
         List<Vector3> vertices=new List<Vector3>();
+        List<Vector3> normals=new List<Vector3>();
         List<int> triangles=new List<int>();
 
         for(int i=+1;i<data.Count-1;i++){
@@ -488,7 +510,10 @@ public class B_Spline_Curve : MonoBehaviour
                 Vector3 pos=pointPosition;
                 pos+=radius*Vector3.Normalize(normal*xVal+bionormal*zVal);
                 pos=Quaternion.AngleAxis(90.0f,new Vector3(0,0,1))*pos;
-                vertices.Add(pos);
+                vertices.Add(pos*flowerTime);
+
+                Vector3 n=Vector3.Normalize(radius*Vector3.Normalize(normal*xVal+bionormal*zVal)-pointPosition);
+                normals.Add(n);
 
                 if(i<data.Count-1-1){
                     triangles.Add((i-1)*segments+p);
@@ -530,6 +555,7 @@ public class B_Spline_Curve : MonoBehaviour
   
         stemMesh.vertices=vertices.ToArray();
         stemMesh.triangles=triangles.ToArray();
+        stemMesh.normals=normals.ToArray();
 
         stemFilter.mesh=stemMesh;
         stemMeshRenderer.material=stemMat;
