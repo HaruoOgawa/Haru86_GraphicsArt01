@@ -68,8 +68,10 @@ public class B_Spline_Curve : MonoBehaviour
     [SerializeField] int N=1;
     [SerializeField] CPU_Flower_Simulation cPU_Flower_Simulation;
 
-    Vector3 flowerPosition;
-    Vector3 flowerTangent;
+    Vector3 flowerPosition=new Vector3(0,0,0);
+    Vector3 flowerTangent=new Vector3(0,0,0);
+    Vector3 flowerNormal=new Vector3(0,0,0);
+    Vector3 flowerBioNormal=new Vector3(0,0,0);
     int flowerPoint;
 
     #endregion
@@ -127,7 +129,7 @@ public class B_Spline_Curve : MonoBehaviour
         Init();
         CalFibonacciPosition();
         flowerTime=1.0f;
-        //RenderMultiFlower();
+        RenderMultiFlower();
         CalLeaf();
        
     }
@@ -137,7 +139,7 @@ public class B_Spline_Curve : MonoBehaviour
         flowerTime=(Mathf.Sin(Time.time)+1.0f)*0.5f;
         //RenderMultiFlower();
         //Init();
-          CalLeaf();
+          //CalLeaf();
     }
 
    
@@ -392,10 +394,11 @@ public class B_Spline_Curve : MonoBehaviour
             //Quaternion fibRot=FibonacciRotation[i];
             Vector4 fibGroth=FibonacciGrothData[i];
             Quaternion fibRot=Quaternion.AngleAxis(flowerTime*fibGroth.w,new Vector3(fibGroth.x,fibGroth.y,fibGroth.z))*FibonacciRotation[i];
+            fibRot=Quaternion.AngleAxis(Vector3.Angle(flowerTangent,new Vector3(0,0,1)),flowerBioNormal)*fibRot;
 
             for(int q=0;q<baseFlower_Data.vertices.Count;q++){
-                float size=(float)(i+1)*0.02f;
-                fibonacciVertices.Add(flowerTime*size*(fibRot*baseFlower_Data.vertices[q]+fibPos*(1.0f/(float)(i+1.0f))));
+                float size=(float)(i+1)*0.005f;
+                fibonacciVertices.Add((flowerTime*size*(fibRot*baseFlower_Data.vertices[q]+fibPos*(1.0f/(float)(i+1.0f)))+flowerPosition));
             }
 
             for(int p=0;p<baseFlower_Data.normals.Count;p++){
@@ -500,6 +503,7 @@ public class B_Spline_Curve : MonoBehaviour
                      firstLeafPosition=pos;
                      firstLeafTangent=tangent;
                      firstLeafNormal=normal;
+                     firstLeafBioNormal=bionormal;
                  }
 
                  if(((i-1)*segments+p)==secondLeafPoint){
@@ -510,7 +514,16 @@ public class B_Spline_Curve : MonoBehaviour
                  }   
                }
             }
+            
+            if(i==(data.Count-1)-1){
+                flowerPosition=pointPosition;
+                flowerTangent=tangent;
+                flowerNormal=normal;
+                flowerBioNormal=bionormal;
+            }
         }
+
+
 
         flowerPosition=vertices[vertices.Count-1];
         flowerTangent=Vector3.Normalize(data[data.Count-1].position-data[data.Count-2].position);
