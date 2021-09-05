@@ -454,10 +454,10 @@ MonoBehaviour:
   firstLeafMesh: {fileID: 0}
   secondLeafMesh: {fileID: 0}
   leafIsDone: 0
-  leafMat: {fileID: 0}
+  leafMat: {fileID: 2100000, guid: 6e84e0fab009b6d45be2e68a79342e41, type: 2}
   StemMesh: {fileID: 0}
   StemIsDone: 0
-  StemMat: {fileID: 0}
+  StemMat: {fileID: 2100000, guid: c07a143813d45b4408ecb812f8c0b865, type: 2}
   count: 500
 --- !u!4 &420722490
 Transform:

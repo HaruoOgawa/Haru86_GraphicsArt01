@@ -398,7 +398,7 @@ public class B_Spline_Curve : MonoBehaviour
             fibRot=Quaternion.AngleAxis(Vector3.Angle(flowerTangent,new Vector3(0,0,1)),flowerBioNormal)*fibRot;
 
             for(int q=0;q<baseFlower_Data.vertices.Count;q++){
-                float size=(float)(i+1)*0.005f;
+                float size=(float)(i+1)*0.01f;
                 fibonacciVertices.Add((flowerTime*size*(fibRot*baseFlower_Data.vertices[q]+fibPos*(1.0f/(float)(i+1.0f)))+flowerPosition));
             }
 
@@ -482,6 +482,11 @@ public class B_Spline_Curve : MonoBehaviour
          secondLeafMesh.normals=secondNormals.ToArray();
          secondLeafFilter.mesh=secondLeafMesh;
          secondLealMeshRenderer.material=leafMat;
+
+         //
+         cPU_Flower_Simulation.firstLeafMesh=firstLeafMesh;
+         cPU_Flower_Simulation.secondLeafMesh=secondLeafMesh;
+         cPU_Flower_Simulation.leafIsDone=true;
         
     }
 
@@ -559,6 +564,10 @@ public class B_Spline_Curve : MonoBehaviour
 
         stemFilter.mesh=stemMesh;
         stemMeshRenderer.material=stemMat;
+
+        //
+        cPU_Flower_Simulation.StemMesh=stemMesh;
+        cPU_Flower_Simulation.StemIsDone=true;
 
     }
 

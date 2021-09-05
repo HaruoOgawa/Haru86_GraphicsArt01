@@ -71,6 +71,10 @@ public class CPU_Flower_Simulation : MonoBehaviour
             Graphics.DrawMeshInstancedProcedural(firstLeafMesh,0,multiFlowerMat,new Bounds(this.gameObject.transform.position,Vector3.one*500f),count);
             Graphics.DrawMeshInstancedProcedural(secondLeafMesh,0,multiFlowerMat,new Bounds(this.gameObject.transform.position,Vector3.one*500f),count);
         }
+
+        if(StemIsDone){
+            Graphics.DrawMeshInstancedProcedural(StemMesh,0,StemMat,new Bounds(this.gameObject.transform.position,Vector3.one*500f),count);
+        }
     }
 
    
