@@ -83,12 +83,14 @@ public class B_Spline_Curve : MonoBehaviour
 
     Vector3 firstLeafPosition=new Vector3(0,0,0);
     Vector3 firstLeafTangent=new Vector3(0,0,0);
+    Matrix4x4 firstLeafMatrix=Matrix4x4.identity;
     bool fisrtLeafCal_Flag=false;
     [SerializeField] int firstLeafPoint=5;
     Vector3 secondLeafPosition=new Vector3(0,0,0);
     Vector3 secondLeafTangent=new Vector3(0,0,0);
     bool secondLeafCal_Flag=false;
     [SerializeField] int secondLeafPoint=6;
+    [SerializeField] float leaf_angle=90.0f;
 
     #endregion
 
@@ -117,7 +119,7 @@ public class B_Spline_Curve : MonoBehaviour
         Init();
         CalFibonacciPosition();
         flowerTime=1.0f;
-        RenderMultiFlower();
+        //RenderMultiFlower();
         CalLeaf();
        
     }
@@ -127,6 +129,7 @@ public class B_Spline_Curve : MonoBehaviour
         flowerTime=(Mathf.Sin(Time.time)+1.0f)*0.5f;
         //RenderMultiFlower();
         //Init();
+          CalLeaf();
     }
 
    
@@ -422,12 +425,19 @@ public class B_Spline_Curve : MonoBehaviour
          List<Vector3> secondVirtices=new List<Vector3>();
          float size=0.5f;
 
-        Debug.Log("firstLeafPosition: "+firstLeafPosition);
-        Debug.Log("secondLeafPosition: "+secondLeafPosition);
+        // Debug.Log("firstLeafPosition: "+firstLeafPosition);
+        // Debug.Log("secondLeafPosition: "+secondLeafPosition);
 
          for(int i=0;i<baseFlower_Data.vertices.Count;i++){
-             firstVirtices.Add(size*(Quaternion.AngleAxis(90.0f,firstLeafTangent)*Quaternion.AngleAxis(90.0f,new Vector3(0,1,0))*((baseFlower_Data.vertices[i]*Mathf.Min(i,1.0f)+firstLeafPosition))));
-             secondVirtices.Add(size*(Quaternion.AngleAxis(90.0f,secondLeafTangent)*Quaternion.AngleAxis(-90.0f,new Vector3(0,1,0))*((baseFlower_Data.vertices[i]*Mathf.Min(i,1.0f)+secondLeafPosition))));
+            //  firstVirtices.Add(size*(Quaternion.AngleAxis(90.0f,new Vector3(0,1,0))*((baseFlower_Data.vertices[i]))));
+            
+             firstVirtices.Add(size*((Quaternion.AngleAxis(leaf_angle,firstLeafTangent)*Quaternion.AngleAxis(90.0f,new Vector3(0,1,0))*baseFlower_Data.vertices[i]*Mathf.Min(i,1.0f)+firstLeafPosition)));
+
+            // Vector4 leafPos=(firstLeafMatrix*new Vector4(firstLeafPosition.x,firstLeafPosition.y,firstLeafPosition.z,0.0f));
+            // Vector3 pos=size*(Quaternion.AngleAxis(90.0f,new Vector3(0,1,0))*(baseFlower_Data.vertices[i]));
+            // firstVirtices.Add((new Vector4(pos.x,pos.y,pos.z,0.0f)));
+
+             secondVirtices.Add(size*(((Quaternion.AngleAxis(90.0f,secondLeafTangent)*Quaternion.AngleAxis(-90.0f,new Vector3(0,1,0))*baseFlower_Data.vertices[i]*Mathf.Min(i,1.0f)+secondLeafPosition))));
 
              
          }
@@ -484,7 +494,22 @@ public class B_Spline_Curve : MonoBehaviour
                  if(((i-1)*segments+p)==firstLeafPoint){
                      Debug.Log("firstLeafPoint is Done !!");
                      firstLeafPosition=pos;
-                     firstLeafTangent=bionormal;
+                     firstLeafTangent=tangent;
+
+                     firstLeafMatrix.m03=firstLeafMatrix.m13=firstLeafMatrix.m23=firstLeafMatrix.m30=firstLeafMatrix.m31=firstLeafMatrix.m32=firstLeafMatrix.m33=0.0f;
+                     
+                     firstLeafMatrix.m00=tangent.x;
+                     firstLeafMatrix.m10=tangent.y;
+                     firstLeafMatrix.m20=tangent.z;
+
+                     firstLeafMatrix.m01=normal.x;
+                     firstLeafMatrix.m11=normal.y;
+                     firstLeafMatrix.m21=normal.z;
+
+                     firstLeafMatrix.m02=bionormal.x;
+                     firstLeafMatrix.m12=bionormal.y;
+                     firstLeafMatrix.m22=bionormal.z;
+
                  }
 
                  if(((i-1)*segments+p)==secondLeafPoint){
@@ -504,7 +529,7 @@ public class B_Spline_Curve : MonoBehaviour
          flowerPosition=vertices[vertices.Count-1];
         flowerTangent=Vector3.Normalize(data[data.Count-1].position-data[data.Count-2].position);
   
-        Debug.Log("vertices.Count: "+vertices.Count);
+       // Debug.Log("vertices.Count: "+vertices.Count);
 
         stemMesh.vertices=vertices.ToArray();
         stemMesh.triangles=triangles.ToArray();
