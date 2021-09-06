@@ -1,10 +1,8 @@
-﻿namespace GraphicsArt.GPUFlower.GPUFlower_Leaf{
-
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GPUFlower_Leaf : MonoBehaviour
+public class B_Spline_Curve_Debugger : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
@@ -17,6 +15,4 @@ public class GPUFlower_Leaf : MonoBehaviour
     {
         
     }
-}
-
 }

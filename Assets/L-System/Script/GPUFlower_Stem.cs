@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿namespace GraphicsArt.GPUFlower.GPUFlower_Stem{
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,4 +17,6 @@ public class GPUFlower_Stem : MonoBehaviour
     {
         
     }
+}
+
 }

@@ -1,18 +1,145 @@
-﻿using System.Collections;
+﻿namespace GraphicsArt.GPUFlower.GPUFlower_Base{
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GPUFlower_Base : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    #region Public Field
+    [Header("Public Field")]
+    public int count=500;
+    #endregion
+
+    #region Flower Field
+    [Space(5)]
+    [Header("Flower Field")]
+    [HideInInspector]public bool flowersIsDone=false;
+    #endregion
+
+    #region Stem Field
+    [Space(5)]
+    [Header("Stem Field")]
+    [HideInInspector]public bool stemIsDone=false;
+    #endregion
+
+    #region Leaf Field
+    [Space(5)]
+    [Header("Leaf Field")]
+    [HideInInspector]public bool leafIsDone=false;
+    #endregion
+
+    #region BaseFlower Region
+     struct B_Spline_Data{
+        public Vector3 position;
+        public int index;
+
+        public B_Spline_Data(Vector3 p,int i){
+            this.position=p;
+            this.index=i;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    #endregion
+
+    void Awake(){
+        count=Mathf.NextPowerOfTwo(count);
+        flowersIsDone=false;
+        stemIsDone=false;
+        leafIsDone=false;
     }
+
+
+     #region BaseFlower Func
+    public List<Vector3> ReverseCurvePos(List<Vector3> pos){
+        List<Vector3> posWithReverse=pos;
+        for(int i=0;i<pos.Count;i++){
+            Vector3 p=pos[i];
+            p.y=-p.y;
+            posWithReverse.Add(p);
+        }
+
+
+        return posWithReverse;
+    }
+
+       List<B_Spline_Data> Cal_BSplineCurve(List<Vector3> controlPoints,float knotMin,float knotMax,float tWidth=0.01f){
+        int p=controlPoints.Count;
+        int n=3;
+        int m=p+n+1;
+        
+        float[] u=GetKnotVector(m,n,knotMin,knotMax);
+        
+        List<float> tDelta=new List<float>();
+        int num=(int)(u[u.Length-1]/tWidth);
+        for(int i=0;i<num;i++){
+            tDelta.Add((float)(tWidth*i));
+        }
+
+        List<B_Spline_Data> S=new List<B_Spline_Data>();
+        for(int i=0;i<tDelta.Count;i++){
+            S.Add(new B_Spline_Data(new Vector3(0,0,0),i));
+        }
+        
+        S[0]=new B_Spline_Data(controlPoints[0],S[0].index);
+       
+        for(int i=1;i<tDelta.Count;i++){
+            for(int j=0;j<p;j++){
+                float b=GetBasisFunction(u,j,n,tDelta[i]);
+                S[i]=new B_Spline_Data(S[i].position+controlPoints[j]*b,S[i].index);
+            }
+        }
+
+        return S;
+
+    }
+
+    float[] GetKnotVector(int m,int n,float knotMin,float knotMax){
+        List<float> knotVector=new List<float>();
+        int knotN=n+1;
+        
+        for(int i=0;i<m;i++){
+            if(i>=0&&i<knotN){
+                knotVector.Add(knotMin);
+            }else if(i>=knotN&&i<(m-knotN)){
+                int knotWidth=m-knotN*2;
+                float knotVal=(knotMax-knotMin)/(float)(knotWidth+1);
+                knotVal=knotVal*(float)(i-knotN+1);
+                knotVector.Add(knotVal);
+            }else if(i>=(m-knotN)&&i<m){
+                knotVector.Add(knotMax);
+            }
+        }
+
+        return knotVector.ToArray();
+    }
+
+    float GetBasisFunction(float[] u,int j,int k,float t){
+        float w1=0.0f;
+        float w2=0.0f;
+
+        if(k==0){
+            if(u[j]<t&&t<=u[j+1]){
+                return 1.0f;
+            }else{
+                return 0.0f;
+            }
+        }else{
+            if(u[j+k+1]-u[j+1]!=0.0f){
+                w1=GetBasisFunction(u,j+1,k-1,t)*(u[j+k+1]-t)/(u[j+k+1]-u[j+1]);
+            }
+
+            if((u[j+k]-u[j])!=0.0f){
+                w2=GetBasisFunction(u,j,k-1,t)*(t-u[j])/(u[j+k]-u[j]);
+            }
+
+            return w1+w2;
+        }
+       
+    }
+
+    #endregion
+
+}
+
 }
