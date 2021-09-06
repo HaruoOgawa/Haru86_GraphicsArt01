@@ -30,7 +30,7 @@ public class GPUFlower_Base : MonoBehaviour
     #endregion
 
     #region BaseFlower Region
-     struct B_Spline_Data{
+    public struct B_Spline_Data{
         public Vector3 position;
         public int index;
 
@@ -38,6 +38,12 @@ public class GPUFlower_Base : MonoBehaviour
             this.position=p;
             this.index=i;
         }
+    }
+
+    public struct BaseFlower_Data{
+        public List<Vector3> vertices;
+        public List<Vector3> normals;
+        public List<int> triangles;
     }
 
     #endregion
@@ -51,6 +57,104 @@ public class GPUFlower_Base : MonoBehaviour
 
 
      #region BaseFlower Func
+
+     public static BaseFlower_Data Cal_BSpline_Surface(List<Vector3> controlPoints,float knotMin,float knotMax,float tWidth=0.01f){
+        BaseFlower_Data baseFlower_Data=new BaseFlower_Data();
+        baseFlower_Data.vertices=new List<Vector3>();
+        baseFlower_Data.normals=new List<Vector3>();
+        baseFlower_Data.triangles=new List<int>();
+
+        //Mesh B_Spline_Mesh=new Mesh();
+        List<B_Spline_Data> data=new List<B_Spline_Data>();
+        data.Clear();
+        data=Cal_BSplineCurve(controlPoints,knotMin,knotMax,tWidth);
+
+
+        List<Vector3> pos=new List<Vector3>();
+        pos.Clear();
+        List<int> triangles=new List<int>();
+        triangles.Clear();
+
+        for(int i=0;i<data.Count;i++){
+            Vector3 p=data[i].position;
+            p=Quaternion.Euler(0,0,90)*p;
+            pos.Add(p);
+        }
+
+        for(int i=0;i<data.Count;i++){
+            Vector3 p=data[i].position;
+            p.y=-p.y;
+            p=Quaternion.Euler(0,0,90)*p;
+            pos.Add(p);
+        }
+
+        int posCount=pos.Count-2;
+        int rightCount=(posCount)/2;
+        int leftCount=posCount-rightCount;
+
+        //rightTriangles 
+        for(int i=0;i<rightCount;i++){
+            triangles.Add(i);
+            triangles.Add(i+1);
+            triangles.Add(pos.Count-i-1); 
+        }
+
+        //lefyTriangles
+        for(int i=0;i<leftCount;i++){
+            triangles.Add(pos.Count-i-1);
+            triangles.Add(pos.Count-i-2);
+            triangles.Add(i+1);
+        }
+
+        // B_Spline_Mesh.vertices=pos.ToArray();
+        // B_Spline_Mesh.triangles=triangles.ToArray();
+        
+        
+        for(int i=0;i<pos.Count;i++){
+            baseFlower_Data.vertices.Add(pos[i]);
+        }
+
+        //rightNormals 
+        for(int i=0;i<rightCount;i++){
+            Vector3 p0=baseFlower_Data.vertices[i];
+            Vector3 p1=baseFlower_Data.vertices[i+1];
+            Vector3 p2=baseFlower_Data.vertices[pos.Count-i-1]; 
+
+            Vector3 v0=Vector3.Normalize(p1-p0);
+            Vector3 v1=Vector3.Normalize(p2-p0);
+
+            Vector3 normal=Vector3.Normalize(Vector3.Cross(v0,v1));
+
+            baseFlower_Data.normals.Add(normal);
+        }
+        baseFlower_Data.normals.Add(baseFlower_Data.normals[baseFlower_Data.normals.Count-1]);
+
+        //lefyNormals
+        for(int i=0;i<leftCount;i++){
+            Vector3 p0=baseFlower_Data.vertices[pos.Count-i-1];
+            Vector3 p1=baseFlower_Data.vertices[pos.Count-i-2];
+            Vector3 p2=baseFlower_Data.vertices[i+1];
+
+            Vector3 v0=Vector3.Normalize(p1-p0);
+            Vector3 v1=Vector3.Normalize(p2-p0);
+
+            Vector3 normal=Vector3.Normalize(Vector3.Cross(v0,v1));
+
+            baseFlower_Data.normals.Add(normal);
+
+        }
+
+        baseFlower_Data.normals.Add(baseFlower_Data.normals[baseFlower_Data.normals.Count-1]);
+
+        //triangles
+        for(int i=0;i<triangles.Count;i++){
+            baseFlower_Data.triangles.Add(triangles[i]);
+        }
+    
+        return baseFlower_Data;
+
+    }
+
     public List<Vector3> ReverseCurvePos(List<Vector3> pos){
         List<Vector3> posWithReverse=pos;
         for(int i=0;i<pos.Count;i++){
@@ -63,7 +167,7 @@ public class GPUFlower_Base : MonoBehaviour
         return posWithReverse;
     }
 
-       List<B_Spline_Data> Cal_BSplineCurve(List<Vector3> controlPoints,float knotMin,float knotMax,float tWidth=0.01f){
+    public static List<B_Spline_Data> Cal_BSplineCurve(List<Vector3> controlPoints,float knotMin,float knotMax,float tWidth=0.01f){
         int p=controlPoints.Count;
         int n=3;
         int m=p+n+1;
@@ -82,7 +186,7 @@ public class GPUFlower_Base : MonoBehaviour
         }
         
         S[0]=new B_Spline_Data(controlPoints[0],S[0].index);
-       
+        
         for(int i=1;i<tDelta.Count;i++){
             for(int j=0;j<p;j++){
                 float b=GetBasisFunction(u,j,n,tDelta[i]);
@@ -94,7 +198,7 @@ public class GPUFlower_Base : MonoBehaviour
 
     }
 
-    float[] GetKnotVector(int m,int n,float knotMin,float knotMax){
+    public static float[] GetKnotVector(int m,int n,float knotMin,float knotMax){
         List<float> knotVector=new List<float>();
         int knotN=n+1;
         
@@ -114,7 +218,7 @@ public class GPUFlower_Base : MonoBehaviour
         return knotVector.ToArray();
     }
 
-    float GetBasisFunction(float[] u,int j,int k,float t){
+    public static float GetBasisFunction(float[] u,int j,int k,float t){
         float w1=0.0f;
         float w2=0.0f;
 
@@ -135,7 +239,7 @@ public class GPUFlower_Base : MonoBehaviour
 
             return w1+w2;
         }
-       
+        
     }
 
     #endregion
