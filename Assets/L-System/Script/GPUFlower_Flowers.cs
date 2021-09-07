@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
     ComputeBuffer flowers_buffer;
     Mesh flowers_mesh;
-    struct Multi_Flower_Data{
+    public struct Multi_Flower_Data{
         public List<Vector3> vertices;
         public List<Vector3> normals;
         public List<int> triangles;
@@ -39,19 +39,29 @@ using System.Runtime.InteropServices;
             }
         }
 
+        void OnDisable(){
+            flowers_buffer.Release();
+        }
+
         void Init(){
             flowers_mesh=new Mesh();
-            flowers_buffer=new ComputeBuffer(gPUFlower_Base.count,Marshal.SizeOf(typeof(GPUFlower_Base.BaseFlower_Data)));
+            flowers_buffer=new ComputeBuffer(1,Marshal.SizeOf(typeof(Multi_Flower_Data)));
         }
 
         void SetupFlowerdata(){
-            List<GPUFlower_Base.BaseFlower_Data> flower_data=new List<GPUFlower_Base.BaseFlower_Data>();
-            flower_data.Add(GPUFlower_Base.Cal_BSpline_Surface(petalDatas[0].controlPoints,petalDatas[0].knotMin,petalDatas[0].knotMax,petalDatas[0].tWidth));
-            flowers_buffer.SetData(flower_data.ToArray());
+            GPUFlower_Base.BaseFlower_Data flower_data=new GPUFlower_Base.BaseFlower_Data();
+            flower_data=GPUFlower_Base.Cal_BSpline_Surface(petalDatas[0].controlPoints,petalDatas[0].knotMin,petalDatas[0].knotMax,petalDatas[0].tWidth);
+            
+            // List<Multi_Flower_Data> multi_Flower_Datas=new List<Multi_Flower_Data>();
+            // multi_Flower_Datas.Add(RenderMultiFlower(flower_data,new Vector3(0,0,0),new Vector3(0,0,0),new Vector3(0,0,0)));
+
+             Multi_Flower_Data[] multi_Flower_Datas=new Multi_Flower_Data[1];
+             multi_Flower_Datas[0]=RenderMultiFlower(flower_data,new Vector3(0,0,0),new Vector3(0,0,0),new Vector3(0,0,0));
+            flowers_buffer.SetData(multi_Flower_Datas);
         }
 
         #region  MultiFlower
-        void CalFibonacciPosition(ref List<Vector3> FibonacciPosition,ref List<Quaternion> FibonacciRotation,ref List<Vector4> FibonacciGrowthData,int N=50){
+        public static void CalFibonacciPosition(ref List<Vector3> FibonacciPosition,ref List<Quaternion> FibonacciRotation,ref List<Vector4> FibonacciGrowthData,int N=50){
             float goldenAngle=137.509f;
             for(int i=1;i<N+1;i++){
                 Vector3 pos=new Vector3(0,0,0);
@@ -70,7 +80,7 @@ using System.Runtime.InteropServices;
             }
         }
 
-        Multi_Flower_Data RenderMultiFlower(GPUFlower_Base.BaseFlower_Data flower_data,Vector3 flowerPosition,Vector3 flowerTangent,Vector3 flowerBioNormal,float flowerTime=1.0f,int N=50){
+        public static Multi_Flower_Data RenderMultiFlower(GPUFlower_Base.BaseFlower_Data flower_data,Vector3 flowerPosition,Vector3 flowerTangent,Vector3 flowerBioNormal,float flowerTime=1.0f,int N=50){
             Multi_Flower_Data data=new Multi_Flower_Data();
             data.vertices=new List<Vector3>();
             data.normals=new List<Vector3>();
@@ -119,6 +129,8 @@ using System.Runtime.InteropServices;
             for(int i=0;i<fibonacciIndices.Count;i++){
                 data.triangles.Add(fibonacciIndices[i]);
             }
+
+            //Debug.Log("data.triangles.Count: "+data.triangles.Count);
 
             return data;
         }
