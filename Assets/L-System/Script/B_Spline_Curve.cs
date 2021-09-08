@@ -136,10 +136,10 @@ public class B_Spline_Curve : MonoBehaviour
 
     void Update()
     {
-        flowerTime=(Mathf.Sin(Time.time*0.01f)+1.0f)*0.5f;
-        CalStem();
-        CalLeaf();
-        RenderMultiFlower();
+        // flowerTime=(Mathf.Sin(Time.time*0.01f)+1.0f)*0.5f;
+        // CalStem();
+        // CalLeaf();
+        // RenderMultiFlower();
         
     }
 
@@ -568,6 +568,7 @@ public class B_Spline_Curve : MonoBehaviour
         //
         cPU_Flower_Simulation.StemMesh=stemMesh;
         cPU_Flower_Simulation.StemIsDone=true;
+
 
     }
 
