@@ -35,7 +35,7 @@ using System.Runtime.InteropServices;
         {
             if(gPUFlower_Base.flowersIsDone&&gPUFlower_Base.stemIsDone){
             // if(gPUFlower_Base.flowersIsDone&&gPUFlower_Base.stemIsDone&&gPUFlower_Base.leafIsDone){
-                flowers_mat.SetBuffer("_stemData_buffer",gPUFlower_Stem.stemData_buffer);
+                flowers_mat.SetBuffer("_stemDataFlower_buffer",gPUFlower_Stem.stemDataFlower_buffer);
                 Graphics.DrawMeshInstancedProcedural(flowers_mesh,0,flowers_mat,new Bounds(this.gameObject.transform.position,Vector3.one*500.0f),gPUFlower_Base.count);
             }
         }
