@@ -256,6 +256,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 707be9144fbb7724a80447e31fb35cfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gPUFlower_Base: {fileID: 364405019}
+  gPUFlower_Stem: {fileID: 1181008687}
+  leaf_mat: {fileID: 2100000, guid: adadb1f833855d749b2f1b97bb579a55, type: 2}
+  petalDatas:
+  - {fileID: 11400000, guid: 8445dcb7516bdfc4083bb33fb0ee64ba, type: 2}
 --- !u!1 &364405017
 GameObject:
   m_ObjectHideFlags: 0

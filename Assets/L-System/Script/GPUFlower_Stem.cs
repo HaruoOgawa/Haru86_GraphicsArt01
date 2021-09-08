@@ -13,6 +13,7 @@
         // [HideInInspector] public ComputeBuffer stemVertex_buffer;
         // [HideInInspector] public ComputeBuffer stemManage_buffer;
         [HideInInspector] public ComputeBuffer stemDataFlower_buffer;
+        [HideInInspector] public ComputeBuffer stemDataLeaf_buffer;
         [SerializeField] GPUFlower_Base gPUFlower_Base;
         #endregion
         
@@ -30,13 +31,13 @@
             int leafStartIndex;
         }
 
-        struct StemDataFlower{
+        struct StemData{
             int index;
             Vector3 position;
             Vector3 tangent;
             Vector3 normal;
             Vector3 bioNormal;
-            public StemDataFlower(int i,Vector3 p,Vector3 t,Vector3 n,Vector3 b){
+            public StemData(int i,Vector3 p,Vector3 t,Vector3 n,Vector3 b){
                 this.index=i;
                 this.position=p;
                 this.tangent=t;
@@ -59,27 +60,35 @@
             // stemVertex_buffer.Release();
             // stemManage_buffer.Release();
             stemDataFlower_buffer.Release();
+            stemDataLeaf_buffer.Release();
         }
 
         void Init(){
             //stemVertex_buffer=new ComputeBuffer(,Marshal.SizeOf(typeof(StemVertex)));
             //stemManage_buffer=new ComputeBuffer(,Marshal.SizeOf(typeof(StemManage)));
-            stemDataFlower_buffer=new ComputeBuffer(gPUFlower_Base.count,Marshal.SizeOf(typeof(StemDataFlower)));
+            stemDataFlower_buffer=new ComputeBuffer(gPUFlower_Base.count,Marshal.SizeOf(typeof(StemData)));
+            stemDataLeaf_buffer=new ComputeBuffer(gPUFlower_Base.count*2,Marshal.SizeOf(typeof(StemData)));
 
             InitBufferData();
         }
 
         void InitBufferData(){
-            List<StemDataFlower> initStemData=new List<StemDataFlower>();
+            List<StemData> initStemData=new List<StemData>();
+            List<StemData> initStemDataLeaf=new List<StemData>();
             for(int i=0;i<gPUFlower_Base.count;i++){
                 Vector2 initPos=Random.insideUnitCircle;
-                StemDataFlower data=new StemDataFlower(i,new Vector3(initPos.x,0,initPos.y),new Vector3(0,0,0),new Vector3(0,0,0),new Vector3(0,0,0));
+                StemData data=new StemData(i,new Vector3(initPos.x,0,initPos.y),new Vector3(0,0,0),new Vector3(0,0,0),new Vector3(0,0,0));
+                
                 initStemData.Add(data);
+                initStemDataLeaf.Add(data);
+                initStemDataLeaf.Add(data);
             }
             stemDataFlower_buffer.SetData(initStemData.ToArray());
+            stemDataLeaf_buffer.SetData(initStemDataLeaf.ToArray());
 
             //test
             gPUFlower_Base.stemIsDone=true;
+            
         }
     }
 
