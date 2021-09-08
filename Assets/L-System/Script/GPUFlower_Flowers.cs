@@ -4,20 +4,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GraphicsArt.GPUFlower.GPUFlower_Base;
+using GraphicsArt.GPUFlower.GPUFlower_Stem;
 using System.Runtime.InteropServices;
 
     public class GPUFlower_Flowers : MonoBehaviour
     {
     #region public field
     [SerializeField] GPUFlower_Base gPUFlower_Base;
-    [SerializeField] ComputeShader flowers_cs;
+    [SerializeField] GPUFlower_Stem gPUFlower_Stem;
     [SerializeField] Material flowers_mat;
     [SerializeField] PetalData[] petalDatas;
     #endregion
 
     #region private region
 
-    ComputeBuffer flowers_buffer;
     Mesh flowers_mesh;
     public struct Multi_Flower_Data{
         public List<Vector3> vertices;
@@ -29,35 +29,38 @@ using System.Runtime.InteropServices;
         void Start()
         {
             Init();
-            SetupFlowerdata();
         }
 
         void Update()
         {
-            if(gPUFlower_Base.flowersIsDone&&gPUFlower_Base.stemIsDone&&gPUFlower_Base.leafIsDone){
+            if(gPUFlower_Base.flowersIsDone&&gPUFlower_Base.stemIsDone){
+            // if(gPUFlower_Base.flowersIsDone&&gPUFlower_Base.stemIsDone&&gPUFlower_Base.leafIsDone){
+                flowers_mat.SetBuffer("_stemData_buffer",gPUFlower_Stem.stemData_buffer);
                 Graphics.DrawMeshInstancedProcedural(flowers_mesh,0,flowers_mat,new Bounds(this.gameObject.transform.position,Vector3.one*500.0f),gPUFlower_Base.count);
             }
         }
 
         void OnDisable(){
-            flowers_buffer.Release();
+           
         }
 
         void Init(){
             flowers_mesh=new Mesh();
-            flowers_buffer=new ComputeBuffer(1,Marshal.SizeOf(typeof(Multi_Flower_Data)));
+            
+            SetupFlowerdata();
         }
 
         void SetupFlowerdata(){
             GPUFlower_Base.BaseFlower_Data flower_data=new GPUFlower_Base.BaseFlower_Data();
             flower_data=GPUFlower_Base.Cal_BSpline_Surface(petalDatas[0].controlPoints,petalDatas[0].knotMin,petalDatas[0].knotMax,petalDatas[0].tWidth);
+            Multi_Flower_Data multi_Flower_Data=RenderMultiFlower(flower_data,new Vector3(0,0,0),new Vector3(0,0,0),new Vector3(0,0,0));
             
-            // List<Multi_Flower_Data> multi_Flower_Datas=new List<Multi_Flower_Data>();
-            // multi_Flower_Datas.Add(RenderMultiFlower(flower_data,new Vector3(0,0,0),new Vector3(0,0,0),new Vector3(0,0,0)));
+            flowers_mesh.vertices=multi_Flower_Data.vertices.ToArray();
+            flowers_mesh.triangles=multi_Flower_Data.triangles.ToArray();
+            flowers_mesh.normals=multi_Flower_Data.normals.ToArray();
+            flowers_mesh.RecalculateNormals();
 
-             Multi_Flower_Data[] multi_Flower_Datas=new Multi_Flower_Data[1];
-             multi_Flower_Datas[0]=RenderMultiFlower(flower_data,new Vector3(0,0,0),new Vector3(0,0,0),new Vector3(0,0,0));
-            flowers_buffer.SetData(multi_Flower_Datas);
+            gPUFlower_Base.flowersIsDone=true;
         }
 
         #region  MultiFlower

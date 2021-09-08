@@ -37,7 +37,7 @@ public class B_Spline_Curve_Debugger : MonoBehaviour
         meshFilter.mesh=petalMesh;
         meshRenderer.material=petal_mat;
 
-        Debug.Log("multi_Flower_Data.vertices.Count: "+multi_Flower_Data.vertices.Count);
+       
     }
 
 }

@@ -41,8 +41,12 @@
 
             v2f vert (appdata v)
             {
+                float4 pos=v.vertex;
+                float l=length(pos.xyz);
+                pos.xz*=((sin(_Time.y)+1.0)*0.5*0.8+0.2);
+
                 v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.vertex = UnityObjectToClipPos(pos);
                 o.uv = v.uv;
                 o.normal=UnityObjectToWorldNormal(v.normal);
                 o.worldPos=mul(UNITY_MATRIX_M,v.vertex);

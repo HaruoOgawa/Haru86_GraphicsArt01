@@ -267,7 +267,7 @@ GameObject:
   - component: {fileID: 364405018}
   - component: {fileID: 364405019}
   m_Layer: 0
-  m_Name: GPUFlower
+  m_Name: TestFlower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -559,6 +559,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43aea203dc6a28742a9cae23c6e6b1f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gPUFlower_Base: {fileID: 364405019}
 --- !u!1 &1915276099
 GameObject:
   m_ObjectHideFlags: 0
@@ -699,7 +700,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gPUFlower_Base: {fileID: 364405019}
-  flowers_cs: {fileID: 7200000, guid: 1d58a5174ee03dc4baf3eea77657846e, type: 3}
+  gPUFlower_Stem: {fileID: 1181008687}
   flowers_mat: {fileID: 2100000, guid: 75f1639db36e4af438316ce70aa9283f, type: 2}
   petalDatas:
   - {fileID: 11400000, guid: 8445dcb7516bdfc4083bb33fb0ee64ba, type: 2}
