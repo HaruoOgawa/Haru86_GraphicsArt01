@@ -15,6 +15,7 @@
         [HideInInspector] public ComputeBuffer stemManage_buffer;
         [HideInInspector] public ComputeBuffer stemDataFlower_buffer;
         [HideInInspector] public ComputeBuffer stemDataLeaf_buffer;
+        [SerializeField] ComputeShader cal_stem_cs;
         [SerializeField] GPUFlower_Base gPUFlower_Base;
         [SerializeField] BSplineData bSplineData;
 
@@ -67,15 +68,25 @@
                 this.bioNormal=b;
             }
         }
+
+        #region Stem_Cs Field
+          int stemVertexCount=-1;
+        int stemResult_kernel=-1;
+        int stemGrowth_kernel=-1;
+        int numthreds_val=256;
+        #endregion
+
         #endregion
         void Start()
         {
             Init();
+            Cal_Stem_Result();
+            Cal_Stem_Growth();
         }
 
         void Update()
         {
-            
+            // Cal_Stem_Growth();
         }
 
         void OnDisable(){
@@ -87,7 +98,11 @@
         }
 
         void Init(){
-            int stemVertexCount=(int)((bSplineData.knotMax-bSplineData.knotMin)/bSplineData.tWidth);
+            stemResult_kernel=cal_stem_cs.FindKernel("CalStemBSplineCurveResult");
+            stemGrowth_kernel=cal_stem_cs.FindKernel("CalStemGrowth");
+
+            stemVertexCount=(int)((bSplineData.knotMax-bSplineData.knotMin)/bSplineData.tWidth);
+            stemVertexCount=Mathf.NextPowerOfTwo(stemVertexCount);
             stemResult_buffer=new ComputeBuffer(stemVertexCount*gPUFlower_Base.count,Marshal.SizeOf(typeof(StemVertex)));
             stemVertex_buffer=new ComputeBuffer(stemVertexCount*gPUFlower_Base.count,Marshal.SizeOf(typeof(StemVertex)));
             stemManage_buffer=new ComputeBuffer(gPUFlower_Base.count,Marshal.SizeOf(typeof(StemManage)));
@@ -124,9 +139,22 @@
             
         }
 
-        void Cal_Stem(){
-
+        void Cal_Stem_Result(){
+            cal_stem_cs.SetBuffer(stemResult_kernel,"_write_stemResult_buffer",stemResult_buffer);
+            List<Vector4> contPos=new List<Vector4>(); 
+            cal_stem_cs.SetInt("_contPosArrayLength",bSplineData.controlPoints.Count);
+            for(int i=0;i<bSplineData.controlPoints.Count;i++){
+                Vector3 controlPoint=bSplineData.controlPoints[i];
+                contPos.Add(new Vector4(controlPoint.x,controlPoint.y,controlPoint.z,0));
+            }
+            cal_stem_cs.SetVectorArray("_controlPoints",contPos.ToArray());
+           // cal_stem_cs.Dispatch(stemResult_kernel,stemVertexCount/numthreds_val,1,1);
         }
+
+        void Cal_Stem_Growth(){
+            //cal_stem_cs.Dispatch(stemGrowth_kernel,stemVertexCount/numthreds_val,1,1);
+        }
+
     }
 
 }

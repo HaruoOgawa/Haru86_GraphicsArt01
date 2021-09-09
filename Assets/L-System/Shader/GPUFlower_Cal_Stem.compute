@@ -3,6 +3,90 @@
 
 #define NUMTHRED_VAL 256
 
+struct StemVertex{
+    float3 vertice;
+    float3 tangent;
+    float3 normal;
+    float3 bioNormal;
+    int index;
+};
+
+//花の数など
+struct StemManage{
+    int flowerCount;
+    int flowerStartIndex;
+    int leafCount;
+    int leafStartIndex;
+};
+
+//花や茎を生成するための情報を載せる構造体
+struct StemData{
+    int index;
+    float3 position;
+    float3 tangent;
+    float3 normal;
+    float3 bioNormal;
+};
+
+RWStructuredBuffer<StemVertex> _read_stemResult_buffer;
+RWStructuredBuffer<StemVertex> _write_stemResult_buffer;
+RWStructuredBuffer<StemVertex> _read_stemVertex_buffer;
+RWStructuredBuffer<StemVertex> _write_stemVertex_buffer;
+RWStructuredBuffer<StemManage> _read_stemManage_buffer;
+RWStructuredBuffer<StemManage> _write_stemManage_buffer;
+RWStructuredBuffer<StemData> _read_stemDataFlower_buffer;
+RWStructuredBuffer<StemData> _write_stemDataFlower_buffer;
+RWStructuredBuffer<StemData> _read_stemDataLeaf_buffer;
+RWStructuredBuffer<StemData> _write_stemDataLeaf_buffer;
+
+int _contPosArrayLength;
+float4 _controlPoints[6];
+
+// float[] GetKnotVector(int m,int n,float knotMin,float knotMax){
+//     List<float> knotVector=new List<float>();
+//     int knotN=n+1;
+    
+//     for(int i=0;i<m;i++){
+//         if(i>=0&&i<knotN){
+//             knotVector.Add(knotMin);
+//         }else if(i>=knotN&&i<(m-knotN)){
+//             int knotWidth=m-knotN*2;
+//             float knotVal=(knotMax-knotMin)/(float)(knotWidth+1);
+//             knotVal=knotVal*(float)(i-knotN+1);
+//             knotVector.Add(knotVal);
+//         }else if(i>=(m-knotN)&&i<m){
+//             knotVector.Add(knotMax);
+//         }
+//     }
+
+//     return knotVector.ToArray();
+// }
+
+//配列の数をあらかじめ決めておかないといけないのがめんどくさい...
+float GetBasisFunction(float u[6],int j,int k,float t){
+    float w1=0.0f;
+    float w2=0.0f;
+
+    if(k==0){
+        if(u[j]<t&&t<=u[j+1]){
+            return 1.0f;
+        }else{
+            return 0.0f;
+        }
+    }else{
+        if(u[j+k+1]-u[j+1]!=0.0f){
+            w1=GetBasisFunction(u,j+1,k-1,t)*(u[j+k+1]-t)/(u[j+k+1]-u[j+1]);
+        }
+
+        if((u[j+k]-u[j])!=0.0f){
+            w2=GetBasisFunction(u,j,k-1,t)*(t-u[j])/(u[j+k]-u[j]);
+        }
+
+        return w1+w2;
+    }
+    
+}
+
 [numthreads(NUMTHRED_VAL,1,1)]
 void CalStemBSplineCurveResult(
     uint3 DID : SV_DISPATCHTHREADID

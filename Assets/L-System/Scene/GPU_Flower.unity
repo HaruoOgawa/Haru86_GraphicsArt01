@@ -687,8 +687,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43aea203dc6a28742a9cae23c6e6b1f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cal_stem_cs: {fileID: 7200000, guid: e1b362389007afa449e164ebf39de711, type: 3}
   gPUFlower_Base: {fileID: 364405019}
-  StemDataScriptable: {fileID: 11400000, guid: 59d0a93249446ec4e900b77e2992204d, type: 2}
+  bSplineData: {fileID: 11400000, guid: 887d91dfa1297244e8634b349ebdbdb0, type: 2}
 --- !u!1 &1915276099
 GameObject:
   m_ObjectHideFlags: 0
