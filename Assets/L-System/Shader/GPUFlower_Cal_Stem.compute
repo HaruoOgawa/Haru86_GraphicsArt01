@@ -1,14 +1,18 @@
-﻿// Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel CSMain
+﻿#pragma kernel CalStemBSplineCurveResult
+#pragma kernel CalStemGrowth
 
-// Create a RenderTexture with enableRandomWrite flag and set it
-// with cs.SetTexture
-RWTexture2D<float4> Result;
+#define NUMTHRED_VAL 256
 
-[numthreads(8,8,1)]
-void CSMain (uint3 id : SV_DispatchThreadID)
-{
-    // TODO: insert actual code here!
+[numthreads(NUMTHRED_VAL,1,1)]
+void CalStemBSplineCurveResult(
+    uint3 DID : SV_DISPATCHTHREADID
+){
+    
+}
 
-    Result[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
+[numthreads(NUMTHRED_VAL,1,1)]
+void CalStemGrowth(
+     uint3 DID : SV_DISPATCHTHREADID
+){
+
 }

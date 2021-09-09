@@ -6,24 +6,27 @@ using GraphicsArt.GPUFlower.GPUFlower_Flowers;
 
 public class B_Spline_Curve_Debugger : MonoBehaviour
 {
-    [SerializeField] PetalData petalData;
+    [SerializeField] BSplineData bSplineData;
     [SerializeField] MeshRenderer meshRenderer;
     [SerializeField] MeshFilter meshFilter;
     [SerializeField] Material petal_mat;
     
     void Start()
     {
-        RenderTestPetal();
+       // RenderTestPetal();
+       RenderTestBSplineCurve();
     }
 
     void Update()
     {
-        RenderTestPetal();
+       // RenderTestPetal();
+       RenderTestBSplineCurve();
     }
 
     void RenderTestPetal(){
         GPUFlower_Base.BaseFlower_Data data=new GPUFlower_Base.BaseFlower_Data();
-        data=GPUFlower_Base.Cal_BSpline_Surface(petalData.controlPoints,petalData.knotMin,petalData.knotMax,petalData.tWidth);
+        data=GPUFlower_Base.Cal_BSpline_Surface(bSplineData.controlPoints,bSplineData.knotMin,bSplineData.knotMax,bSplineData.tWidth);
+
 
         GPUFlower_Flowers.Multi_Flower_Data multi_Flower_Data=new GPUFlower_Flowers.Multi_Flower_Data();
         multi_Flower_Data=GPUFlower_Flowers.RenderMultiFlower(data,new Vector3(0,0,0),new Vector3(0,0,0),new Vector3(0,0,0));
@@ -38,6 +41,29 @@ public class B_Spline_Curve_Debugger : MonoBehaviour
         meshRenderer.material=petal_mat;
 
        
+    }
+
+    void RenderTestBSplineCurve(){
+        List<GPUFlower_Base.B_Spline_Data> data=new List<GPUFlower_Base.B_Spline_Data>();
+        data=GPUFlower_Base.Cal_BSplineCurve(bSplineData.controlPoints,bSplineData.knotMin,bSplineData.knotMax,bSplineData.tWidth);
+
+        Mesh testSplineMesh=new Mesh();
+        List<Vector3> vertices=new List<Vector3>();
+        List<int> indives=new List<int>();
+        for(int i=0;i<data.Count;i++){
+            vertices.Add(data[i].position);
+
+            indives.Add(data[i].index);
+            if(i<data.Count-1){
+                indives.Add(data[i+1].index);
+            }
+        }
+
+        testSplineMesh.vertices=vertices.ToArray();
+        testSplineMesh.SetIndices(indives.ToArray(),MeshTopology.Lines,0);
+
+        meshFilter.mesh=testSplineMesh;
+
     }
 
 }

@@ -54,6 +54,7 @@
                 float4 pos=v.vertex;
                 float l=length(pos.xyz);
                 pos.xz*=((sin(_Time.y)+1.0)*0.5*0.8+0.2);
+                pos.y*=((sin(_Time.y)+1.0)*0.5*0.3+0.7);
                 pos.xyz+=data.position*100.0;
 
                 v2f o;

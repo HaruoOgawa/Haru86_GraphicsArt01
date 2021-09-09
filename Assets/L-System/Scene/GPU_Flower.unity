@@ -688,6 +688,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gPUFlower_Base: {fileID: 364405019}
+  StemDataScriptable: {fileID: 11400000, guid: 59d0a93249446ec4e900b77e2992204d, type: 2}
 --- !u!1 &1915276099
 GameObject:
   m_ObjectHideFlags: 0
@@ -733,7 +734,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 351f5af4894c2c64f9540b81e653a082, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  petalData: {fileID: 11400000, guid: 8445dcb7516bdfc4083bb33fb0ee64ba, type: 2}
+  bSplineData: {fileID: 11400000, guid: 887d91dfa1297244e8634b349ebdbdb0, type: 2}
   meshRenderer: {fileID: 1915276102}
   meshFilter: {fileID: 1915276103}
   petal_mat: {fileID: 2100000, guid: c5dabec01f2b06943a4c5543435ffecd, type: 2}
