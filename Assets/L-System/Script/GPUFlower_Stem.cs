@@ -181,12 +181,12 @@
             cal_stem_cs.SetFloat("_tWidth",bSplineData.tWidth);
             cal_stem_cs.Dispatch(stemResult_kernel,(stemVertexCount*gPUFlower_Base.count)/numthreds_val,1,1);
 
-            Matrix4x4[] resultStemVertex=new Matrix4x4[stemVertexCount*gPUFlower_Base.count];
-            stem_debug_bufer.GetData(resultStemVertex);
-            int debug_offset=0;
-            for(int i=0+debug_offset*stemVertexCount;i<stemVertexCount+debug_offset*stemVertexCount;i++){
-                Debug.Log("resultStemVertex["+i+"] "+resultStemVertex[i]);
-            }
+            // Matrix4x4[] resultStemVertex=new Matrix4x4[stemVertexCount*gPUFlower_Base.count];
+            // stem_debug_bufer.GetData(resultStemVertex);
+            // int debug_offset=10;
+            // for(int i=0+debug_offset*stemVertexCount;i<stemVertexCount+debug_offset*stemVertexCount;i++){
+            //     Debug.Log("resultStemVertex["+i+"] "+resultStemVertex[i]);
+            // }
         }
 
         void Cal_Stem_Growth(){

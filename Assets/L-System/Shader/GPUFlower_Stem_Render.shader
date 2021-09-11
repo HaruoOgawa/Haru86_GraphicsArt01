@@ -13,6 +13,7 @@
         {
             CGPROGRAM
             #pragma vertex vert
+            #pragma geometry geom
             #pragma fragment frag
             
             #include "UnityCG.cginc"
@@ -23,7 +24,13 @@
                 float2 uv : TEXCOORD0;
             };
 
-            struct v2f
+            struct v2g
+            {
+                float4 vertex : POSITION;
+                float2 uv : TEXCOORD0;
+            };
+
+            struct g2f
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
@@ -40,15 +47,29 @@
             sampler2D _MainTex;
             StructuredBuffer<StemVertex> _stemVertex_buffer;
 
-            v2f vert (appdata v)
+            v2g vert (appdata v,uint id : SV_INSTANCEID)
             {
-                v2f o;
+                StemVertex sVertex=_stemVertex_buffer[id];
+
+                v.vertex.xyz=sVertex.vertice;
+
+                v2g o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
                 return o;
             }
 
-            fixed4 frag (v2f i) : SV_Target
+            [maxvertexcount(1)]
+            void geom(point v2g input[1],inout PointStream<g2f> outStream){
+                g2f o;
+                o.vertex=input[0].vertex;
+                o.uv=float2(0,0);
+                outStream.Append(o);
+
+                outStream.RestartStrip();
+            }
+
+            fixed4 frag (g2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
                 return col;

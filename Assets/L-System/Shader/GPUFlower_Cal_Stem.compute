@@ -219,7 +219,7 @@ void CalStemBSplineCurveResult(
     Cal_BSplineCurve(stemBasePosition,_controlPoints,_knotMin,_knotMax,_tWidth,DID);
     
     StemVertex stemO;
-    stemO.vertice=stemBasePosition[idInMyStem];//+_read_stemBasePosition_buffer[stemGroupID];
+    stemO.vertice=stemBasePosition[idInMyStem]+_read_stemBasePosition_buffer[stemGroupID];
     stemO.tangent=float3(0,0,0);
     stemO.normal=float3(0,0,0);
     stemO.bioNormal=float3(0,0,0);
