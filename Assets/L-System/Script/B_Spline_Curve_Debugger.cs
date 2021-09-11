@@ -66,7 +66,7 @@ public class B_Spline_Curve_Debugger : MonoBehaviour
 
         meshFilter.mesh=testSplineMesh;
 
-        Debug.Log("vertices.Count: "+vertices.Count);
+       // Debug.Log("vertices.Count: "+vertices.Count);
 
     }
 
