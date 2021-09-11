@@ -223,6 +223,11 @@ void CalStemBSplineCurveResult(
     stemO.tangent=float3(0,0,0);
     stemO.normal=float3(0,0,0);
     stemO.bioNormal=float3(0,0,0);
+    if(idInMyStem>0&&idInMyStem<16-1){
+        stemO.tangent=normalize(stemBasePosition[idInMyStem+1]-stemBasePosition[idInMyStem-1]);
+        stemO.normal=normalize(cross(stemO.tangent,float3(0,1,0)));
+        stemO.bioNormal=normalize(cross(stemO.tangent,stemO.normal));
+    }
     stemO.index=idInMyStem;
     _write_stemResult_buffer[DID.x]=stemO;
 

@@ -91,7 +91,7 @@
         void Update()
         {
             // Cal_Stem_Growth();
-            // Render_Stem();
+             Render_Stem();
         }
 
         void OnDisable(){
@@ -198,6 +198,8 @@
             Vector3[] vertices=new Vector3[1]{new Vector3(0,0,0)};
             stem_mat.SetBuffer("_stemVertex_buffer",stemResult_buffer);
             //stem_mat.SetBuffer("_stemVertex_buffer",stemVertex_buffer);
+            stem_mat.SetInt("_stemVertexCount",stemVertexCount);
+            stem_mat.SetInt("_stemSegments",12);
             Graphics.DrawMeshInstancedProcedural(stem_point_mesh,0,stem_mat,new Bounds(this.gameObject.transform.position,Vector3.one*500.0f),stemVertexCount*gPUFlower_Base.count);
         }
 
