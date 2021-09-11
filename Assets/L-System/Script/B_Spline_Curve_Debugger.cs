@@ -51,7 +51,9 @@ public class B_Spline_Curve_Debugger : MonoBehaviour
         List<Vector3> vertices=new List<Vector3>();
         List<int> indives=new List<int>();
         for(int i=0;i<data.Count;i++){
-            vertices.Add(data[i].position);
+            Vector3 pos=data[i].position;
+            pos+=new Vector3(Mathf.PerlinNoise(pos.x,pos.y),Mathf.PerlinNoise(pos.y,pos.z),Mathf.PerlinNoise(pos.z,pos.x))*0.25f;
+            vertices.Add(pos);
 
             indives.Add(data[i].index);
             if(i<data.Count-1){
@@ -63,6 +65,8 @@ public class B_Spline_Curve_Debugger : MonoBehaviour
         testSplineMesh.SetIndices(indives.ToArray(),MeshTopology.Lines,0);
 
         meshFilter.mesh=testSplineMesh;
+
+        Debug.Log("vertices.Count: "+vertices.Count);
 
     }
 

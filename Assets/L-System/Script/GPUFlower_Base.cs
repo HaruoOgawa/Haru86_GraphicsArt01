@@ -172,7 +172,9 @@
             int p=controlPoints.Count;
             int n=3;
             int m=p+n+1;
-            
+            //Debug.Log("m: "+m);
+            // m : 10
+
             float[] u=GetKnotVector(m,n,knotMin,knotMax);
             
             List<float> tDelta=new List<float>();
@@ -194,6 +196,13 @@
                     S[i]=new B_Spline_Data(S[i].position+controlPoints[j]*b,S[i].index);
                 }
             }
+
+            // Debug.Log("u.Length:"+u.Length);
+            //u: 10
+            // Debug.Log("tDelta.Count: "+tDelta.Count);
+            //tDelta.Count: 19
+            // Debug.Log("S.Count: "+S.Count);
+            //S.Count: 19
 
             return S;
 

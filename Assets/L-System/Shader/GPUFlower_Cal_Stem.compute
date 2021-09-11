@@ -41,29 +41,23 @@ RWStructuredBuffer<StemData> _write_stemDataLeaf_buffer;
 
 int _contPosArrayLength;
 float4 _controlPoints[6];
+float _knotMin;
+float _knotMax;
+float _tWidth;
 
-// float[] GetKnotVector(int m,int n,float knotMin,float knotMax){
-//     List<float> knotVector=new List<float>();
-//     int knotN=n+1;
+float GetBasisFunctionFour(float u[10],int j,int k,float t){
+    float w1=0.0f;
+    float w2=0.0f;
+
+    if(u[j]<t&&t<=u[j+1]){
+        return 1.0f;
+    }else{
+        return 0.0f;
+    }
     
-//     for(int i=0;i<m;i++){
-//         if(i>=0&&i<knotN){
-//             knotVector.Add(knotMin);
-//         }else if(i>=knotN&&i<(m-knotN)){
-//             int knotWidth=m-knotN*2;
-//             float knotVal=(knotMax-knotMin)/(float)(knotWidth+1);
-//             knotVal=knotVal*(float)(i-knotN+1);
-//             knotVector.Add(knotVal);
-//         }else if(i>=(m-knotN)&&i<m){
-//             knotVector.Add(knotMax);
-//         }
-//     }
+}
 
-//     return knotVector.ToArray();
-// }
-
-//配列の数をあらかじめ決めておかないといけないのがめんどくさい...
-float GetBasisFunction(float u[6],int j,int k,float t){
+float GetBasisFunctionThird(float u[10],int j,int k,float t){
     float w1=0.0f;
     float w2=0.0f;
 
@@ -75,11 +69,11 @@ float GetBasisFunction(float u[6],int j,int k,float t){
         }
     }else{
         if(u[j+k+1]-u[j+1]!=0.0f){
-            w1=GetBasisFunction(u,j+1,k-1,t)*(u[j+k+1]-t)/(u[j+k+1]-u[j+1]);
+            w1=GetBasisFunctionFour(u,j+1,k-1,t)*(u[j+k+1]-t)/(u[j+k+1]-u[j+1]);
         }
 
         if((u[j+k]-u[j])!=0.0f){
-            w2=GetBasisFunction(u,j,k-1,t)*(t-u[j])/(u[j+k]-u[j]);
+            w2=GetBasisFunctionFour(u,j,k-1,t)*(t-u[j])/(u[j+k]-u[j]);
         }
 
         return w1+w2;
@@ -87,11 +81,116 @@ float GetBasisFunction(float u[6],int j,int k,float t){
     
 }
 
+float GetBasisFunctionSecond(float u[10],int j,int k,float t){
+    float w1=0.0f;
+    float w2=0.0f;
+
+    if(k==0){
+        if(u[j]<t&&t<=u[j+1]){
+            return 1.0f;
+        }else{
+            return 0.0f;
+        }
+    }else{
+        if(u[j+k+1]-u[j+1]!=0.0f){
+            w1=GetBasisFunctionThird(u,j+1,k-1,t)*(u[j+k+1]-t)/(u[j+k+1]-u[j+1]);
+        }
+
+        if((u[j+k]-u[j])!=0.0f){
+            w2=GetBasisFunctionThird(u,j,k-1,t)*(t-u[j])/(u[j+k]-u[j]);
+        }
+
+        return w1+w2;
+    }
+    
+}
+
+float GetBasisFunction(float u[10],int j,int k,float t){
+    float w1=0.0f;
+    float w2=0.0f;
+
+    if(k==0){
+        if(u[j]<t&&t<=u[j+1]){
+            return 1.0f;
+        }else{
+            return 0.0f;
+        }
+    }else{
+        if(u[j+k+1]-u[j+1]!=0.0f){
+            w1=GetBasisFunctionSecond(u,j+1,k-1,t)*(u[j+k+1]-t)/(u[j+k+1]-u[j+1]);
+        }
+
+        if((u[j+k]-u[j])!=0.0f){
+            w2=GetBasisFunctionSecond(u,j,k-1,t)*(t-u[j])/(u[j+k]-u[j]);
+        }
+
+        return w1+w2;
+    }
+    
+}
+
+void Cal_BSplineCurve(inout float3 S[19],float4 controlPoints[6],float knotMin,float knotMax,float tWidth){
+    int p=6;
+    int n=3;
+    int m=p+n+1;
+    //Debug.Log("m: "+m);
+    // m : 10
+
+    //GetKnotVector
+    float u[10];
+    int knotN=n+1;
+    
+    for(int i=0;i<m;i++){
+        if(i>=0&&i<knotN){
+            u[i]=knotMin;
+        }else if(i>=knotN&&i<(m-knotN)){
+            int knotWidth=m-knotN*2;
+            float knotVal=(knotMax-knotMin)/(float)(knotWidth+1);
+            knotVal=knotVal*(float)(i-knotN+1);
+            u[i]=knotVal;
+        }else if(i>=(m-knotN)&&i<m){
+            u[i]=knotMax;
+        }
+    }
+    
+    float tDelta[19];
+    int num=(int)((knotMax-knotMin)/tWidth);
+    for(int i=0;i<num;i++){
+        tDelta[i]=(float)(tWidth*i);
+    }
+
+    //float3 S[19];
+    for(int i=0;i<19;i++){
+        S[i]=float3(0,0,0);
+    }
+    
+    S[0]=controlPoints[0].xyz;
+    
+    for(int i=1;i<19;i++){
+        for(int j=0;j<p;j++){
+            float b=GetBasisFunction(u,j,n,tDelta[i]);
+            S[i]=S[i]+controlPoints[j].xyz*b;
+        }
+    }
+
+    // Debug.Log("u.Length:"+u.Length);
+    //u: 10
+    // Debug.Log("tDelta.Count: "+tDelta.Count);
+    //tDelta.Count: 19
+    // Debug.Log("S.Count: "+S.Count);
+    //S.Count: 19
+
+   // return S;
+
+}
+
+
 [numthreads(NUMTHRED_VAL,1,1)]
 void CalStemBSplineCurveResult(
     uint3 DID : SV_DISPATCHTHREADID
 ){
-    
+    float3 test[19];
+    Cal_BSplineCurve(test,_controlPoints,_knotMin,_knotMax,_tWidth);
 }
 
 [numthreads(NUMTHRED_VAL,1,1)]
