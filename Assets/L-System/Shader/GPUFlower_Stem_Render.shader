@@ -3,11 +3,13 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        [HDR] _Color("_Color",color)=(1,1,1,1)
     }
     SubShader
     {
         Tags { "RenderType"="Opaque" }
         LOD 100
+        Cull Off
 
         Pass
         {
@@ -55,6 +57,8 @@
             };
 
             sampler2D _MainTex;
+            float4 _Color;
+
             StructuredBuffer<StemVertex> _stemVertex_buffer;
             int _stemVertexCount;
             int _stemSegments;
@@ -93,10 +97,10 @@
             //        float angleVal=(2.0*PI)/_stemSegments;
 
             //        for(int i=0;i<_stemSegments;i++){
-            //             float4 pos0=float4(input[0].normal*cos(angleVal*(i))+input[0].bioNormal*sin(angleVal*(i)),1.0);
-            //             float4 pos1=float4(input[0].normal*cos(angleVal*(i+1))+input[0].bioNormal*sin(angleVal*(i+1)),1.0);
-            //             float4 pos2=float4(input[0].nextNormal*cos(angleVal*(i))+input[0].nextBioNormal*sin(angleVal*(i)),1.0);
-            //             float4 pos3=float4(input[0].nextNormal*cos(angleVal*(i+1))+input[0].nextBioNormal*sin(angleVal*(i+1)),1.0);
+            //             float4 pos0=float4(input[0].normal*cos(angleVal*(i))+input[0].bioNormal*sin(angleVal*(i)+input[0].vertex.xyz),1.0);
+            //             float4 pos1=float4(input[0].normal*cos(angleVal*(i+1))+input[0].bioNormal*sin(angleVal*(i+1)+input[0].vertex.xyz),1.0);
+            //             float4 pos2=float4(input[0].nextNormal*cos(angleVal*(i))+input[0].nextBioNormal*sin(angleVal*(i))+input[0].nextStemVertex.xyz,1.0);
+            //             float4 pos3=float4(input[0].nextNormal*cos(angleVal*(i+1))+input[0].nextBioNormal*sin(angleVal*(i+1))+input[0].nextStemVertex.xyz,1.0);
                         
             //             //first
             //             o.vertex=UnityObjectToClipPos(pos0);
@@ -181,9 +185,53 @@
                 }
             }
 
+            //debug geom
+            // [maxvertexcount(6)]
+            // void geom(point v2g input[1],inout TriangleStream<g2f> outStream){
+                
+            //     float4 pos0=float4(-1.0,-1.0,0.0,1.0);
+            //     float4 pos1=float4(-1.0,1.0,0.0,1.0);
+            //     float4 pos2=float4(1.0,1.0,0.0,1.0);
+            //     float4 pos3=float4(1.0,-1.0,0.0,1.0);
+            
+            //     g2f o;
+
+            //     o.vertex=UnityObjectToClipPos(pos0);
+            //     o.uv=float2(0,0);
+            //     outStream.Append(o);
+
+            //     o.vertex=UnityObjectToClipPos(pos1);
+            //     o.uv=float2(0,0);
+            //     outStream.Append(o);
+
+            //     o.vertex=UnityObjectToClipPos(pos3);
+            //     o.uv=float2(0,0);
+            //     outStream.Append(o);    
+
+            //     outStream.RestartStrip();
+
+
+
+            //     o.vertex=UnityObjectToClipPos(pos0);
+            //     o.uv=float2(0,0);
+            //     outStream.Append(o);
+
+            //     o.vertex=UnityObjectToClipPos(pos3);
+            //     o.uv=float2(0,0);
+            //     outStream.Append(o);
+
+            //     o.vertex=UnityObjectToClipPos(pos2);
+            //     o.uv=float2(0,0);
+            //     outStream.Append(o);    
+
+            //     outStream.RestartStrip();
+
+                
+            // }
+
             fixed4 frag (g2f i) : SV_Target
             {
-                float4 col =float4(1,1,1,1); 
+                float4 col =_Color; 
                 return col;
             }
             ENDCG

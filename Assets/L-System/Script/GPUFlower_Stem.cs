@@ -143,7 +143,7 @@
                 initStemVertex.Add(new StemVertex(i));
                 initStemManege.Add(new StemManage(1));
 
-                Vector2 initBasePos=Random.insideUnitCircle;
+                Vector2 initBasePos=Random.insideUnitCircle*500.0f;
                 initStemBasePosition.Add(new Vector3(initBasePos.x,0,initBasePos.y));
 
                 initStemDebugMatrix.Add(Matrix4x4.identity);
@@ -181,12 +181,12 @@
             cal_stem_cs.SetFloat("_tWidth",bSplineData.tWidth);
             cal_stem_cs.Dispatch(stemResult_kernel,(stemVertexCount*gPUFlower_Base.count)/numthreds_val,1,1);
 
-            // Matrix4x4[] resultStemVertex=new Matrix4x4[stemVertexCount*gPUFlower_Base.count];
-            // stem_debug_bufer.GetData(resultStemVertex);
-            // int debug_offset=10;
-            // for(int i=0+debug_offset*stemVertexCount;i<stemVertexCount+debug_offset*stemVertexCount;i++){
-            //     Debug.Log("resultStemVertex["+i+"] "+resultStemVertex[i]);
-            // }
+            Matrix4x4[] resultStemVertex=new Matrix4x4[stemVertexCount*gPUFlower_Base.count];
+            stem_debug_bufer.GetData(resultStemVertex);
+            int debug_offset=10;
+            for(int i=0+debug_offset*stemVertexCount;i<stemVertexCount+debug_offset*stemVertexCount;i++){
+                Debug.Log("resultStemVertex["+i+"] "+resultStemVertex[i]);
+            }
         }
 
         void Cal_Stem_Growth(){
@@ -195,7 +195,13 @@
 
         void Render_Stem(){
             Mesh stem_point_mesh=new Mesh();
+            
             Vector3[] vertices=new Vector3[1]{new Vector3(0,0,0)};
+            int[] indices=new int[1]{0};
+
+            stem_point_mesh.vertices=vertices;
+            stem_point_mesh.SetIndices(indices,MeshTopology.Points,0);
+
             stem_mat.SetBuffer("_stemVertex_buffer",stemResult_buffer);
             //stem_mat.SetBuffer("_stemVertex_buffer",stemVertex_buffer);
             stem_mat.SetInt("_stemVertexCount",stemVertexCount);
