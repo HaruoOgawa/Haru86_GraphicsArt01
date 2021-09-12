@@ -691,6 +691,7 @@ MonoBehaviour:
   gPUFlower_Base: {fileID: 364405019}
   bSplineData: {fileID: 11400000, guid: 887d91dfa1297244e8634b349ebdbdb0, type: 2}
   stem_mat: {fileID: 2100000, guid: de71fcefaef0c7c41893b2dc88028815, type: 2}
+  stemRadius: 1
 --- !u!1 &1915276099
 GameObject:
   m_ObjectHideFlags: 0

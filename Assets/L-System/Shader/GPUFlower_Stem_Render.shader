@@ -62,6 +62,7 @@
             StructuredBuffer<StemVertex> _stemVertex_buffer;
             int _stemVertexCount;
             int _stemSegments;
+            float _stemRadius;
 
             v2g vert (appdata v,uint id : SV_INSTANCEID)
             {
@@ -87,97 +88,98 @@
                 return o;
             }
 
-            // [maxvertexcount(48)]
-            // void geom(point v2g input[1],inout TriangleStream<g2f> outStream){
+            [maxvertexcount(72)]
+            void geom(point v2g input[1],inout TriangleStream<g2f> outStream){
                 
 
 
-            //     if(input[0].idInMyStem>0&&input[0].idInMyStem<_stemVertexCount-1){
-            //        g2f o;
-            //        float angleVal=(2.0*PI)/_stemSegments;
+                if(input[0].idInMyStem>0&&input[0].idInMyStem<_stemVertexCount-1){
+                   g2f o;
+                   float angleVal=(2.0*PI)/_stemSegments;
 
-            //        for(int i=0;i<_stemSegments;i++){
-            //             float4 pos0=float4(input[0].normal*cos(angleVal*(i))+input[0].bioNormal*sin(angleVal*(i)+input[0].vertex.xyz),1.0);
-            //             float4 pos1=float4(input[0].normal*cos(angleVal*(i+1))+input[0].bioNormal*sin(angleVal*(i+1)+input[0].vertex.xyz),1.0);
-            //             float4 pos2=float4(input[0].nextNormal*cos(angleVal*(i))+input[0].nextBioNormal*sin(angleVal*(i))+input[0].nextStemVertex.xyz,1.0);
-            //             float4 pos3=float4(input[0].nextNormal*cos(angleVal*(i+1))+input[0].nextBioNormal*sin(angleVal*(i+1))+input[0].nextStemVertex.xyz,1.0);
+                   for(int i=0;i<_stemSegments;i++){
                         
-            //             //first
-            //             o.vertex=UnityObjectToClipPos(pos0);
-            //             o.uv=float2(0,0);
-            //             outStream.Append(o);
+                        float4 pos0=float4(
+                            _stemRadius*normalize(input[0].normal*cos(angleVal*(float)(i))
+                            +input[0].bioNormal*sin(angleVal*(float)(i)))
+                            +input[0].vertex.xyz
+                            ,1.0);
 
-            //             o.vertex=UnityObjectToClipPos(pos1);
-            //             o.uv=float2(0,0);
-            //             outStream.Append(o);  
+                        float4 pos1=float4(
+                            _stemRadius*normalize(input[0].normal*cos(angleVal*(float)(i+1))
+                            +input[0].bioNormal*sin(angleVal*(float)(i+1)))
+                            +input[0].vertex.xyz
+                            ,1.0);
 
-            //             o.vertex=UnityObjectToClipPos(pos3);
-            //             o.uv=float2(0,0);
-            //             outStream.Append(o);    
+                        float4 pos2=float4(
+                            _stemRadius*normalize(input[0].nextNormal*cos(angleVal*(float)(i))
+                            +input[0].nextBioNormal*sin(angleVal*(float)(i)))
+                            +input[0].nextStemVertex.xyz
+                            ,1.0);
 
-            //             outStream.RestartStrip();
+                        float4 pos3=float4(
+                            _stemRadius*normalize(input[0].nextNormal*cos(angleVal*(float)(i+1))
+                            +input[0].nextBioNormal*sin(angleVal*(float)(i+1)))
+                            +input[0].nextStemVertex.xyz
+                            ,1.0);
+                        
+                        //first
+                        o.vertex=UnityObjectToClipPos(pos0);
+                        o.uv=float2(0,0);
+                        outStream.Append(o);
 
-            //             //second
-            //             o.vertex=UnityObjectToClipPos(pos0);
-            //             o.uv=float2(0,0);
-            //             outStream.Append(o);
+                        o.vertex=UnityObjectToClipPos(pos1);
+                        o.uv=float2(0,0);
+                        outStream.Append(o);  
 
-            //             o.vertex=UnityObjectToClipPos(pos3);
-            //             o.uv=float2(0,0);
-            //             outStream.Append(o);  
+                        o.vertex=UnityObjectToClipPos(pos3);
+                        o.uv=float2(0,0);
+                        outStream.Append(o);    
 
-            //             o.vertex=UnityObjectToClipPos(pos2);
-            //             o.uv=float2(0,0);
-            //             outStream.Append(o);    
+                        outStream.RestartStrip();
 
-            //             outStream.RestartStrip();
-            //        }
+                        //second
+                        o.vertex=UnityObjectToClipPos(pos0);
+                        o.uv=float2(0,0);
+                        outStream.Append(o);
 
-            //     }else{
-            //         g2f o;
+                        o.vertex=UnityObjectToClipPos(pos3);
+                        o.uv=float2(0,0);
+                        outStream.Append(o);  
 
-            //         o.vertex=input[0].vertex;
-            //         o.uv=float2(0,0);
-            //         outStream.Append(o);
+                        o.vertex=UnityObjectToClipPos(pos2);
+                        o.uv=float2(0,0);
+                        outStream.Append(o);    
 
-            //         o.vertex=input[0].vertex;
-            //         o.uv=float2(0,0);
-            //         outStream.Append(o);
-
-            //         o.vertex=input[0].vertex;
-            //         o.uv=float2(0,0);
-            //         outStream.Append(o);
-
-            //         outStream.RestartStrip();
-            //     }
-            // }
-
-            [maxvertexcount(2)]
-            void geom(point v2g input[1],inout LineStream<g2f> outStream){
-                
-
-
-                if(input[0].idInMyStem<_stemVertexCount-1){
-                    g2f o;
-
-                    o.vertex=UnityObjectToClipPos(input[0].vertex);
-                    o.uv=float2(0,0);
-                    outStream.Append(o);
-
-                    o.vertex=UnityObjectToClipPos(float4(input[0].nextStemVertex,1.0));
-                    o.uv=float2(0,0);
-                    outStream.Append(o);    
-
-                    outStream.RestartStrip();
+                        outStream.RestartStrip();
+                   }
 
                 }else{
                     g2f o;
 
-                    o.vertex=UnityObjectToClipPos(input[0].vertex);
+                    o.vertex=input[0].vertex;
                     o.uv=float2(0,0);
                     outStream.Append(o);
 
-                    o.vertex=UnityObjectToClipPos(input[0].vertex);
+                    o.vertex=input[0].vertex;
+                    o.uv=float2(0,0);
+                    outStream.Append(o);
+
+                    o.vertex=input[0].vertex;
+                    o.uv=float2(0,0);
+                    outStream.Append(o);
+
+                    outStream.RestartStrip();
+
+                     o.vertex=input[0].vertex;
+                    o.uv=float2(0,0);
+                    outStream.Append(o);
+
+                    o.vertex=input[0].vertex;
+                    o.uv=float2(0,0);
+                    outStream.Append(o);
+
+                    o.vertex=input[0].vertex;
                     o.uv=float2(0,0);
                     outStream.Append(o);
 
@@ -185,48 +187,37 @@
                 }
             }
 
-            //debug geom
-            // [maxvertexcount(6)]
-            // void geom(point v2g input[1],inout TriangleStream<g2f> outStream){
+            // [maxvertexcount(2)]
+            // void geom(point v2g input[1],inout LineStream<g2f> outStream){
                 
-            //     float4 pos0=float4(-1.0,-1.0,0.0,1.0);
-            //     float4 pos1=float4(-1.0,1.0,0.0,1.0);
-            //     float4 pos2=float4(1.0,1.0,0.0,1.0);
-            //     float4 pos3=float4(1.0,-1.0,0.0,1.0);
-            
-            //     g2f o;
-
-            //     o.vertex=UnityObjectToClipPos(pos0);
-            //     o.uv=float2(0,0);
-            //     outStream.Append(o);
-
-            //     o.vertex=UnityObjectToClipPos(pos1);
-            //     o.uv=float2(0,0);
-            //     outStream.Append(o);
-
-            //     o.vertex=UnityObjectToClipPos(pos3);
-            //     o.uv=float2(0,0);
-            //     outStream.Append(o);    
-
-            //     outStream.RestartStrip();
 
 
+            //     if(input[0].idInMyStem<_stemVertexCount-1){
+            //         g2f o;
 
-            //     o.vertex=UnityObjectToClipPos(pos0);
-            //     o.uv=float2(0,0);
-            //     outStream.Append(o);
+            //         o.vertex=UnityObjectToClipPos(input[0].vertex);
+            //         o.uv=float2(0,0);
+            //         outStream.Append(o);
 
-            //     o.vertex=UnityObjectToClipPos(pos3);
-            //     o.uv=float2(0,0);
-            //     outStream.Append(o);
+            //         o.vertex=UnityObjectToClipPos(float4(input[0].nextStemVertex,1.0));
+            //         o.uv=float2(0,0);
+            //         outStream.Append(o);    
 
-            //     o.vertex=UnityObjectToClipPos(pos2);
-            //     o.uv=float2(0,0);
-            //     outStream.Append(o);    
+            //         outStream.RestartStrip();
 
-            //     outStream.RestartStrip();
+            //     }else{
+            //         g2f o;
 
-                
+            //         o.vertex=UnityObjectToClipPos(input[0].vertex);
+            //         o.uv=float2(0,0);
+            //         outStream.Append(o);
+
+            //         o.vertex=UnityObjectToClipPos(input[0].vertex);
+            //         o.uv=float2(0,0);
+            //         outStream.Append(o);
+
+            //         outStream.RestartStrip();
+            //     }
             // }
 
             fixed4 frag (g2f i) : SV_Target

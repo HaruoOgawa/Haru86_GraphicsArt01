@@ -21,6 +21,7 @@
         [SerializeField] GPUFlower_Base gPUFlower_Base;
         [SerializeField] BSplineData bSplineData;
         [SerializeField] Material stem_mat;
+        [SerializeField] float stemRadius=1.0f;
 
         #endregion
         
@@ -206,6 +207,7 @@
             //stem_mat.SetBuffer("_stemVertex_buffer",stemVertex_buffer);
             stem_mat.SetInt("_stemVertexCount",stemVertexCount);
             stem_mat.SetInt("_stemSegments",12);
+            stem_mat.SetFloat("_stemRadius",stemRadius);
             Graphics.DrawMeshInstancedProcedural(stem_point_mesh,0,stem_mat,new Bounds(this.gameObject.transform.position,Vector3.one*500.0f),stemVertexCount*gPUFlower_Base.count);
         }
 

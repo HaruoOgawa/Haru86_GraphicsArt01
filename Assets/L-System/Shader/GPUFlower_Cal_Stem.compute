@@ -223,20 +223,45 @@ void CalStemBSplineCurveResult(
     stemO.tangent=float3(0,0,0);
     stemO.normal=float3(0,0,0);
     stemO.bioNormal=float3(0,0,0);
+
     if(idInMyStem>0&&idInMyStem<16-1){
-        stemO.tangent=normalize(stemBasePosition[idInMyStem+1]-stemBasePosition[idInMyStem-1]);
-        stemO.normal=normalize(cross(stemO.tangent,float3(0,1,0)));
-        stemO.bioNormal=normalize(cross(stemO.tangent,stemO.normal));
+        float3 stemTangent=normalize(stemBasePosition[idInMyStem+1]-stemBasePosition[idInMyStem-1]);
+        float3 stemNormal=normalize(cross(stemTangent,float3(1,0,0)));
+        float3 stemBioNormal=normalize(cross(stemTangent,stemNormal));
+
+
+        stemO.tangent=stemTangent;
+        stemO.normal=stemNormal;
+        stemO.bioNormal=stemBioNormal;
+
+        // _write_stem_debug_bufer[DID.x]=float4x4(
+        //     float4(stemO.vertice,0),
+        //     float4(stemBasePosition[idInMyStem+1],0),
+        //     float4(stemBasePosition[idInMyStem-1],0),
+        //     float4(idInMyStem,0,0,0)
+        // );
+
+        _write_stem_debug_bufer[DID.x]=float4x4(
+            float4(stemO.vertice,0),
+            float4(stemTangent,0),
+            float4(stemNormal,0),
+            float4(stemBioNormal,0.0)
+        );
+
     }
+
     stemO.index=idInMyStem;
+
     _write_stemResult_buffer[DID.x]=stemO;
 
-    _write_stem_debug_bufer[DID.x]=float4x4(
-        float4(stemO.vertice,0),
-        float4(stemO.tangent,0),
-        float4(stemO.normal,0),
-        float4(stemO.bioNormal,stemO.index)
-    );
+    // _write_stem_debug_bufer[DID.x]=float4x4(
+    //     float4(stemO.vertice,0),
+    //     float4(stemO.tangent,0),
+    //     float4(stemO.normal,0),
+    //     float4(stemO.bioNormal,stemO.index)
+    // );
+
+  
 
 }
 
