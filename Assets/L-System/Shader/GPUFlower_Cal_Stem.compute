@@ -50,6 +50,14 @@ float _tWidth;
 int _stemVertexCount;
 float _stemLength;
 
+#define PI 3.14159265
+
+float rand(float2 st){
+    return frac(
+        sin(dot(st.xy,float2(12.9898,78.233)))*43758.5453123
+    );
+}
+
 float GetBasisFunctionFour(float u[10],int j,int k,float t){
     float w1=0.0;
     float w2=0.0;
@@ -216,8 +224,17 @@ void CalStemBSplineCurveResult(
     float3 resampleControlPoints[6];
     int stemGroupID=floor(DID.x/_stemVertexCount);
     int idInMyStem=DID.x-stemGroupID*_stemVertexCount;
+    
+    float4 cp[6]=_controlPoints;
+    float cpPower=2.5;
+    for(int i=0;i<6;i++){
+        cp[i].xyz+=cpPower*float3(rand(float2((float)stemGroupID,0.123+(float)i))*2.0-1.0,
+                            rand(float2((float)stemGroupID,0.456+(float)i))*2.0-1.0,
+                            rand(float2((float)stemGroupID,0.789+(float)i))*2.0-1.0
+                            );
+    }
 
-    Cal_BSplineCurve(stemBasePosition,_controlPoints,_knotMin,_knotMax,_tWidth,DID);
+    Cal_BSplineCurve(stemBasePosition,cp,_knotMin,_knotMax,_tWidth,DID);
     
     StemVertex stemO;
     stemO.vertice=stemBasePosition[idInMyStem]+_read_stemBasePosition_buffer[stemGroupID];
