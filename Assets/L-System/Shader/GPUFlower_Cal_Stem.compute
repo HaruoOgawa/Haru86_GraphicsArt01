@@ -74,24 +74,11 @@ float GetBasisFunctionThird(float u[10],int j,int k,float t){
     float w1=0.0;
     float w2=0.0;
 
-    //if(k==0){
         if(u[j]<t&&t<=u[j+1]){
             return 1.0;
         }else{
             return 0.0;
         }
-    // }else{
-    //     if(u[j+k+1]-u[j+1]!=0.0){
-    //         w1=GetBasisFunctionFour(u,j+1,k-1,t)*(u[j+k+1]-t)/(u[j+k+1]-u[j+1]);
-    //     }
-
-    //     if((u[j+k]-u[j])!=0.0){
-    //         w2=GetBasisFunctionFour(u,j,k-1,t)*(t-u[j])/(u[j+k]-u[j]);
-    //     }
-
-    //     return w1+w2;
-    // }
-    
 }
 
 float GetBasisFunctionSecond(float u[10],int j,int k,float t){
@@ -131,12 +118,10 @@ float GetBasisFunction(float u[10],int j,int k,float t){
     }else{
         if(u[j+k+1]-u[j+1]!=0.0){
             w1=GetBasisFunctionSecond(u,j+1,k-1,t)*(u[j+k+1]-t)/(u[j+k+1]-u[j+1]);
-            //w1=5.0;
         }
 
         if((u[j+k]-u[j])!=0.0){
             w2=GetBasisFunctionSecond(u,j,k-1,t)*(t-u[j])/(u[j+k]-u[j]);
-            //w2=5.0;
         }
 
         return w1+w2;
@@ -148,9 +133,7 @@ void Cal_BSplineCurve(inout float3 S[16],float4 controlPoints[6],float knotMin,f
     int p=6;
     int n=3;
     int m=p+n+1;
-    //Debug.Log("m: "+m);
-    // m : 10
-
+ 
     //GetKnotVector
     float u[10];
     int knotN=n+1;
@@ -158,19 +141,14 @@ void Cal_BSplineCurve(inout float3 S[16],float4 controlPoints[6],float knotMin,f
     for(int i=0;i<m;i++){
         if(i>=0&&i<knotN){
             u[i]=knotMin;
-            // u[i]=1192;
         }else if(i>=knotN&&i<(m-knotN)){
             int knotWidth=m-knotN*2;
             float knotVal=(knotMax-knotMin)/(float)(knotWidth+1);
             knotVal=knotVal*(float)(i-knotN+1);
             u[i]=knotVal;
-            // u[i]=1192;
         }else if(i>=(m-knotN)&&i<m){
             u[i]=knotMax;
-            // u[i]=1192;
         }
-
-        //u[i]=1192;
     }
     
     float tDelta[16];
@@ -191,26 +169,7 @@ void Cal_BSplineCurve(inout float3 S[16],float4 controlPoints[6],float knotMin,f
             S[i]=S[i]+controlPoints[j].xyz*b;
         }
     }
-
-    //  _write_stem_debug_bufer[DID.x]=float4x4(
-    //     float4(u[0],u[1],u[2],u[3]),
-    //     float4(u[4],u[5],u[6],u[7]),
-    //     float4(u[8],u[9],_tWidth,tWidth),
-    //     float4(_knotMin,_knotMax,knotMin,knotMax)
-    // );
-
-// Debug.Log("u.Length:"+u.Length);
-    //u: 10
-    // Debug.Log("tDelta.Count: "+tDelta.Count);
-    //tDelta.Count: 19
-    // Debug.Log("S.Count: "+S.Count);
-    //S.Count: 19
-
-   // return S;
-    
-
 }
-
 
 [numthreads(NUMTHRED_VAL,1,1)]
 void CalStemBSplineCurveResult(
@@ -247,40 +206,15 @@ void CalStemBSplineCurveResult(
         float3 stemNormal=normalize(cross(stemTangent,float3(1,0,0)));
         float3 stemBioNormal=normalize(cross(stemTangent,stemNormal));
 
-
         stemO.tangent=stemTangent;
         stemO.normal=stemNormal;
         stemO.bioNormal=stemBioNormal;
-
-        // _write_stem_debug_bufer[DID.x]=float4x4(
-        //     float4(stemO.vertice,0),
-        //     float4(stemBasePosition[idInMyStem+1],0),
-        //     float4(stemBasePosition[idInMyStem-1],0),
-        //     float4(idInMyStem,0,0,0)
-        // );
-
-        _write_stem_debug_bufer[DID.x]=float4x4(
-            float4(stemO.vertice,0),
-            float4(stemTangent,0),
-            float4(stemNormal,0),
-            float4(stemBioNormal,0.0)
-        );
 
     }
 
     stemO.index=idInMyStem;
 
     _write_stemResult_buffer[DID.x]=stemO;
-
-    // _write_stem_debug_bufer[DID.x]=float4x4(
-    //     float4(stemO.vertice,0),
-    //     float4(stemO.tangent,0),
-    //     float4(stemO.normal,0),
-    //     float4(stemO.bioNormal,stemO.index)
-    // );
-
-  
-
 }
 
 [numthreads(NUMTHRED_VAL,1,1)]

@@ -193,6 +193,10 @@
             // }
         }
 
+        void Init_Stem_Growth(){
+            
+        }
+
         void Cal_Stem_Growth(){
             cal_stem_cs.Dispatch(stemGrowth_kernel,(stemVertexCount*gPUFlower_Base.count)/numthreds_val,1,1);
         }
