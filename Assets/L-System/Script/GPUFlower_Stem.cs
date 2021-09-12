@@ -52,13 +52,19 @@
 
         //花の数など
         struct StemManage{
-            float stemLifeVal;
+            public float stemLifeVal;
+            public float stemWaitTime;
+            public float signNum;
+            public int manageLifeCountFlag;
             int flowerCount;
             int flowerStartIndex;
             int leafCount;
             int leafStartIndex;
             public StemManage(int fCount){
                 this.stemLifeVal=Random.Range(0.0f,1.0f);
+                this.stemWaitTime=0.0f;
+                this.signNum=Mathf.Sign(Random.Range(-1.0f,1.0f));
+                this.manageLifeCountFlag=1;
                 this.flowerCount=fCount;
                 this.flowerStartIndex=1;
                 this.leafCount=1;
@@ -100,8 +106,6 @@
         {
             Init();
             Cal_Stem_Result();
-
-            // Init_Stem_Manage();
             Init_Stem_Growth();
 
             Cal_Stem_Manage();
@@ -112,10 +116,9 @@
 
         void Update()
         {
-            // Cal_Stem_Manage();
-            // Cal_Stem_Growth();
-            Init_Stem_Growth();
-
+            Cal_Stem_Manage();
+            Cal_Stem_Growth();
+            
             Render_Stem();
         }
 
@@ -146,7 +149,7 @@
             stemDataLeaf_buffer=new ComputeBuffer(gPUFlower_Base.count*2,Marshal.SizeOf(typeof(StemData)));
             stemBasePosition_buffer=new ComputeBuffer(gPUFlower_Base.count,Marshal.SizeOf(typeof(Vector3)));
 
-            stem_debug_bufer=new ComputeBuffer(stemVertexCount*gPUFlower_Base.count,Marshal.SizeOf(typeof(Matrix4x4)));
+            stem_debug_bufer=new ComputeBuffer(gPUFlower_Base.count,Marshal.SizeOf(typeof(Matrix4x4)));
 
             InitBufferData();
         }
@@ -169,7 +172,13 @@
                 initStemDataLeaf.Add(data);
 
                 initStemVertex.Add(new StemVertex(i));
-                initStemManege.Add(new StemManage(1));
+                
+                StemManage stemManage=new StemManage(1);
+                if(stemManage.stemLifeVal==0.0f||stemManage.stemLifeVal==1.0f){
+                    stemManage.stemWaitTime=Random.Range(1.0f,3.0f);
+                    stemManage.manageLifeCountFlag=0;
+                }
+                initStemManege.Add(stemManage);
 
                 Vector2 initBasePos=Random.insideUnitCircle*500.0f;
                 initStemBasePosition.Add(new Vector3(initBasePos.x,0,initBasePos.y));
@@ -194,7 +203,7 @@
             cal_stem_cs.SetBuffer(stemResult_kernel,"_write_stemResult_buffer",stemResult_buffer);
             cal_stem_cs.SetBuffer(stemResult_kernel,"_read_stemBasePosition_buffer",stemBasePosition_buffer);
 
-            cal_stem_cs.SetBuffer(stemResult_kernel,"_write_stem_debug_bufer",stem_debug_bufer);
+            // cal_stem_cs.SetBuffer(stemResult_kernel,"_write_stem_debug_bufer",stem_debug_bufer);
             
             List<Vector4> contPos=new List<Vector4>(); 
             cal_stem_cs.SetInt("_contPosArrayLength",bSplineData.controlPoints.Count);
@@ -234,10 +243,40 @@
         }
 
         void Cal_Stem_Manage(){
+            cal_stem_cs.SetBuffer(CalStemManage_kernel,"_write_stemManage_buffer",stemManage_buffer);
+            cal_stem_cs.SetFloat("_DTime",Time.deltaTime);
+
+            // cal_stem_cs.SetFloat("_DTime",Time.time);
+            cal_stem_cs.SetBuffer(CalStemManage_kernel,"_write_stem_debug_bufer",stem_debug_bufer);
+
+            cal_stem_cs.Dispatch(CalStemManage_kernel,gPUFlower_Base.count/numthreds_val,1,1);
+
+           Matrix4x4[] resultStemVertex=new Matrix4x4[gPUFlower_Base.count];
+            stem_debug_bufer.GetData(resultStemVertex);
+            //int debug_offset=0;
+            //for(int i=0+debug_offset;i<resultStemVertex.Length;i++){
+                Debug.Log("resultStemVertex["+10+"] "+resultStemVertex[10]);
+            //}
 
         }
         void Cal_Stem_Growth(){
+            cal_stem_cs.SetInt("_stemVertexCount",stemVertexCount);
+            cal_stem_cs.SetBuffer(stemGrowth_kernel,"_read_stemResult_buffer",stemResult_buffer);
+            cal_stem_cs.SetBuffer(stemGrowth_kernel,"_write_stemVertex_buffer",stemVertex_buffer);
+            cal_stem_cs.SetBuffer(stemGrowth_kernel,"_read_stemManage_buffer",stemManage_buffer);
+            
+            // cal_stem_cs.SetFloat("_DTime",Time.time);
+            // cal_stem_cs.SetFloat("_testLife",testLife);
+            cal_stem_cs.SetBuffer(stemGrowth_kernel,"_write_stem_debug_bufer",stem_debug_bufer);
+
             cal_stem_cs.Dispatch(stemGrowth_kernel,(stemVertexCount*gPUFlower_Base.count)/numthreds_val,1,1);
+
+            // Matrix4x4[] resultStemVertex=new Matrix4x4[gPUFlower_Base.count];
+            // stem_debug_bufer.GetData(resultStemVertex);
+            // //int debug_offset=0;
+            // //for(int i=0+debug_offset;i<resultStemVertex.Length;i++){
+            //     Debug.Log("resultStemVertex["+10+"] "+resultStemVertex[10]);
+            // //}
         }
 
         void Render_Stem(){

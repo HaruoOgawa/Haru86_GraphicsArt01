@@ -19,6 +19,9 @@ struct StemVertex{
 //花の数など
 struct StemManage{
     float stemLifeVal;
+    float stemWaitTime;
+    float signNum;
+    int manageLifeCountFlag;
     int flowerCount;
     int flowerStartIndex;
     int leafCount;
@@ -54,6 +57,7 @@ float _knotMax;
 float _tWidth;
 int _stemVertexCount;
 float _stemLength;
+float _DTime;
 
 //debug
 RWStructuredBuffer<float4x4> _write_stem_debug_bufer;
@@ -263,12 +267,76 @@ void InitStemGrowth(
 void CalStemManage(
      uint3 DID : SV_DISPATCHTHREADID
 ){
+    StemManage sManege=_write_stemManage_buffer[DID.x];
+    float life=sManege.stemLifeVal;
+    float waitTime=sManege.stemWaitTime;
+    if(sManege.manageLifeCountFlag==1){
+        sManege.stemLifeVal=life+sManege.signNum*_DTime;
+        
+        if(life<=0.0){
+            sManege.manageLifeCountFlag=0;
+            sManege.signNum=-sManege.signNum;
+            sManege.stemWaitTime=rand(float2(DID.x,0.123))*2.0+1.0;
+            sManege.stemLifeVal=0.0;
+        }
 
+        if(life>=1.0){
+            sManege.manageLifeCountFlag=0;
+            sManege.signNum=-sManege.signNum;
+            sManege.stemWaitTime=rand(float2(DID.x,0.123))*2.0+1.0;
+            sManege.stemLifeVal=1.0;
+        }
+
+    }else{
+        sManege.stemWaitTime=waitTime-_DTime;
+        if(waitTime<=0.0){
+            sManege.manageLifeCountFlag=1;
+            sManege.stemWaitTime=0.0;
+        }
+    }
+
+    //sManege.stemWaitTime=(sin(_DTime)+1.0)*0.5;
+
+    _write_stemManage_buffer[DID.x]=sManege;
+
+    _write_stem_debug_bufer[DID.x]=float4x4(
+        float4(sManege.manageLifeCountFlag,sManege.signNum,sManege.stemWaitTime,sManege.stemLifeVal),
+        float4(0,0,0,0),
+        float4(0,0,0,0),
+        float4(0,0,0,0)
+    );
 }
 
 [numthreads(NUMTHRED_VAL,1,1)]
 void CalStemGrowth(
      uint3 DID : SV_DISPATCHTHREADID
 ){
+    int stemGroupID=floor(DID.x/_stemVertexCount);
+    int idInMyStem=DID.x-stemGroupID*_stemVertexCount;
+    StemManage sManege=_read_stemManage_buffer[stemGroupID];
+    float life=sManege.stemLifeVal;
 
+    //life=_testLife;
+    // life=(sin(_DTime)+1.0)*0.5;
+
+    int resampleStemNodeID=(int)(floor(idInMyStem*life));
+    resampleStemNodeID=stemGroupID*_stemVertexCount+resampleStemNodeID;
+
+    StemVertex result=_read_stemResult_buffer[resampleStemNodeID];
+
+    StemVertex stemO;
+    stemO.vertice=result.vertice;
+    stemO.tangent=result.tangent;
+    stemO.normal=result.normal;
+    stemO.bioNormal=result.bioNormal;
+    stemO.index=result.index;
+
+    _write_stemVertex_buffer[DID.x]=stemO;
+
+    // _write_stem_debug_bufer[DID.x]=float4x4(
+    //     float4(life,0,0,0),
+    //     float4(0,0,0,0),
+    //     float4(0,0,0,0),
+    //     float4(0,0,0,0)
+    // );
 }
