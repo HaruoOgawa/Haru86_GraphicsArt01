@@ -48,6 +48,7 @@ float _knotMin;
 float _knotMax;
 float _tWidth;
 int _stemVertexCount;
+float _stemLength;
 
 float GetBasisFunctionFour(float u[10],int j,int k,float t){
     float w1=0.0;

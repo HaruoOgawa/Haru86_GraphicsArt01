@@ -7,7 +7,7 @@
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Opaque" "LightMode"="ForwardBase"}
         LOD 100
         Cull Off
 
@@ -19,6 +19,7 @@
             #pragma fragment frag
             
             #include "UnityCG.cginc"
+            #include "Lighting.cginc"
 
             #define PI 3.14159265
 
@@ -46,6 +47,8 @@
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
+                float3 normal : NORMAL;
+                float3 worldPos : TEXCOORD1;
             };
 
             struct StemVertex{
@@ -126,14 +129,20 @@
                         //first
                         o.vertex=UnityObjectToClipPos(pos0);
                         o.uv=float2(0,0);
+                        o.normal=normalize(pos0-input[0].vertex.xyz);
+                        o.worldPos=(mul(UNITY_MATRIX_M,pos0)).xyz;
                         outStream.Append(o);
 
                         o.vertex=UnityObjectToClipPos(pos1);
                         o.uv=float2(0,0);
+                        o.normal=normalize(pos1-input[0].vertex.xyz);
+                        o.worldPos=(mul(UNITY_MATRIX_M,pos1)).xyz;
                         outStream.Append(o);  
 
                         o.vertex=UnityObjectToClipPos(pos3);
                         o.uv=float2(0,0);
+                        o.normal=normalize(pos3-input[0].nextStemVertex.xyz);
+                        o.worldPos=(mul(UNITY_MATRIX_M,pos3)).xyz;
                         outStream.Append(o);    
 
                         outStream.RestartStrip();
@@ -141,14 +150,20 @@
                         //second
                         o.vertex=UnityObjectToClipPos(pos0);
                         o.uv=float2(0,0);
+                        o.normal=normalize(pos0-input[0].vertex.xyz);
+                        o.worldPos=(mul(UNITY_MATRIX_M,pos0)).xyz;
                         outStream.Append(o);
 
                         o.vertex=UnityObjectToClipPos(pos3);
                         o.uv=float2(0,0);
+                        o.normal=normalize(pos3-input[0].nextStemVertex.xyz);
+                        o.worldPos=(mul(UNITY_MATRIX_M,pos3)).xyz;
                         outStream.Append(o);  
 
                         o.vertex=UnityObjectToClipPos(pos2);
                         o.uv=float2(0,0);
+                        o.normal=normalize(pos2-input[0].nextStemVertex.xyz);
+                        o.worldPos=(mul(UNITY_MATRIX_M,pos2)).xyz;
                         outStream.Append(o);    
 
                         outStream.RestartStrip();
@@ -159,70 +174,54 @@
 
                     o.vertex=input[0].vertex;
                     o.uv=float2(0,0);
+                    o.normal=normalize(float3(0,0,1));
+                    o.worldPos=(mul(UNITY_MATRIX_M,input[0].vertex)).xyz;
                     outStream.Append(o);
 
                     o.vertex=input[0].vertex;
                     o.uv=float2(0,0);
+                    o.normal=normalize(float3(0,0,1));
+                    o.worldPos=(mul(UNITY_MATRIX_M,input[0].vertex)).xyz;
                     outStream.Append(o);
 
                     o.vertex=input[0].vertex;
                     o.uv=float2(0,0);
+                    o.normal=normalize(float3(0,0,1));
+                    o.worldPos=(mul(UNITY_MATRIX_M,input[0].vertex)).xyz;
                     outStream.Append(o);
 
                     outStream.RestartStrip();
 
                      o.vertex=input[0].vertex;
                     o.uv=float2(0,0);
+                    o.normal=normalize(float3(0,0,1));
+                    o.worldPos=(mul(UNITY_MATRIX_M,input[0].vertex)).xyz;
                     outStream.Append(o);
 
                     o.vertex=input[0].vertex;
                     o.uv=float2(0,0);
+                    o.normal=normalize(float3(0,0,1));
+                    o.worldPos=(mul(UNITY_MATRIX_M,input[0].vertex)).xyz;
                     outStream.Append(o);
 
                     o.vertex=input[0].vertex;
                     o.uv=float2(0,0);
+                    o.normal=normalize(float3(0,0,1));
+                    o.worldPos=(mul(UNITY_MATRIX_M,input[0].vertex)).xyz;
                     outStream.Append(o);
 
                     outStream.RestartStrip();
                 }
             }
 
-            // [maxvertexcount(2)]
-            // void geom(point v2g input[1],inout LineStream<g2f> outStream){
-                
-
-
-            //     if(input[0].idInMyStem<_stemVertexCount-1){
-            //         g2f o;
-
-            //         o.vertex=UnityObjectToClipPos(input[0].vertex);
-            //         o.uv=float2(0,0);
-            //         outStream.Append(o);
-
-            //         o.vertex=UnityObjectToClipPos(float4(input[0].nextStemVertex,1.0));
-            //         o.uv=float2(0,0);
-            //         outStream.Append(o);    
-
-            //         outStream.RestartStrip();
-
-            //     }else{
-            //         g2f o;
-
-            //         o.vertex=UnityObjectToClipPos(input[0].vertex);
-            //         o.uv=float2(0,0);
-            //         outStream.Append(o);
-
-            //         o.vertex=UnityObjectToClipPos(input[0].vertex);
-            //         o.uv=float2(0,0);
-            //         outStream.Append(o);
-
-            //         outStream.RestartStrip();
-            //     }
-            // }
-
             fixed4 frag (g2f i) : SV_Target
             {
-                float4 col =_Color; 
+                float4 col =float4(1,1,1,1);
+                float3 lightDir=normalize(i.worldPos-_WorldSpaceLightPos0.xyz);
+                float diff=dot(i.normal,lightDir);
+                diff=(diff+1.0)*0.5;
+                diff+=0.05;
+                col.rgb*=diff*_Color.rgb;
                 return col;
             }
             ENDCG
