@@ -26,6 +26,11 @@
         [SerializeField] float stemLength=1.0f;
 
         #endregion
+
+        #region Test Field
+        [Range(0.0f,1.0f)]
+        [SerializeField] float testLife=0.1f;
+        #endregion
         
         #region private field
 
@@ -47,11 +52,13 @@
 
         //花の数など
         struct StemManage{
+            float stemLifeVal;
             int flowerCount;
             int flowerStartIndex;
             int leafCount;
             int leafStartIndex;
             public StemManage(int fCount){
+                this.stemLifeVal=Random.Range(0.0f,1.0f);
                 this.flowerCount=fCount;
                 this.flowerStartIndex=1;
                 this.leafCount=1;
@@ -77,8 +84,14 @@
 
         #region Stem_Cs Field
           int stemVertexCount=-1;
+
         int stemResult_kernel=-1;
+        int InitStemManage_kernel=-1;
+        int InitStemGrowth_kernel=-1;
+        int CalStemManage_kernel;
         int stemGrowth_kernel=-1;
+
+        
         int numthreds_val=256;
         #endregion
 
@@ -87,15 +100,23 @@
         {
             Init();
             Cal_Stem_Result();
+
+            // Init_Stem_Manage();
+            Init_Stem_Growth();
+
+            Cal_Stem_Manage();
             Cal_Stem_Growth();
+
             Render_Stem();
         }
 
         void Update()
         {
+            // Cal_Stem_Manage();
             // Cal_Stem_Growth();
-            //  Cal_Stem_Result();
-             Render_Stem();
+            Init_Stem_Growth();
+
+            Render_Stem();
         }
 
         void OnDisable(){
@@ -110,11 +131,14 @@
         }
 
         void Init(){
+            
             stemResult_kernel=cal_stem_cs.FindKernel("CalStemBSplineCurveResult");
+            InitStemManage_kernel=cal_stem_cs.FindKernel("InitStemManage");
+            InitStemGrowth_kernel=cal_stem_cs.FindKernel("InitStemGrowth");
+            CalStemManage_kernel=cal_stem_cs.FindKernel("CalStemManage");
             stemGrowth_kernel=cal_stem_cs.FindKernel("CalStemGrowth");
 
             stemVertexCount=(int)((bSplineData.knotMax-bSplineData.knotMin)/bSplineData.tWidth);
-           // stemVertexCount=Mathf.NextPowerOfTwo(stemVertexCount);
             stemResult_buffer=new ComputeBuffer(stemVertexCount*gPUFlower_Base.count,Marshal.SizeOf(typeof(StemVertex)));
             stemVertex_buffer=new ComputeBuffer(stemVertexCount*gPUFlower_Base.count,Marshal.SizeOf(typeof(StemVertex)));
             stemManage_buffer=new ComputeBuffer(gPUFlower_Base.count,Marshal.SizeOf(typeof(StemManage)));
@@ -193,10 +217,25 @@
             // }
         }
 
-        void Init_Stem_Growth(){
-            
+        void Init_Stem_Manage(){
+            cal_stem_cs.SetBuffer(InitStemManage_kernel,"_write_stemManage_buffer",stemManage_buffer);
+            cal_stem_cs.Dispatch(InitStemManage_kernel,gPUFlower_Base.count/numthreds_val,1,1);
         }
 
+        void Init_Stem_Growth(){
+            cal_stem_cs.SetBuffer(InitStemGrowth_kernel,"_read_stemResult_buffer",stemResult_buffer);
+            cal_stem_cs.SetBuffer(InitStemGrowth_kernel,"_write_stemVertex_buffer",stemVertex_buffer);
+            cal_stem_cs.SetBuffer(InitStemGrowth_kernel,"_read_stemManage_buffer",stemManage_buffer);
+            cal_stem_cs.SetInt("_stemVertexCount",stemVertexCount);
+
+            cal_stem_cs.SetFloat("_testLife",testLife);
+
+            cal_stem_cs.Dispatch(InitStemGrowth_kernel,(stemVertexCount*gPUFlower_Base.count)/numthreds_val,1,1);
+        }
+
+        void Cal_Stem_Manage(){
+
+        }
         void Cal_Stem_Growth(){
             cal_stem_cs.Dispatch(stemGrowth_kernel,(stemVertexCount*gPUFlower_Base.count)/numthreds_val,1,1);
         }
@@ -210,8 +249,8 @@
             stem_point_mesh.vertices=vertices;
             stem_point_mesh.SetIndices(indices,MeshTopology.Points,0);
 
-            stem_mat.SetBuffer("_stemVertex_buffer",stemResult_buffer);
-            //stem_mat.SetBuffer("_stemVertex_buffer",stemVertex_buffer);
+            // stem_mat.SetBuffer("_stemVertex_buffer",stemResult_buffer);
+            stem_mat.SetBuffer("_stemVertex_buffer",stemVertex_buffer);
             stem_mat.SetInt("_stemVertexCount",stemVertexCount);
             stem_mat.SetInt("_stemSegments",stemSegments);
             stem_mat.SetFloat("_stemRadius",stemRadius);

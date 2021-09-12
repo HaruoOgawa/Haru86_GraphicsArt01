@@ -1,4 +1,9 @@
 ﻿#pragma kernel CalStemBSplineCurveResult
+
+#pragma kernel InitStemManage
+#pragma kernel InitStemGrowth
+
+#pragma kernel CalStemManage
 #pragma kernel CalStemGrowth
 
 #define NUMTHRED_VAL 256
@@ -13,6 +18,7 @@ struct StemVertex{
 
 //花の数など
 struct StemManage{
+    float stemLifeVal;
     int flowerCount;
     int flowerStartIndex;
     int leafCount;
@@ -40,7 +46,6 @@ RWStructuredBuffer<StemData> _write_stemDataFlower_buffer;
 RWStructuredBuffer<StemData> _read_stemDataLeaf_buffer;
 RWStructuredBuffer<StemData> _write_stemDataLeaf_buffer;
 
-RWStructuredBuffer<float4x4> _write_stem_debug_bufer;
 
 int _contPosArrayLength;
 float4 _controlPoints[6];
@@ -49,6 +54,10 @@ float _knotMax;
 float _tWidth;
 int _stemVertexCount;
 float _stemLength;
+
+//debug
+RWStructuredBuffer<float4x4> _write_stem_debug_bufer;
+float _testLife;
 
 #define PI 3.14159265
 
@@ -215,6 +224,46 @@ void CalStemBSplineCurveResult(
     stemO.index=idInMyStem;
 
     _write_stemResult_buffer[DID.x]=stemO;
+}
+
+[numthreads(NUMTHRED_VAL,1,1)]
+void InitStemManage(
+     uint3 DID : SV_DISPATCHTHREADID
+){
+
+}
+
+[numthreads(NUMTHRED_VAL,1,1)]
+void InitStemGrowth(
+     uint3 DID : SV_DISPATCHTHREADID
+){
+    int stemGroupID=floor(DID.x/_stemVertexCount);
+    int idInMyStem=DID.x-stemGroupID*_stemVertexCount;
+    StemManage sManege=_read_stemManage_buffer[stemGroupID];
+    float life=sManege.stemLifeVal;
+
+    life=_testLife;
+
+    int resampleStemNodeID=(int)(floor(idInMyStem*life));
+    resampleStemNodeID=stemGroupID*_stemVertexCount+resampleStemNodeID;
+
+    StemVertex result=_read_stemResult_buffer[resampleStemNodeID];
+
+    StemVertex stemO;
+    stemO.vertice=result.vertice;
+    stemO.tangent=result.tangent;
+    stemO.normal=result.normal;
+    stemO.bioNormal=result.bioNormal;
+    stemO.index=result.index;
+
+    _write_stemVertex_buffer[DID.x]=stemO;
+}
+
+[numthreads(NUMTHRED_VAL,1,1)]
+void CalStemManage(
+     uint3 DID : SV_DISPATCHTHREADID
+){
+
 }
 
 [numthreads(NUMTHRED_VAL,1,1)]
