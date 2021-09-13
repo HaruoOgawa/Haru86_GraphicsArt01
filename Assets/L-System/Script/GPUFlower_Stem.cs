@@ -209,7 +209,7 @@
             cal_stem_cs.SetInt("_contPosArrayLength",bSplineData.controlPoints.Count);
             for(int i=0;i<bSplineData.controlPoints.Count;i++){
                 Vector3 controlPoint=bSplineData.controlPoints[i];
-                contPos.Add(new Vector4(controlPoint.x,controlPoint.y*stemLength,controlPoint.z,0));
+                contPos.Add(new Vector4(controlPoint.x,controlPoint.y*stemLength*Random.Range(0.5f,1.5f),controlPoint.z,0));
             }
             cal_stem_cs.SetVectorArray("_controlPoints",contPos.ToArray());
             cal_stem_cs.SetInt("_stemVertexCount",stemVertexCount);

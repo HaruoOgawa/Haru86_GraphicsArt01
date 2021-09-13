@@ -450,6 +450,7 @@ GameObject:
   - component: {fileID: 830575346}
   - component: {fileID: 830575345}
   - component: {fileID: 830575348}
+  - component: {fileID: 830575349}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -516,7 +517,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 830575344}
   m_LocalRotation: {x: 0.31315023, y: -0, z: -0, w: 0.94970363}
-  m_LocalPosition: {x: 0, y: 147.5, z: 0}
+  m_LocalPosition: {x: 0, y: 90, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -582,6 +583,18 @@ MonoBehaviour:
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
   m_AfterStackBundles: []
+--- !u!114 &830575349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 830575344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 466aba6e9d60e5444871d3e21ab3f991, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1005383001
 GameObject:
   m_ObjectHideFlags: 0
@@ -694,7 +707,7 @@ MonoBehaviour:
   stem_mat: {fileID: 2100000, guid: de71fcefaef0c7c41893b2dc88028815, type: 2}
   stemRadius: 0.5
   stemSegments: 12
-  stemLength: 10
+  stemLength: 2.5
   testLife: 0.513
   stemVertexCount: -1
   numthreds_val: 256

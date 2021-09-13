@@ -84,7 +84,7 @@ void CalFlowerGrowth(
         // }
 
         if(sManage.manageLifeCountFlag==1){
-             sData.lifeTime=max(min(sData.lifeTime+lifeSign*(1.0/(1.0-_isFloweringTime))*_DTime,1.0),0.0);
+             sData.lifeTime=max(min(sData.lifeTime+lifeSign*(1.0/(1.0-_isFloweringTime))*_DTime*0.5,1.0),0.0);
         }else{
             sData.lifeTime=1.0;
         }
