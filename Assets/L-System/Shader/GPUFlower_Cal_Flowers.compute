@@ -11,6 +11,7 @@ struct StemData{
     float3 bioNormal;
     int renderFlag;
     float lifeTime;
+    float flowerSize;
 };
 
 struct StemVertex{
@@ -42,13 +43,19 @@ int _stemVertexCount;
 float _isFloweringTime;
 float _DTime;
 
+float rand(float2 st){
+    return frac(
+        sin(dot(st.xy,float2(12.9898,78.233)))*43758.5453123
+    );
+}
+
 [numthreads(NUMTHRED_VAL,1,1)]
 void CalFlowerGrowth(
     uint3 DID : SV_DISPATCHTHREADID
 ){
     StemData sData;
     StemManage sManage=_read_stemManage_buffer[DID.x];
-    int resampleIndexInStem=_stemVertexCount-1;
+    int resampleIndexInStem=_stemVertexCount-1-1;
     int stemIndex=DID.x;
     int resampleIndex=stemIndex*_stemVertexCount+resampleIndexInStem;
     StemVertex sVertex=_read_stemVertex_buffer[resampleIndex];
@@ -61,6 +68,7 @@ void CalFlowerGrowth(
     sData.bioNormal=sVertex.bioNormal;
     sData.renderFlag=0;
     sData.lifeTime=(sin(_DTime)+1.0)*0.5;
+    sData.flowerSize=(rand(float2(DID.x,0.123))+1.0)*2.0;
 
     if(sManage.stemLifeVal>_isFloweringTime){
         sData.renderFlag=1;
@@ -74,5 +82,12 @@ void CalFlowerGrowth(
         float4(sData.tangent,_stemVertexCount),
         float4(sData.normal,0)
     );
+
+    //   _debug_buffer[DID.x]=float4x4(
+    //     float4(_stemVertexCount,0,0,0),
+    //     float4(0,0,0,0),
+    //     float4(0,0,0,0),
+    //     float4(0,0,0,0)
+    // );
 
 }

@@ -174,7 +174,7 @@ using System.Runtime.InteropServices;
             cal_flower_cs.SetBuffer(kernel_CalFlowerGrowth,"_write_stemDataFlower_buffer",stemDataFlower_buffer);
             cal_flower_cs.SetBuffer(kernel_CalFlowerGrowth,"_read_stemVertex_buffer",gPUFlower_Stem.stemVertex_buffer);
             cal_flower_cs.SetBuffer(kernel_CalFlowerGrowth,"_read_stemManage_buffer",gPUFlower_Stem.stemManage_buffer);
-            cal_flower_cs.SetFloat("_stemVertexCount",gPUFlower_Stem.stemVertexCount);
+            cal_flower_cs.SetInt("_stemVertexCount",gPUFlower_Stem.stemVertexCount);
             cal_flower_cs.SetFloat("_isFloweringTime",isFloweringTime);
             cal_flower_cs.SetFloat("_DTime",Time.time);
 
@@ -182,11 +182,11 @@ using System.Runtime.InteropServices;
 
             cal_flower_cs.Dispatch(kernel_CalFlowerGrowth,gPUFlower_Base.count/gPUFlower_Stem.numthreds_val,1,1);
 
-            Matrix4x4[] resultStemVertex=new Matrix4x4[gPUFlower_Base.count];
-            debug_buffer.GetData(resultStemVertex);
-            int debugNum=10;
-            Debug.Log("resultStemVertex["+debugNum+"] "+resultStemVertex[debugNum]);
-            Debug.Log("gPUFlower_Stem.stemVertexCount: "+gPUFlower_Stem.stemVertexCount);
+            // Matrix4x4[] resultStemVertex=new Matrix4x4[gPUFlower_Base.count];
+            // debug_buffer.GetData(resultStemVertex);
+            // int debugNum=10;
+            // Debug.Log("resultStemVertex["+debugNum+"] "+resultStemVertex[debugNum]);
+            // Debug.Log("gPUFlower_Stem.stemVertexCount: "+gPUFlower_Stem.stemVertexCount);
         }
         #endregion
 

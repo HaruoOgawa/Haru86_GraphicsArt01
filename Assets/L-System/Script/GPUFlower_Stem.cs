@@ -83,6 +83,7 @@
             Vector3 bioNormal;
             int renderFlag;
             float lifeTime;
+            float flowerSize;
             public StemData(int i,Vector3 p,Vector3 t,Vector3 n,Vector3 b){
                 this.resampleIndex=i;
                 this.resampleIndexInStem=-1;
@@ -92,6 +93,7 @@
                 this.bioNormal=b;
                 this.renderFlag=0;
                 this.lifeTime=0;
+                this.flowerSize=Random.Range(2.0f,4.0f);
             }
         }
 
@@ -116,7 +118,7 @@
 
             gPUFlower_Base.stemIsDone=true;
 
-            Debug.Log("stemVertexCount: "+stemVertexCount);
+            //Debug.Log("stemVertexCount: "+stemVertexCount);
         }
 
         void Update()
@@ -181,7 +183,7 @@
                 }
                 initStemManege.Add(stemManage);
 
-                Vector2 initBasePos=Random.insideUnitCircle*500.0f;
+                Vector2 initBasePos=Random.insideUnitCircle*250.0f;
                 initStemBasePosition.Add(new Vector3(initBasePos.x,0,initBasePos.y));
 
                 initStemDebugMatrix.Add(Matrix4x4.identity);

@@ -21,4 +21,4 @@ MonoBehaviour:
   - {x: 0, y: 9.35, z: 0}
   knotMin: 0
   knotMax: 1
-  tWidth: 0.0625
+  tWidth: 0.015625

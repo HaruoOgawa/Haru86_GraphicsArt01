@@ -44,6 +44,7 @@
                 float3 bioNormal;
                 int renderFlag;
                 float lifeTime;
+                float flowerSize;
             };
 
             sampler2D _MainTex;
@@ -56,11 +57,17 @@
 
                 float4 pos=v.vertex;
                 float l=length(pos.xyz);
-                pos.xz*=((sin(_Time.y)+1.0)*0.5*0.8+0.2);
-                pos.y*=((sin(_Time.y)+1.0)*0.5*0.3+0.7);
+                // pos.xz*=((sin(_Time.y)+1.0)*0.5*0.8+0.2);
+                // pos.y*=((sin(_Time.y)+1.0)*0.5*0.3+0.7);
                 // pos.xz*=data.lifeTime*0.8+0.2;
                 // pos.y*=data.lifeTime*0.3+0.7;
-                pos.xyz+=data.position*100.0;
+                pos.xyz*=data.flowerSize;
+                
+                pos.xyz=mul(float3x3(
+                    data.normal,
+                    data.tangent,
+                    data.bioNormal
+                ),pos.xyz)+data.position;
 
                 v2f o;
                 o.vertex = UnityObjectToClipPos(pos);
