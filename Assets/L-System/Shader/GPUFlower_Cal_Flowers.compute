@@ -53,7 +53,7 @@ float rand(float2 st){
 void CalFlowerGrowth(
     uint3 DID : SV_DISPATCHTHREADID
 ){
-    StemData sData;
+    StemData sData=_write_stemDataFlower_buffer[DID.x];
     StemManage sManage=_read_stemManage_buffer[DID.x];
     int resampleIndexInStem=_stemVertexCount-1-1;
     int stemIndex=DID.x;
@@ -67,27 +67,45 @@ void CalFlowerGrowth(
     sData.normal=sVertex.normal;
     sData.bioNormal=sVertex.bioNormal;
     sData.renderFlag=0;
-    sData.lifeTime=(sin(_DTime)+1.0)*0.5;
+    //sData.lifeTime=(sin(_DTime)+1.0)*0.5;
     sData.flowerSize=(rand(float2(DID.x,0.123))+1.0)*2.0;
 
-    if(sManage.stemLifeVal>_isFloweringTime){
-        sData.renderFlag=1;
+    if(sManage.stemLifeVal>=_isFloweringTime){
+        float lifeSign=sManage.signNum;
+        float lifeTime=sData.lifeTime;
+        
+        // if(sData.lifeTime>=_isFloweringTime&&sData.lifeTime<=1.0){
+        //    sData.lifeTime=sData.lifeTime+lifeSign*(1.0/(1.0-_isFloweringTime))*_DTime;
+        //     // sData.lifeTime=1.0;
+
+        // }else if(sData.lifeTime>1.0){
+        //     sData.lifeTime=1.0;
+            
+        // }
+
+        if(sManage.manageLifeCountFlag==1){
+             sData.lifeTime=max(min(sData.lifeTime+lifeSign*(1.0/(1.0-_isFloweringTime))*_DTime,1.0),0.0);
+        }else{
+            sData.lifeTime=1.0;
+        }
+        
+       
+        
+        
+    }else{
+        sData.lifeTime=0.0;
     }    
+    
+    //sData.lifeTime=sManage.stemLifeVal;
+    //sData.lifeTime=1.0;
 
     _write_stemDataFlower_buffer[DID.x]=sData;
 
-    _debug_buffer[DID.x]=float4x4(
-        float4(sData.resampleIndex,sData.resampleIndexInStem,sData.renderFlag,sData.lifeTime),
-        float4(sData.position,stemIndex),
-        float4(sData.tangent,_stemVertexCount),
-        float4(sData.normal,0)
+      _debug_buffer[DID.x]=float4x4(
+        float4(sData.lifeTime,sManage.stemLifeVal,_isFloweringTime,sManage.signNum),
+        float4(0,0,0,0),
+        float4(0,0,0,0),
+        float4(0,0,0,0)
     );
-
-    //   _debug_buffer[DID.x]=float4x4(
-    //     float4(_stemVertexCount,0,0,0),
-    //     float4(0,0,0,0),
-    //     float4(0,0,0,0),
-    //     float4(0,0,0,0)
-    // );
 
 }

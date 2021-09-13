@@ -92,7 +92,7 @@
                 this.normal=n;
                 this.bioNormal=b;
                 this.renderFlag=0;
-                this.lifeTime=0;
+                this.lifeTime=0.0f;
                 this.flowerSize=Random.Range(2.0f,4.0f);
             }
         }

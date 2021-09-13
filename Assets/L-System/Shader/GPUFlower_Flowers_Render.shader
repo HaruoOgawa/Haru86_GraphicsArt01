@@ -59,8 +59,10 @@
                 float l=length(pos.xyz);
                 // pos.xz*=((sin(_Time.y)+1.0)*0.5*0.8+0.2);
                 // pos.y*=((sin(_Time.y)+1.0)*0.5*0.3+0.7);
-                // pos.xz*=data.lifeTime*0.8+0.2;
-                // pos.y*=data.lifeTime*0.3+0.7;
+                pos.xz*=data.lifeTime*0.8+0.2;
+                pos.y*=data.lifeTime*0.3+0.7;
+                //  pos.xz*=data.lifeTime;
+                // pos.y*=data.lifeTime;
                 pos.xyz*=data.flowerSize;
                 
                 pos.xyz=mul(float3x3(
