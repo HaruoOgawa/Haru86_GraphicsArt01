@@ -1,10 +1,44 @@
-﻿#pragma kernel Cal_Flower_Modeling
+﻿#pragma kernel CalFlowerGrowth
 
-#define NUMTHREAD_VAL 256
+#define NUMTHRED_VAL 256
 
-[numthreads(NUMTHREAD_VAL,1,1)]
-void Cal_Flower_Modeling(
+struct StemData{
+    int resampleIndex;
+    int resampleGroupIndex;
+    float3 position;
+    float3 tangent;
+    float3 normal;
+    float3 bioNormal;
+    int renderFlag;
+    float lifeTime;
+};
+
+struct StemVertex{
+    float3 vertice;
+    float3 tangent;
+    float3 normal;
+    float3 bioNormal;
+    int index;
+};
+
+struct StemManage{
+    float stemLifeVal;
+    float stemWaitTime;
+    float signNum;
+    int manageLifeCountFlag;
+    int flowerCount;
+    int flowerStartIndex;
+    int leafCount;
+    int leafStartIndex;
+};
+
+RWStructuredBuffer<StemData> _write_stemDataFlower_buffer;
+RWStructuredBuffer<StemVertex> _read_stemVertex_buffer;
+RWStructuredBuffer<StemManage> _read_stemManage_buffer;
+
+[numthreads(NUMTHRED_VAL,1,1)]
+void CalFlowerGrowth(
     uint3 DID : SV_DISPATCHTHREADID
 ){
-
+    
 }

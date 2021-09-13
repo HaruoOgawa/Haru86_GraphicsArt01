@@ -1,6 +1,5 @@
 ﻿#pragma kernel CalStemBSplineCurveResult
 
-#pragma kernel InitStemManage
 #pragma kernel InitStemGrowth
 
 #pragma kernel CalStemManage
@@ -30,11 +29,14 @@ struct StemManage{
 
 //花や茎を生成するための情報を載せる構造体
 struct StemData{
-    int index;
+    int resampleIndex;
+    int resampleGroupIndex;
     float3 position;
     float3 tangent;
     float3 normal;
     float3 bioNormal;
+    int renderFlag;
+    float lifeTime;
 };
 
 RWStructuredBuffer<float3> _read_stemBasePosition_buffer;
@@ -231,13 +233,6 @@ void CalStemBSplineCurveResult(
 }
 
 [numthreads(NUMTHRED_VAL,1,1)]
-void InitStemManage(
-     uint3 DID : SV_DISPATCHTHREADID
-){
-
-}
-
-[numthreads(NUMTHRED_VAL,1,1)]
 void InitStemGrowth(
      uint3 DID : SV_DISPATCHTHREADID
 ){
@@ -295,16 +290,7 @@ void CalStemManage(
         }
     }
 
-    //sManege.stemWaitTime=(sin(_DTime)+1.0)*0.5;
-
     _write_stemManage_buffer[DID.x]=sManege;
-
-    // _write_stem_debug_bufer[DID.x]=float4x4(
-    //     float4(sManege.manageLifeCountFlag,sManege.signNum,sManege.stemWaitTime,sManege.stemLifeVal),
-    //     float4(_DTime,0,0,0),
-    //     float4(0,0,0,0),
-    //     float4(0,0,0,0)
-    // );
 }
 
 [numthreads(NUMTHRED_VAL,1,1)]
@@ -315,9 +301,6 @@ void CalStemGrowth(
     int idInMyStem=DID.x-stemGroupID*_stemVertexCount;
     StemManage sManege=_read_stemManage_buffer[stemGroupID];
     float life=sManege.stemLifeVal;
-
-    //life=_testLife;
-    // life=(sin(_DTime)+1.0)*0.5;
 
     int resampleStemNodeID=(int)(floor(idInMyStem*life));
     resampleStemNodeID=stemGroupID*_stemVertexCount+resampleStemNodeID;
@@ -332,11 +315,4 @@ void CalStemGrowth(
     stemO.index=result.index;
 
     _write_stemVertex_buffer[DID.x]=stemO;
-
-    // _write_stem_debug_bufer[DID.x]=float4x4(
-    //     float4(life,0,0,0),
-    //     float4(0,0,0,0),
-    //     float4(0,0,0,0),
-    //     float4(0,0,0,0)
-    // );
 }

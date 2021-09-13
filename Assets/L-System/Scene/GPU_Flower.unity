@@ -229,7 +229,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &297393700
 Transform:
   m_ObjectHideFlags: 0
@@ -688,6 +688,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cal_stem_cs: {fileID: 7200000, guid: e1b362389007afa449e164ebf39de711, type: 3}
+  cal_leaf_cs: {fileID: 7200000, guid: c0883b746c7e49043887e6829dc7a3e6, type: 3}
   gPUFlower_Base: {fileID: 364405019}
   bSplineData: {fileID: 11400000, guid: 887d91dfa1297244e8634b349ebdbdb0, type: 2}
   stem_mat: {fileID: 2100000, guid: de71fcefaef0c7c41893b2dc88028815, type: 2}
@@ -807,7 +808,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1959025190
 Transform:
   m_ObjectHideFlags: 0
@@ -839,3 +840,4 @@ MonoBehaviour:
   flowers_mat: {fileID: 2100000, guid: 75f1639db36e4af438316ce70aa9283f, type: 2}
   petalDatas:
   - {fileID: 11400000, guid: 8445dcb7516bdfc4083bb33fb0ee64ba, type: 2}
+  cal_flower_cs: {fileID: 7200000, guid: 1d58a5174ee03dc4baf3eea77657846e, type: 3}

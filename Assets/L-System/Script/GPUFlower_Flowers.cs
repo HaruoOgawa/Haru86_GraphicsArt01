@@ -14,9 +14,12 @@ using System.Runtime.InteropServices;
     [SerializeField] GPUFlower_Stem gPUFlower_Stem;
     [SerializeField] Material flowers_mat;
     [SerializeField] PetalData[] petalDatas;
+    [SerializeField] ComputeShader cal_flower_cs;
     #endregion
 
     #region private region
+    ComputeBuffer stemDataFlower_buffer;
+    int kernel_CalFlowerGrowth=-1;
 
     Mesh flowers_mesh;
     public struct Multi_Flower_Data{
@@ -35,21 +38,42 @@ using System.Runtime.InteropServices;
         {
             //if(gPUFlower_Base.flowersIsDone&&gPUFlower_Base.stemIsDone){
             if(gPUFlower_Base.flowersIsDone&&gPUFlower_Base.stemIsDone&&gPUFlower_Base.leafIsDone){
-                flowers_mat.SetBuffer("_stemDataFlower_buffer",gPUFlower_Stem.stemDataFlower_buffer);
+                Cal_flower_growth();
+                flowers_mat.SetBuffer("_stemDataFlower_buffer",stemDataFlower_buffer);
                 Graphics.DrawMeshInstancedProcedural(flowers_mesh,0,flowers_mat,new Bounds(this.gameObject.transform.position,Vector3.one*500.0f),gPUFlower_Base.count);
             }
         }
 
         void OnDisable(){
-           
+           stemDataFlower_buffer.Release();
         }
 
         void Init(){
+            kernel_CalFlowerGrowth=cal_flower_cs.FindKernel("CalFlowerGrowth");
+
             flowers_mesh=new Mesh();
-            
+            InitBuffer();
             SetupFlowerdata();
         }
 
+        #region Init Field
+        void InitBuffer(){
+             stemDataFlower_buffer=new ComputeBuffer(gPUFlower_Base.count,Marshal.SizeOf(typeof(GPUFlower_Stem.StemData)));
+             
+             List<GPUFlower_Stem.StemData> initFlowerStemData=new List<GPUFlower_Stem.StemData>();
+           
+            List<Matrix4x4> initStemDebugMatrix=new List<Matrix4x4>();
+
+            for(int i=0;i<gPUFlower_Base.count;i++){
+                Vector2 initPos=Random.insideUnitCircle;
+                GPUFlower_Stem.StemData data=new GPUFlower_Stem.StemData(i,new Vector3(initPos.x,0,initPos.y),new Vector3(0,0,0),new Vector3(0,0,0),new Vector3(0,0,0));
+                
+                initFlowerStemData.Add(data);
+               
+            }
+            
+            stemDataFlower_buffer.SetData(initFlowerStemData.ToArray());
+        }
         void SetupFlowerdata(){
             GPUFlower_Base.BaseFlower_Data flower_data=new GPUFlower_Base.BaseFlower_Data();
             flower_data=GPUFlower_Base.Cal_BSpline_Surface(petalDatas[0].controlPoints,petalDatas[0].knotMin,petalDatas[0].knotMax,petalDatas[0].tWidth);
@@ -62,6 +86,7 @@ using System.Runtime.InteropServices;
 
             gPUFlower_Base.flowersIsDone=true;
         }
+        #endregion
 
         #region  MultiFlower
         public static void CalFibonacciPosition(ref List<Vector3> FibonacciPosition,ref List<Quaternion> FibonacciRotation,ref List<Vector4> FibonacciGrowthData,int N=50){
@@ -139,6 +164,16 @@ using System.Runtime.InteropServices;
         }
 
         #endregion
+
+        #region Cal Stem Data
+        void Cal_flower_growth(){
+            cal_flower_cs.SetBuffer(kernel_CalFlowerGrowth,"_write_stemDataFlower_buffer",stemDataFlower_buffer);
+            cal_flower_cs.SetBuffer(kernel_CalFlowerGrowth,"_read_stemVertex_buffer",gPUFlower_Stem.stemVertex_buffer);
+            cal_flower_cs.SetBuffer(kernel_CalFlowerGrowth,"_read_stemManage_buffer",gPUFlower_Stem.stemManage_buffer);
+            cal_flower_cs.Dispatch(kernel_CalFlowerGrowth,gPUFlower_Base.count/gPUFlower_Stem.numthreds_val,1,1);
+        }
+        #endregion
+
     }
 }
 
