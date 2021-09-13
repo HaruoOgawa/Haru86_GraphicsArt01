@@ -35,26 +35,31 @@
                 float3 normal : NORMAL;
             };
 
-            struct StemData{
-                int index;
+           struct StemData{
+                int resampleIndex;
+                int resampleIndexInStem;
                 float3 position;
                 float3 tangent;
                 float3 normal;
                 float3 bioNormal;
+                int renderFlag;
+                float lifeTime;
             };
 
             sampler2D _MainTex;
-            StructuredBuffer<StemData> _stemDataFlower_buffer;
+            StructuredBuffer<StemData> _read_stemDataFlower_buffer;
             float4 _Color;
 
             v2f vert (appdata v,uint id : SV_INSTANCEID)
             {
-                StemData data=_stemDataFlower_buffer[id];
+                StemData data=_read_stemDataFlower_buffer[id];
 
                 float4 pos=v.vertex;
                 float l=length(pos.xyz);
                 pos.xz*=((sin(_Time.y)+1.0)*0.5*0.8+0.2);
                 pos.y*=((sin(_Time.y)+1.0)*0.5*0.3+0.7);
+                // pos.xz*=data.lifeTime*0.8+0.2;
+                // pos.y*=data.lifeTime*0.3+0.7;
                 pos.xyz+=data.position*100.0;
 
                 v2f o;

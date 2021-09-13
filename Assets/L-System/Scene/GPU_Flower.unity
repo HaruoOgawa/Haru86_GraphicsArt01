@@ -696,6 +696,8 @@ MonoBehaviour:
   stemSegments: 12
   stemLength: 10
   testLife: 0.513
+  stemVertexCount: -1
+  numthreds_val: 256
 --- !u!1 &1915276099
 GameObject:
   m_ObjectHideFlags: 0
@@ -841,3 +843,4 @@ MonoBehaviour:
   petalDatas:
   - {fileID: 11400000, guid: 8445dcb7516bdfc4083bb33fb0ee64ba, type: 2}
   cal_flower_cs: {fileID: 7200000, guid: 1d58a5174ee03dc4baf3eea77657846e, type: 3}
+  isFloweringTime: 0.5

@@ -36,8 +36,11 @@ RWStructuredBuffer<StemData> _write_stemDataFlower_buffer;
 RWStructuredBuffer<StemVertex> _read_stemVertex_buffer;
 RWStructuredBuffer<StemManage> _read_stemManage_buffer;
 
+RWStructuredBuffer<float4x4> _debug_buffer;
+
 int _stemVertexCount;
 float _isFloweringTime;
+float _DTime;
 
 [numthreads(NUMTHRED_VAL,1,1)]
 void CalFlowerGrowth(
@@ -57,12 +60,19 @@ void CalFlowerGrowth(
     sData.normal=sVertex.normal;
     sData.bioNormal=sVertex.bioNormal;
     sData.renderFlag=0;
-    sData.lifeTime=0;
+    sData.lifeTime=(sin(_DTime)+1.0)*0.5;
 
     if(sManage.stemLifeVal>_isFloweringTime){
         sData.renderFlag=1;
     }    
 
     _write_stemDataFlower_buffer[DID.x]=sData;
+
+    _debug_buffer[DID.x]=float4x4(
+        float4(sData.resampleIndex,sData.resampleIndexInStem,sData.renderFlag,sData.lifeTime),
+        float4(sData.position,stemIndex),
+        float4(sData.tangent,_stemVertexCount),
+        float4(sData.normal,0)
+    );
 
 }

@@ -115,6 +115,8 @@
             Init_Stem_Growth();
 
             gPUFlower_Base.stemIsDone=true;
+
+            Debug.Log("stemVertexCount: "+stemVertexCount);
         }
 
         void Update()

@@ -21,6 +21,7 @@ using System.Runtime.InteropServices;
 
     #region private region
     ComputeBuffer stemDataFlower_buffer;
+    ComputeBuffer debug_buffer;
     int kernel_CalFlowerGrowth=-1;
 
     Mesh flowers_mesh;
@@ -38,16 +39,16 @@ using System.Runtime.InteropServices;
 
         void Update()
         {
-            //if(gPUFlower_Base.flowersIsDone&&gPUFlower_Base.stemIsDone){
             if(gPUFlower_Base.flowersIsDone&&gPUFlower_Base.stemIsDone&&gPUFlower_Base.leafIsDone){
                 Cal_flower_growth();
-                flowers_mat.SetBuffer("_stemDataFlower_buffer",stemDataFlower_buffer);
+                flowers_mat.SetBuffer("_read_stemDataFlower_buffer",stemDataFlower_buffer);
                 Graphics.DrawMeshInstancedProcedural(flowers_mesh,0,flowers_mat,new Bounds(this.gameObject.transform.position,Vector3.one*500.0f),gPUFlower_Base.count);
             }
         }
 
         void OnDisable(){
            stemDataFlower_buffer.Release();
+           debug_buffer.Release();
         }
 
         void Init(){
@@ -60,10 +61,10 @@ using System.Runtime.InteropServices;
 
         #region Init Field
         void InitBuffer(){
-             stemDataFlower_buffer=new ComputeBuffer(gPUFlower_Base.count,Marshal.SizeOf(typeof(GPUFlower_Stem.StemData)));
-             
-             List<GPUFlower_Stem.StemData> initFlowerStemData=new List<GPUFlower_Stem.StemData>();
-           
+            stemDataFlower_buffer=new ComputeBuffer(gPUFlower_Base.count,Marshal.SizeOf(typeof(GPUFlower_Stem.StemData)));
+            debug_buffer=new ComputeBuffer(gPUFlower_Base.count,Marshal.SizeOf(typeof(Matrix4x4)));
+
+            List<GPUFlower_Stem.StemData> initFlowerStemData=new List<GPUFlower_Stem.StemData>();
             List<Matrix4x4> initStemDebugMatrix=new List<Matrix4x4>();
 
             for(int i=0;i<gPUFlower_Base.count;i++){
@@ -71,10 +72,11 @@ using System.Runtime.InteropServices;
                 GPUFlower_Stem.StemData data=new GPUFlower_Stem.StemData(i,new Vector3(initPos.x,0,initPos.y),new Vector3(0,0,0),new Vector3(0,0,0),new Vector3(0,0,0));
                 
                 initFlowerStemData.Add(data);
-               
+                initStemDebugMatrix.Add(Matrix4x4.identity);
             }
             
             stemDataFlower_buffer.SetData(initFlowerStemData.ToArray());
+            debug_buffer.SetData(initStemDebugMatrix.ToArray());
         }
         void SetupFlowerdata(){
             GPUFlower_Base.BaseFlower_Data flower_data=new GPUFlower_Base.BaseFlower_Data();
@@ -174,7 +176,17 @@ using System.Runtime.InteropServices;
             cal_flower_cs.SetBuffer(kernel_CalFlowerGrowth,"_read_stemManage_buffer",gPUFlower_Stem.stemManage_buffer);
             cal_flower_cs.SetFloat("_stemVertexCount",gPUFlower_Stem.stemVertexCount);
             cal_flower_cs.SetFloat("_isFloweringTime",isFloweringTime);
+            cal_flower_cs.SetFloat("_DTime",Time.time);
+
+            cal_flower_cs.SetBuffer(kernel_CalFlowerGrowth,"_debug_buffer",debug_buffer);
+
             cal_flower_cs.Dispatch(kernel_CalFlowerGrowth,gPUFlower_Base.count/gPUFlower_Stem.numthreds_val,1,1);
+
+            Matrix4x4[] resultStemVertex=new Matrix4x4[gPUFlower_Base.count];
+            debug_buffer.GetData(resultStemVertex);
+            int debugNum=10;
+            Debug.Log("resultStemVertex["+debugNum+"] "+resultStemVertex[debugNum]);
+            Debug.Log("gPUFlower_Stem.stemVertexCount: "+gPUFlower_Stem.stemVertexCount);
         }
         #endregion
 
