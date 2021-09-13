@@ -76,7 +76,7 @@
         //花や茎を生成するための情報を載せる構造体
         public struct StemData{
             int resampleIndex;
-            int resampleGroupIndex;
+            int resampleIndexInStem;
             Vector3 position;
             Vector3 tangent;
             Vector3 normal;
@@ -85,7 +85,7 @@
             float lifeTime;
             public StemData(int i,Vector3 p,Vector3 t,Vector3 n,Vector3 b){
                 this.resampleIndex=i;
-                this.resampleGroupIndex=-1;
+                this.resampleIndexInStem=-1;
                 this.position=p;
                 this.tangent=t;
                 this.normal=n;
@@ -96,7 +96,7 @@
         }
 
         #region Stem_Cs Field
-          int stemVertexCount=-1;
+        [HideInInspector] public  int stemVertexCount=-1;
 
         int stemResult_kernel=-1;
         int InitStemGrowth_kernel=-1;

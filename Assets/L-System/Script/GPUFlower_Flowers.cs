@@ -15,6 +15,8 @@ using System.Runtime.InteropServices;
     [SerializeField] Material flowers_mat;
     [SerializeField] PetalData[] petalDatas;
     [SerializeField] ComputeShader cal_flower_cs;
+    [Range(0.0f,1.0f)]
+    [SerializeField] float isFloweringTime=0.5f;
     #endregion
 
     #region private region
@@ -170,6 +172,8 @@ using System.Runtime.InteropServices;
             cal_flower_cs.SetBuffer(kernel_CalFlowerGrowth,"_write_stemDataFlower_buffer",stemDataFlower_buffer);
             cal_flower_cs.SetBuffer(kernel_CalFlowerGrowth,"_read_stemVertex_buffer",gPUFlower_Stem.stemVertex_buffer);
             cal_flower_cs.SetBuffer(kernel_CalFlowerGrowth,"_read_stemManage_buffer",gPUFlower_Stem.stemManage_buffer);
+            cal_flower_cs.SetFloat("_stemVertexCount",gPUFlower_Stem.stemVertexCount);
+            cal_flower_cs.SetFloat("_isFloweringTime",isFloweringTime);
             cal_flower_cs.Dispatch(kernel_CalFlowerGrowth,gPUFlower_Base.count/gPUFlower_Stem.numthreds_val,1,1);
         }
         #endregion
