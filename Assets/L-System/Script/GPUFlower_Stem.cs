@@ -251,12 +251,12 @@
 
             cal_stem_cs.Dispatch(CalStemManage_kernel,gPUFlower_Base.count/numthreds_val,1,1);
 
-           Matrix4x4[] resultStemVertex=new Matrix4x4[gPUFlower_Base.count];
-            stem_debug_bufer.GetData(resultStemVertex);
-            //int debug_offset=0;
-            //for(int i=0+debug_offset;i<resultStemVertex.Length;i++){
-                Debug.Log("resultStemVertex["+10+"] "+resultStemVertex[10]);
-            //}
+        //    Matrix4x4[] resultStemVertex=new Matrix4x4[gPUFlower_Base.count];
+        //     stem_debug_bufer.GetData(resultStemVertex);
+        //     //int debug_offset=0;
+        //     //for(int i=0+debug_offset;i<resultStemVertex.Length;i++){
+        //         Debug.Log("resultStemVertex["+10+"] "+resultStemVertex[10]);
+        //     //}
 
         }
         void Cal_Stem_Growth(){

@@ -273,14 +273,14 @@ void CalStemManage(
     if(sManege.manageLifeCountFlag==1){
         sManege.stemLifeVal=life+sManege.signNum*_DTime;
         
-        if(life<=0.0){
+        if(life<0.0){
             sManege.manageLifeCountFlag=0;
             sManege.signNum=-sManege.signNum;
             sManege.stemWaitTime=rand(float2(DID.x,0.123))*2.0+1.0;
             sManege.stemLifeVal=0.0;
         }
 
-        if(life>=1.0){
+        if(life>1.0){
             sManege.manageLifeCountFlag=0;
             sManege.signNum=-sManege.signNum;
             sManege.stemWaitTime=rand(float2(DID.x,0.123))*2.0+1.0;
@@ -289,7 +289,7 @@ void CalStemManage(
 
     }else{
         sManege.stemWaitTime=waitTime-_DTime;
-        if(waitTime<=0.0){
+        if(waitTime<0.0){
             sManege.manageLifeCountFlag=1;
             sManege.stemWaitTime=0.0;
         }
@@ -299,12 +299,12 @@ void CalStemManage(
 
     _write_stemManage_buffer[DID.x]=sManege;
 
-    _write_stem_debug_bufer[DID.x]=float4x4(
-        float4(sManege.manageLifeCountFlag,sManege.signNum,sManege.stemWaitTime,sManege.stemLifeVal),
-        float4(0,0,0,0),
-        float4(0,0,0,0),
-        float4(0,0,0,0)
-    );
+    // _write_stem_debug_bufer[DID.x]=float4x4(
+    //     float4(sManege.manageLifeCountFlag,sManege.signNum,sManege.stemWaitTime,sManege.stemLifeVal),
+    //     float4(_DTime,0,0,0),
+    //     float4(0,0,0,0),
+    //     float4(0,0,0,0)
+    // );
 }
 
 [numthreads(NUMTHRED_VAL,1,1)]
