@@ -51,13 +51,15 @@ float rand(float2 st){
 void CalLeafGrowth(
     uint3 DID : SV_DISPATCHTHREADID
 ){
+    int stemIndex=floor(DID.x/2.0);
+
     StemData sData=_write_stemDataLeaf_buffer[DID.x];
-    StemManage sManage=_read_stemManage_buffer[DID.x];
+    StemManage sManage=_read_stemManage_buffer[stemIndex];
     
     // int resampleIndexInStem=_stemVertexCount-1-1;
-     int resampleIndexInStem=(_stemVertexCount/5)+(int)floor(rand(float2(DID.x,0.123))*2.0);
+     int resampleIndexInStem=(_stemVertexCount/5)+(int)floor(rand(float2(DID.x,0.123))*7.0);
     
-    int stemIndex=DID.x;
+    
     int resampleIndex=stemIndex*_stemVertexCount+resampleIndexInStem;
     StemVertex sVertex=_read_stemVertex_buffer[resampleIndex];
 
@@ -69,7 +71,7 @@ void CalLeafGrowth(
     sData.bioNormal=sVertex.bioNormal;
     sData.renderFlag=0;
 
-    sData.flowerSize=(rand(float2(DID.x,0.123))+1.0);
+    sData.flowerSize=(rand(float2(DID.x,0.123))+1.0)*1.5;
 
     if(sManage.stemLifeVal>=_isLeafTime){
         float lifeSign=sManage.signNum;

@@ -20,6 +20,9 @@
             #include "UnityCG.cginc"
             #include "Lighting.cginc"
 
+            #define PI 3.14159265
+            #define rot(a) float2x2(cos(a),-sin(a),sin(a),cos(a))
+
             struct appdata
             {
                 float4 vertex : POSITION;
@@ -51,16 +54,33 @@
             StructuredBuffer<StemData> _read_stemDataLeaf_buffer;
             float4 _Color;
 
+            float rand(float2 st){
+                return frac(
+                    sin(dot(st.xy,float2(12.9898,78.233)))*43758.5453123
+                );
+            }
+
             v2f vert (appdata v,uint id : SV_INSTANCEID)
             {
                 StemData data=_read_stemDataLeaf_buffer[id];
 
                 float4 pos=v.vertex;
                 float l=length(pos.xyz);
-                pos.xz*=data.lifeTime*0.8+0.2;
-                pos.y*=data.lifeTime*0.3+0.7;
+                pos.xyz*=data.lifeTime*0.8+0.2;
+               // pos.y*=data.lifeTime*0.3+0.7;
                 pos.xyz*=data.flowerSize;
                 
+                // float angle=rand(float2(id,0.123))*2.0*PI;
+                float angle=PI*(id%2);
+                pos.xy=mul(rot(angle),pos.xy);
+                pos.yz=mul(rot(
+                    (id%2==1) ? (PI/4.0) : (-PI/4.0)
+                ),pos.yz);
+
+                pos.xz=mul(rot(
+                    (rand(float2(id,0.123))*2.0-1.0)*(PI/6.0)
+                ),pos.xz);
+
                 pos.xyz=mul(float3x3(
                     data.bioNormal,
                     data.normal,

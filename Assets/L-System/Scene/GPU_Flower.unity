@@ -262,6 +262,7 @@ MonoBehaviour:
   petalDatas:
   - {fileID: 11400000, guid: 8445dcb7516bdfc4083bb33fb0ee64ba, type: 2}
   cal_leaf_cs: {fileID: 7200000, guid: c0883b746c7e49043887e6829dc7a3e6, type: 3}
+  isLeafTime: 0.2
 --- !u!1 &364405017
 GameObject:
   m_ObjectHideFlags: 0
