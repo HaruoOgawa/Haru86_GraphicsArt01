@@ -200,7 +200,7 @@ void CalStemBSplineCurveResult(
     int idInMyStem=DID.x-stemGroupID*_stemVertexCount;
     
     float4 cp[6]=_controlPoints;
-    float cpPower=2.5;
+    float cpPower=1.0;
     for(int i=0;i<6;i++){
         cp[i].xyz+=cpPower*float3(rand(float2((float)stemGroupID,0.123+(float)i))*2.0-1.0,
                             rand(float2((float)stemGroupID,0.456+(float)i))*2.0-1.0,

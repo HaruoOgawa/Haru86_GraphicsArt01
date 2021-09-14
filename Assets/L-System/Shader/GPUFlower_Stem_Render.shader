@@ -41,6 +41,7 @@
                 float3 nextTangent : TEXCOORD6;
                 float3 nextNormal : TEXCOORD7;
                 float3 nextBioNormal : TEXCOORD8;
+                 float lifeTime : TEXCOORD9;
             };
 
             struct g2f
@@ -59,10 +60,35 @@
                 int index;
             };
 
+            //花の数など
+            struct StemManage{
+                float stemLifeVal;
+                float stemWaitTime;
+                float signNum;
+                int manageLifeCountFlag;
+                int flowerCount;
+                int flowerStartIndex;
+                int leafCount;
+                int leafStartIndex;
+            };
+
+            //花や茎を生成するための情報を載せる構造体
+            struct StemData{
+                int resampleIndex;
+                int resampleGroupIndex;
+                float3 position;
+                float3 tangent;
+                float3 normal;
+                float3 bioNormal;
+                int renderFlag;
+                float lifeTime;
+            };
+
             sampler2D _MainTex;
             float4 _Color;
 
             StructuredBuffer<StemVertex> _stemVertex_buffer;
+            StructuredBuffer<StemManage> _read_stemManage_buffer;
             int _stemVertexCount;
             int _stemSegments;
             float _stemRadius;
@@ -72,6 +98,10 @@
                 StemVertex sVertex=_stemVertex_buffer[id];
                 StemVertex nextVertex=_stemVertex_buffer[id+1];
                 
+                //get lifetime
+                int stemNodeID=(id-sVertex.index)/_stemVertexCount;
+                StemManage sManage=_read_stemManage_buffer[stemNodeID];
+                float lifeTime=sManage.stemLifeVal;
                 
 
                 v2g o;
@@ -88,13 +118,15 @@
                 o.nextTangent=nextVertex.tangent;
                 o.nextNormal=nextVertex.normal;
                 o.nextBioNormal=nextVertex.bioNormal;
+
+                o.lifeTime=lifeTime;
                 return o;
             }
 
             [maxvertexcount(72)]
             void geom(point v2g input[1],inout TriangleStream<g2f> outStream){
                 
-
+                float lifeTime=input[0].lifeTime;
 
                 if(input[0].idInMyStem>0&&input[0].idInMyStem<_stemVertexCount-1){
                    g2f o;
@@ -103,25 +135,25 @@
                    for(int i=0;i<_stemSegments;i++){
                         
                         float4 pos0=float4(
-                            _stemRadius*normalize(input[0].normal*cos(angleVal*(float)(i))
+                            lifeTime*_stemRadius*normalize(input[0].normal*cos(angleVal*(float)(i))
                             +input[0].bioNormal*sin(angleVal*(float)(i)))
                             +input[0].vertex.xyz
                             ,1.0);
 
                         float4 pos1=float4(
-                            _stemRadius*normalize(input[0].normal*cos(angleVal*(float)(i+1))
+                            lifeTime*_stemRadius*normalize(input[0].normal*cos(angleVal*(float)(i+1))
                             +input[0].bioNormal*sin(angleVal*(float)(i+1)))
                             +input[0].vertex.xyz
                             ,1.0);
 
                         float4 pos2=float4(
-                            _stemRadius*normalize(input[0].nextNormal*cos(angleVal*(float)(i))
+                            lifeTime*_stemRadius*normalize(input[0].nextNormal*cos(angleVal*(float)(i))
                             +input[0].nextBioNormal*sin(angleVal*(float)(i)))
                             +input[0].nextStemVertex.xyz
                             ,1.0);
 
                         float4 pos3=float4(
-                            _stemRadius*normalize(input[0].nextNormal*cos(angleVal*(float)(i+1))
+                            lifeTime*_stemRadius*normalize(input[0].nextNormal*cos(angleVal*(float)(i+1))
                             +input[0].nextBioNormal*sin(angleVal*(float)(i+1)))
                             +input[0].nextStemVertex.xyz
                             ,1.0);

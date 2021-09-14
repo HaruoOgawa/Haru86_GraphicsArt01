@@ -248,6 +248,8 @@
             stem_mat.SetInt("_stemSegments",stemSegments);
             stem_mat.SetFloat("_stemRadius",stemRadius);
             stem_mat.SetFloat("_stemLength",stemLength);
+
+            stem_mat.SetBuffer("_read_stemManage_buffer",stemManage_buffer);
             
             Graphics.DrawMeshInstancedProcedural(stem_point_mesh,0,stem_mat,new Bounds(this.gameObject.transform.position,Vector3.one*500.0f),stemVertexCount*gPUFlower_Base.count);
         }
