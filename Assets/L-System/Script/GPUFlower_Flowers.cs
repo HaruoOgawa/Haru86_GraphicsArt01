@@ -51,7 +51,10 @@ using System.Runtime.InteropServices;
            debug_buffer.Release();
         }
 
-        void Init(){
+       
+
+        #region Init Field
+         void Init(){
             kernel_CalFlowerGrowth=cal_flower_cs.FindKernel("CalFlowerGrowth");
 
             flowers_mesh=new Mesh();
@@ -59,7 +62,6 @@ using System.Runtime.InteropServices;
             SetupFlowerdata();
         }
 
-        #region Init Field
         void InitBuffer(){
             stemDataFlower_buffer=new ComputeBuffer(gPUFlower_Base.count,Marshal.SizeOf(typeof(GPUFlower_Stem.StemData)));
             debug_buffer=new ComputeBuffer(gPUFlower_Base.count,Marshal.SizeOf(typeof(Matrix4x4)));
@@ -190,6 +192,7 @@ using System.Runtime.InteropServices;
         }
         #endregion
 
+        
     }
 }
 

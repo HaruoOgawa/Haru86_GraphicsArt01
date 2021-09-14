@@ -261,6 +261,7 @@ MonoBehaviour:
   leaf_mat: {fileID: 2100000, guid: adadb1f833855d749b2f1b97bb579a55, type: 2}
   petalDatas:
   - {fileID: 11400000, guid: 8445dcb7516bdfc4083bb33fb0ee64ba, type: 2}
+  cal_leaf_cs: {fileID: 7200000, guid: c0883b746c7e49043887e6829dc7a3e6, type: 3}
 --- !u!1 &364405017
 GameObject:
   m_ObjectHideFlags: 0
@@ -342,7 +343,7 @@ AudioSource:
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0

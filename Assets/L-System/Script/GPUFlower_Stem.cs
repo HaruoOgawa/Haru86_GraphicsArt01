@@ -13,7 +13,7 @@
         [HideInInspector] public ComputeBuffer stemResult_buffer;
         [HideInInspector] public ComputeBuffer stemVertex_buffer;
         [HideInInspector] public ComputeBuffer stemManage_buffer;
-        [HideInInspector] public ComputeBuffer stemDataLeaf_buffer;
+        
         [HideInInspector] public ComputeBuffer stemBasePosition_buffer;
         // ComputeBuffer stem_debug_bufer;
         [SerializeField] ComputeShader cal_stem_cs;
@@ -133,7 +133,6 @@
             stemResult_buffer.Release();
             stemVertex_buffer.Release();
             stemManage_buffer.Release();
-            stemDataLeaf_buffer.Release();
             stemBasePosition_buffer.Release();
 
             // stem_debug_bufer.Release();
@@ -151,7 +150,6 @@
             stemResult_buffer=new ComputeBuffer(stemVertexCount*gPUFlower_Base.count,Marshal.SizeOf(typeof(StemVertex)));
             stemVertex_buffer=new ComputeBuffer(stemVertexCount*gPUFlower_Base.count,Marshal.SizeOf(typeof(StemVertex)));
             stemManage_buffer=new ComputeBuffer(gPUFlower_Base.count,Marshal.SizeOf(typeof(StemManage)));
-            stemDataLeaf_buffer=new ComputeBuffer(gPUFlower_Base.count*2,Marshal.SizeOf(typeof(StemData)));
             stemBasePosition_buffer=new ComputeBuffer(gPUFlower_Base.count,Marshal.SizeOf(typeof(Vector3)));
 
             // stem_debug_bufer=new ComputeBuffer(gPUFlower_Base.count,Marshal.SizeOf(typeof(Matrix4x4)));
@@ -162,18 +160,12 @@
         void InitBufferData(){
             List<StemVertex> initStemVertex=new List<StemVertex>();
             List<StemManage> initStemManege=new List<StemManage>();
-            List<StemData> initStemDataLeaf=new List<StemData>();
+           
             List<Vector3> initStemBasePosition=new List<Vector3>();
 
             List<Matrix4x4> initStemDebugMatrix=new List<Matrix4x4>();
 
             for(int i=0;i<gPUFlower_Base.count;i++){
-                Vector2 initPos=Random.insideUnitCircle;
-                StemData data=new StemData(i,new Vector3(initPos.x,0,initPos.y),new Vector3(0,0,0),new Vector3(0,0,0),new Vector3(0,0,0));
-                
-                initStemDataLeaf.Add(data);
-                initStemDataLeaf.Add(data);
-
                 initStemVertex.Add(new StemVertex(i));
                 
                 StemManage stemManage=new StemManage(1);
@@ -191,7 +183,6 @@
             stemResult_buffer.SetData(initStemVertex.ToArray());
             stemVertex_buffer.SetData(initStemVertex.ToArray());
             stemManage_buffer.SetData(initStemManege.ToArray());
-            stemDataLeaf_buffer.SetData(initStemDataLeaf.ToArray());
             stemBasePosition_buffer.SetData(initStemBasePosition.ToArray());
 
             // stem_debug_bufer.SetData(initStemDebugMatrix.ToArray());
