@@ -1,14 +1,21 @@
-﻿// Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel CSMain
+﻿#pragma kernel CalPetalGPUParticle
 
-// Create a RenderTexture with enableRandomWrite flag and set it
-// with cs.SetTexture
-RWTexture2D<float4> Result;
+#define NUMTHREADS_VAL 256
 
-[numthreads(8,8,1)]
-void CSMain (uint3 id : SV_DispatchThreadID)
-{
-    // TODO: insert actual code here!
+struct PetalAnimation{
+    float petalLifeTime;
+    float3 position;
+    float3 rotation;
+    float4 petalColor;
+    float petalAngular;
+};
 
-    Result[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
+RWStructuredBuffer<PetalAnimation> _write_petalAnim_buffer;
+RWStructuredBuffer<float3> _read_petalBasePosition_buffer;
+
+[numthreads(NUMTHREADS_VAL,1,1)]
+void CalPetalGPUParticle(
+    uint3 DID : SV_DISPATCHTHREADID
+){
+
 }
