@@ -597,6 +597,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 466aba6e9d60e5444871d3e21ab3f991, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 8866da30cb787974e9ba72ff7f6eee4f, type: 2}
+  GapOffsetR: 1
+  GapOffsetG: 0.5
+  GapOffsetB: 0.25
+  GapOffsetRY: 0.02
+  GapOffsetGY: 0.03
+  GapOffsetBY: 0.03
+  gapOffsetPower: 0.04
 --- !u!1 &1005383001
 GameObject:
   m_ObjectHideFlags: 0
