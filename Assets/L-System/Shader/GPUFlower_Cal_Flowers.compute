@@ -67,22 +67,12 @@ void CalFlowerGrowth(
     sData.normal=sVertex.normal;
     sData.bioNormal=sVertex.bioNormal;
     sData.renderFlag=0;
-    //sData.lifeTime=(sin(_DTime)+1.0)*0.5;
     sData.flowerSize=(rand(float2(DID.x,0.123))+1.0)*2.0;
 
     if(sManage.stemLifeVal>=_isFloweringTime){
         float lifeSign=sManage.signNum;
         float lifeTime=sData.lifeTime;
-        
-        // if(sData.lifeTime>=_isFloweringTime&&sData.lifeTime<=1.0){
-        //    sData.lifeTime=sData.lifeTime+lifeSign*(1.0/(1.0-_isFloweringTime))*_DTime;
-        //     // sData.lifeTime=1.0;
-
-        // }else if(sData.lifeTime>1.0){
-        //     sData.lifeTime=1.0;
-            
-        // }
-
+       
         if(sManage.manageLifeCountFlag==1){
              sData.lifeTime=max(min(sData.lifeTime+lifeSign*(1.0/(1.0-_isFloweringTime))*_DTime*0.5,1.0),0.0);
         }else{
@@ -95,9 +85,6 @@ void CalFlowerGrowth(
     }else{
         sData.lifeTime=0.0;
     }    
-    
-    //sData.lifeTime=sManage.stemLifeVal;
-    //sData.lifeTime=1.0;
 
     _write_stemDataFlower_buffer[DID.x]=sData;
 

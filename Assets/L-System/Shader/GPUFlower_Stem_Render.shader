@@ -254,6 +254,8 @@
                 diff=(diff+1.0)*0.5;
                 diff+=0.05;
                 col.rgb*=diff*_Color.rgb;
+                col=saturate(col);
+
                 return col;
             }
             ENDCG

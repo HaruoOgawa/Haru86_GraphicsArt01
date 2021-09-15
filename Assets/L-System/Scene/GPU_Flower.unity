@@ -858,4 +858,4 @@ MonoBehaviour:
   petalDatas:
   - {fileID: 11400000, guid: 8445dcb7516bdfc4083bb33fb0ee64ba, type: 2}
   cal_flower_cs: {fileID: 7200000, guid: 1d58a5174ee03dc4baf3eea77657846e, type: 3}
-  isFloweringTime: 0.5
+  isFloweringTime: 0.7
