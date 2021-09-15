@@ -60,7 +60,7 @@
                 col.g+=tex2D(_MainTex,st_G);
                 col.b+=tex2D(_MainTex,st_B);
 
-                col.rgb/=2.0;
+                col.rgb*=0.5;
                 
                 return col;
             }
