@@ -73,6 +73,12 @@ float rand(float2 st){
     );
 }
 
+float3 RandSpherePosition(float2 st,float radiusVal){
+    float r=radiusVal*(rand(st+float2(0.123,0.456))*0.9+0.1);
+    float a=2.0*PI*rand(st+float2(0.963,0.741));
+    return float3(r*cos(a),0.0,r*sin(a));
+}
+
 float GetBasisFunctionFour(float u[10],int j,int k,float t){
     float w1=0.0;
     float w2=0.0;
@@ -211,7 +217,7 @@ void CalStemBSplineCurveResult(
     Cal_BSplineCurve(stemBasePosition,cp,_knotMin,_knotMax,_tWidth,DID);
     
     StemVertex stemO;
-    stemO.vertice=stemBasePosition[idInMyStem]+_read_stemBasePosition_buffer[stemGroupID];
+    stemO.vertice=stemBasePosition[idInMyStem];//+_read_stemBasePosition_buffer[stemGroupID];
     stemO.tangent=float3(0,0,0);
     stemO.normal=float3(0,0,0);
     stemO.bioNormal=float3(0,0,0);
@@ -249,7 +255,7 @@ void InitStemGrowth(
     StemVertex result=_read_stemResult_buffer[resampleStemNodeID];
 
     StemVertex stemO;
-    stemO.vertice=result.vertice;
+    stemO.vertice=result.vertice+_read_stemBasePosition_buffer[stemGroupID];
     stemO.tangent=result.tangent;
     stemO.normal=result.normal;
     stemO.bioNormal=result.bioNormal;
@@ -275,12 +281,13 @@ void CalStemManage(
             sManege.signNum=-sManege.signNum;
             sManege.stemWaitTime=rand(float2(DID.x,0.123))*2.0+1.0;
             sManege.stemLifeVal=0.0;
+            _read_stemBasePosition_buffer[DID.x]=RandSpherePosition(float2(DID.x,_DTime),250.0);
         }
 
         if(life>1.0){
             sManege.manageLifeCountFlag=0;
             sManege.signNum=-sManege.signNum;
-            sManege.stemWaitTime=rand(float2(DID.x,0.123))*2.0+1.0+10.0;
+            sManege.stemWaitTime=rand(float2(DID.x,0.123))*7.0+3.0;
             sManege.stemLifeVal=1.0;
         }
 
@@ -310,7 +317,7 @@ void CalStemGrowth(
     StemVertex result=_read_stemResult_buffer[resampleStemNodeID];
 
     StemVertex stemO;
-    stemO.vertice=result.vertice;
+    stemO.vertice=result.vertice+_read_stemBasePosition_buffer[stemGroupID];
     stemO.tangent=result.tangent;
     stemO.normal=result.normal;
     stemO.bioNormal=result.bioNormal;

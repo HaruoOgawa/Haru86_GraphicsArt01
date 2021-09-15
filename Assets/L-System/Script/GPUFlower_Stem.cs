@@ -214,6 +214,9 @@
             cal_stem_cs.SetBuffer(InitStemGrowth_kernel,"_read_stemResult_buffer",stemResult_buffer);
             cal_stem_cs.SetBuffer(InitStemGrowth_kernel,"_write_stemVertex_buffer",stemVertex_buffer);
             cal_stem_cs.SetBuffer(InitStemGrowth_kernel,"_read_stemManage_buffer",stemManage_buffer);
+
+            cal_stem_cs.SetBuffer(InitStemGrowth_kernel,"_read_stemBasePosition_buffer",stemBasePosition_buffer);
+
             cal_stem_cs.SetInt("_stemVertexCount",stemVertexCount);
             // cal_stem_cs.SetFloat("_testLife",testLife);
             cal_stem_cs.Dispatch(InitStemGrowth_kernel,(stemVertexCount*gPUFlower_Base.count)/numthreds_val,1,1);
@@ -221,6 +224,9 @@
 
         void Cal_Stem_Manage(){
             cal_stem_cs.SetBuffer(CalStemManage_kernel,"_write_stemManage_buffer",stemManage_buffer);
+
+            cal_stem_cs.SetBuffer(CalStemManage_kernel,"_read_stemBasePosition_buffer",stemBasePosition_buffer);
+
             cal_stem_cs.SetFloat("_DTime",Time.deltaTime);
             //cal_stem_cs.SetBuffer(CalStemManage_kernel,"_write_stem_debug_bufer",stem_debug_bufer);
             cal_stem_cs.Dispatch(CalStemManage_kernel,gPUFlower_Base.count/numthreds_val,1,1);
@@ -230,6 +236,9 @@
             cal_stem_cs.SetBuffer(stemGrowth_kernel,"_read_stemResult_buffer",stemResult_buffer);
             cal_stem_cs.SetBuffer(stemGrowth_kernel,"_write_stemVertex_buffer",stemVertex_buffer);
             cal_stem_cs.SetBuffer(stemGrowth_kernel,"_read_stemManage_buffer",stemManage_buffer);
+
+            cal_stem_cs.SetBuffer(stemGrowth_kernel,"_read_stemBasePosition_buffer",stemBasePosition_buffer);
+
             //cal_stem_cs.SetBuffer(stemGrowth_kernel,"_write_stem_debug_bufer",stem_debug_bufer);
             cal_stem_cs.Dispatch(stemGrowth_kernel,(stemVertexCount*gPUFlower_Base.count)/numthreds_val,1,1);
         }
