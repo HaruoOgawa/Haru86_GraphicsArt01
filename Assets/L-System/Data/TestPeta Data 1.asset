@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c29d7740683a0f4397ada0ade2478a5, type: 3}
-  m_Name: TestPeta Data
+  m_Name: TestPeta Data 1
   m_EditorClassIdentifier: 
   controlPoints:
   - {x: 0, y: 0, z: -0.1389077}

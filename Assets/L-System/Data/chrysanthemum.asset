@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c29d7740683a0f4397ada0ade2478a5, type: 3}
+  m_Name: chrysanthemum
+  m_EditorClassIdentifier: 
+  controlPoints:
+  - {x: 0, y: 0, z: -0.1389077}
+  - {x: 1.16, y: 0.5, z: 0.2524655}
+  - {x: 2.95, y: 0.45, z: -0.1389077}
+  - {x: 3.26, y: 1.39, z: 0.2733917}
+  - {x: 5.68, y: -0.03, z: 0.9092102}
+  - {x: 8.6, y: -0.48, z: 0.08377504}
+  knotMin: 0
+  knotMax: 1
+  tWidth: 0.05

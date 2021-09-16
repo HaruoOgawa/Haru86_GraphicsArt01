@@ -60,6 +60,7 @@ float _tWidth;
 int _stemVertexCount;
 float _stemLength;
 float _DTime;
+float _stemGrowthRange;
 
 //debug
 RWStructuredBuffer<float4x4> _write_stem_debug_bufer;
@@ -281,7 +282,7 @@ void CalStemManage(
             sManege.signNum=-sManege.signNum;
             sManege.stemWaitTime=rand(float2(DID.x,0.123))*2.0+1.0;
             sManege.stemLifeVal=0.0;
-            _read_stemBasePosition_buffer[DID.x]=RandSpherePosition(float2(DID.x,_DTime),250.0);
+            _read_stemBasePosition_buffer[DID.x]=RandSpherePosition(float2(DID.x,_DTime),_stemGrowthRange);
         }
 
         if(life>1.0){

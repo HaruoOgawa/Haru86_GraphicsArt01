@@ -11,10 +11,11 @@ public class B_Spline_Curve_Debugger : MonoBehaviour
     [SerializeField] MeshRenderer meshRenderer;
     [SerializeField] MeshFilter meshFilter;
     [SerializeField] Material petal_mat;
+    [SerializeField] int N=50;
     
     void Start()
     {
-       RenderTestPetal();
+    //    RenderTestPetal();
     //    RenderTestBSplineCurve();
     }
 

@@ -25,6 +25,7 @@
         [SerializeField] float stemRadius=1.0f;
         [SerializeField] int stemSegments=12;
         [SerializeField] float stemLength=1.0f;
+        public float stemGrowthRange=250.0f;
 
         #endregion
 
@@ -175,7 +176,7 @@
                 }
                 initStemManege.Add(stemManage);
 
-                Vector2 initBasePos=Random.insideUnitCircle*250.0f;
+                Vector2 initBasePos=Random.insideUnitCircle*stemGrowthRange;
                 initStemBasePosition.Add(new Vector3(initBasePos.x,0,initBasePos.y));
 
                 initStemDebugMatrix.Add(Matrix4x4.identity);
@@ -226,7 +227,7 @@
             cal_stem_cs.SetBuffer(CalStemManage_kernel,"_write_stemManage_buffer",stemManage_buffer);
 
             cal_stem_cs.SetBuffer(CalStemManage_kernel,"_read_stemBasePosition_buffer",stemBasePosition_buffer);
-
+            cal_stem_cs.SetFloat("_stemGrowthRange",stemGrowthRange);
             cal_stem_cs.SetFloat("_DTime",Time.deltaTime);
             //cal_stem_cs.SetBuffer(CalStemManage_kernel,"_write_stem_debug_bufer",stem_debug_bufer);
             cal_stem_cs.Dispatch(CalStemManage_kernel,gPUFlower_Base.count/numthreds_val,1,1);

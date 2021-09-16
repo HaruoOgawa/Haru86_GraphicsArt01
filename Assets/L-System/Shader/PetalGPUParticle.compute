@@ -15,6 +15,7 @@ struct PetalAnimation{
 RWStructuredBuffer<PetalAnimation> _write_petalAnim_buffer;
 float _DTime;
 float _maxPetalParticleHeight;
+float _stemGrowthRange;
 
 float rand(float2 st){
     return frac(
@@ -54,7 +55,7 @@ void CalPetalGPUParticle(
             0.0 
         );
         petal.petalVelocity=float3(0.0,rand(float2(DID.x,_DTime+0.258))*1.5+0.5,0.0);
-        petal.position=RandSpherePosition(float2(DID.x,_DTime),250.0);
+        petal.position=RandSpherePosition(float2(DID.x,_DTime),_stemGrowthRange);
         petal.rotation=float3(rand(float2(DID.x,_DTime+0.321))*2.0*PI,rand(float2(DID.x,_DTime+0.654))*2.0*PI,rand(float2(DID.x,_DTime+0.987))*2.0*PI);
 
         _write_petalAnim_buffer[DID.x]=petal;

@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using UnityEngine;
     using GraphicsArt.GPUFlower.GPUFlower_Base;
-
+    using GraphicsArt.GPUFlower.GPUFlower_Stem;
     using System.Runtime.InteropServices;
 
     public class PetalGPUParticle : MonoBehaviour
@@ -12,6 +12,7 @@
         [SerializeField] PetalData petalData;
         [SerializeField] Material petalMaterial;
         [SerializeField] GPUFlower_Base gPUFlower_Base;
+        [SerializeField] GPUFlower_Stem gPUFlower_Stem;
         [SerializeField] int petalGroupCount=4;
         [SerializeField] ComputeShader cal_petalParticle_cs;
         [SerializeField] float maxPetalParticleHeight=250.0f;
@@ -81,7 +82,7 @@
             petalBasePosition_buffer=new ComputeBuffer(gPUFlower_Base.count*petalGroupCount,Marshal.SizeOf(typeof(Vector3)));
             
             for(int i=0;i<gPUFlower_Base.count*petalGroupCount;i++){
-                Vector2 initPos=Random.insideUnitSphere*250.0f;
+                Vector2 initPos=Random.insideUnitSphere*gPUFlower_Stem.stemGrowthRange;
                 Vector3 initAngular=Random.insideUnitSphere;
                 Vector3 initVelocity=Random.insideUnitSphere;
                 
@@ -108,6 +109,7 @@
             cal_petalParticle_cs.SetBuffer(kernel_CalPetalGPUParticle,"_write_petalAnim_buffer",petalAnim_buffer);
             cal_petalParticle_cs.SetFloat("_DTime",Time.deltaTime*5.0f);
             cal_petalParticle_cs.SetFloat("_maxPetalParticleHeight",maxPetalParticleHeight);
+            cal_petalParticle_cs.SetFloat("_stemGrowthRange",gPUFlower_Stem.stemGrowthRange);
             cal_petalParticle_cs.Dispatch(kernel_CalPetalGPUParticle,(gPUFlower_Base.count*petalGroupCount)/numthread,1,1);
         }
 

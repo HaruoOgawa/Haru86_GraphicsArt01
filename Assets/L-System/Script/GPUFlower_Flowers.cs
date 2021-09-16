@@ -123,7 +123,7 @@ using System.Runtime.InteropServices;
             List<Vector3> FibonacciPosition=new List<Vector3>();
             List<Quaternion> FibonacciRotation=new List<Quaternion>();
             List<Vector4> FibonacciGrowthData=new List<Vector4>();
-            CalFibonacciPosition(ref FibonacciPosition,ref FibonacciRotation,ref FibonacciGrowthData);
+            CalFibonacciPosition(ref FibonacciPosition,ref FibonacciRotation,ref FibonacciGrowthData,N);
 
             List<Vector3> fibonacciVertices=new List<Vector3>();
             List<int> fibonacciIndices=new List<int>();
