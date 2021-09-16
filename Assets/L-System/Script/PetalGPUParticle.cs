@@ -81,7 +81,7 @@
             petalBasePosition_buffer=new ComputeBuffer(gPUFlower_Base.count*petalGroupCount,Marshal.SizeOf(typeof(Vector3)));
             
             for(int i=0;i<gPUFlower_Base.count*petalGroupCount;i++){
-                Vector2 initPos=Random.insideUnitSphere*500.0f;
+                Vector2 initPos=Random.insideUnitSphere*250.0f;
                 Vector3 initAngular=Random.insideUnitSphere;
                 Vector3 initVelocity=Random.insideUnitSphere;
                 
@@ -106,9 +106,9 @@
 
         void Cal_PetalParticle(){
             cal_petalParticle_cs.SetBuffer(kernel_CalPetalGPUParticle,"_write_petalAnim_buffer",petalAnim_buffer);
-            cal_petalParticle_cs.SetFloat("_DTime",Time.deltaTime*10.0f);
+            cal_petalParticle_cs.SetFloat("_DTime",Time.deltaTime*5.0f);
             cal_petalParticle_cs.SetFloat("_maxPetalParticleHeight",maxPetalParticleHeight);
-            cal_petalParticle_cs.Dispatch(kernel_CalPetalGPUParticle,gPUFlower_Base.count/numthread,1,1);
+            cal_petalParticle_cs.Dispatch(kernel_CalPetalGPUParticle,(gPUFlower_Base.count*petalGroupCount)/numthread,1,1);
         }
 
         void Render_PetalGPUParticle(){

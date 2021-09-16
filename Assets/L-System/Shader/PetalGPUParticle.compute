@@ -28,32 +28,6 @@ float3 RandSpherePosition(float2 st,float radiusVal){
     return float3(r*cos(a),0.0,r*sin(a));
 }
 
-float perlinNoise(float2 seeds)
-{
-    float2 i = floor(seeds);
-    float2 f = frac (seeds);
-    float2 i00 = i + float2(0, 0);
-    float2 i10 = i + float2(1, 0);
-    float2 i01 = i + float2(0, 1);
-    float2 i11 = i + float2(1, 1);
-    float2 f00 = f - float2(0, 0);
-    float2 f10 = f - float2(1, 0);
-    float2 f01 = f - float2(0, 1);
-    float2 f11 = f - float2(1, 1);
-    float2 g00 = normalize(-1 + 2 * rand(i00));
-    float2 g10 = normalize(-1 + 2 * rand(i10));
-    float2 g01 = normalize(-1 + 2 * rand(i01));
-    float2 g11 = normalize(-1 + 2 * rand(i11));
-    float2 v00 = dot(g00, f00);
-    float2 v10 = dot(g10, f10);
-    float2 v01 = dot(g01, f01);
-    float2 v11 = dot(g11, f11);
-    float2 p = smoothstep(0, 1, f);
-    float v00v10 = lerp(v00, v10, p.x);
-    float v01v11 = lerp(v01, v11, p.x);
-    return lerp(v00v10, v01v11, p.y) * 0.5 + 0.5;
-}
-
 [numthreads(NUMTHREADS_VAL,1,1)]
 void CalPetalGPUParticle(
     uint3 DID : SV_DISPATCHTHREADID
@@ -65,6 +39,7 @@ void CalPetalGPUParticle(
         float3 petal_v=petal.petalVelocity+angular*_DTime;
         float3 petal_position=petal.position+petal_v*_DTime;
 
+        petal.petalLifeTime=(abs(petal_position)/_maxPetalParticleHeight);
         petal.petalAngular=angular;
         petal.petalVelocity=petal_v;
         petal.position=petal_position;
@@ -72,10 +47,11 @@ void CalPetalGPUParticle(
 
         _write_petalAnim_buffer[DID.x]=petal;
     }else{
+        petal.petalLifeTime=1.0;
         petal.petalAngular=float3(
-             0.0, //rand(float2(DID.x,_DTime+0.369))*2.0-1.0,
+            0.0, 
             rand(float2(DID.x,_DTime+0.258))*1.5+0.5,
-            0.0 //rand(float2(DID.x,_DTime+0.147))*2.0-1.0
+            0.0 
         );
         petal.petalVelocity=float3(0.0,rand(float2(DID.x,_DTime+0.258))*1.5+0.5,0.0);
         petal.position=RandSpherePosition(float2(DID.x,_DTime),250.0);

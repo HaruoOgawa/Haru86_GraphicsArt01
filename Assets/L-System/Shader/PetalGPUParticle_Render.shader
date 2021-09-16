@@ -7,9 +7,10 @@
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Transparent" "Queue"="Transparent"}
         LOD 100
         Cull Off
+        Blend SrcAlpha OneMinusSrcAlpha
 
         Pass
         {
@@ -32,6 +33,7 @@
             {
                 float2 uv : TEXCOORD0;
                float4 vertex : SV_POSITION;
+               float lifeTime : TEXCOORD1;
             };
 
             struct PetalAnimation{
@@ -65,12 +67,14 @@
                 v2f o;
                 o.vertex = UnityObjectToClipPos(pos);
                 o.uv =v.uv;
+                o.lifeTime=petal.petalLifeTime;
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = _Color;
+                // col.a=saturate(i.lifeTime*20.0);
                 return col;
             }
             ENDCG

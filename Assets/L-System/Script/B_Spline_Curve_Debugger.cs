@@ -14,15 +14,15 @@ public class B_Spline_Curve_Debugger : MonoBehaviour
     
     void Start()
     {
-    //    RenderTestPetal();
+       RenderTestPetal();
     //    RenderTestBSplineCurve();
     }
 
     void Update()
     {
-    //    RenderTestPetal();
+       RenderTestPetal();
     //    RenderTestBSplineCurve();
-        RenderPetal();
+        // RenderPetal();
     }
 
     void RenderTestPetal(){
