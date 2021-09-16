@@ -65,11 +65,9 @@
             baseFlower_Data.normals=new List<Vector3>();
             baseFlower_Data.triangles=new List<int>();
 
-            //Mesh B_Spline_Mesh=new Mesh();
             List<B_Spline_Data> data=new List<B_Spline_Data>();
             data.Clear();
             data=Cal_BSplineCurve(controlPoints,knotMin,knotMax,tWidth);
-
 
             List<Vector3> pos=new List<Vector3>();
             pos.Clear();
@@ -106,11 +104,7 @@
                 triangles.Add(pos.Count-i-2);
                 triangles.Add(i+1);
             }
-
-            // B_Spline_Mesh.vertices=pos.ToArray();
-            // B_Spline_Mesh.triangles=triangles.ToArray();
-            
-            
+ 
             for(int i=0;i<pos.Count;i++){
                 baseFlower_Data.vertices.Add(pos[i]);
             }
@@ -172,9 +166,7 @@
             int p=controlPoints.Count;
             int n=3;
             int m=p+n+1;
-            //Debug.Log("m: "+m);
-            // m : 10
-
+           
             float[] u=GetKnotVector(m,n,knotMin,knotMax);
             
             List<float> tDelta=new List<float>();
@@ -196,13 +188,6 @@
                     S[i]=new B_Spline_Data(S[i].position+controlPoints[j]*b,S[i].index);
                 }
             }
-
-            // Debug.Log("u.Length:"+u.Length);
-            //u: 10
-            // Debug.Log("tDelta.Count: "+tDelta.Count);
-            //tDelta.Count: 19
-            // Debug.Log("S.Count: "+S.Count);
-            //S.Count: 19
 
             return S;
 

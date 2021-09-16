@@ -56,9 +56,7 @@ void CalLeafGrowth(
     StemData sData=_write_stemDataLeaf_buffer[DID.x];
     StemManage sManage=_read_stemManage_buffer[stemIndex];
     
-    // int resampleIndexInStem=_stemVertexCount-1-1;
-     int resampleIndexInStem=(_stemVertexCount/5)+(int)floor(rand(float2(DID.x,0.123))*7.0);
-    
+    int resampleIndexInStem=(_stemVertexCount/5)+(int)floor(rand(float2(DID.x,0.123))*7.0);
     
     int resampleIndex=stemIndex*_stemVertexCount+resampleIndexInStem;
     StemVertex sVertex=_read_stemVertex_buffer[resampleIndex];

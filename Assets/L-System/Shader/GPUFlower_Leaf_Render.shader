@@ -67,10 +67,8 @@
                 float4 pos=v.vertex;
                 float l=length(pos.xyz);
                 pos.xyz*=data.lifeTime*0.8+0.2;
-               // pos.y*=data.lifeTime*0.3+0.7;
                 pos.xyz*=data.flowerSize;
                 
-                // float angle=rand(float2(id,0.123))*2.0*PI;
                 float angle=PI*(id%2);
                 pos.xy=mul(rot(angle),pos.xy);
                 pos.yz=mul(rot(

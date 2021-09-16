@@ -74,7 +74,6 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = _Color;
-                // col.a=saturate(i.lifeTime*20.0);
                 return col;
             }
             ENDCG

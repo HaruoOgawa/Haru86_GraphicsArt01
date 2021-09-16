@@ -6,7 +6,6 @@
     }
     SubShader
     {
-        // No culling or depth
         Cull Off ZWrite Off ZTest Always
 
         //pass1
@@ -45,10 +44,6 @@
 
             fixed4 frag (v2f i) : SV_Target
             {
-                // float2 st_R=i.uv+float2(_GapOffsetX.r,_GapOffsetY.r)*_gapOffsetPower;
-                // float2 st_G=i.uv+float2(_GapOffsetX.g,_GapOffsetY.g)*_gapOffsetPower;
-                // float2 st_B=i.uv+float2(_GapOffsetX.b,_GapOffsetY.b)*_gapOffsetPower;
-                
                 float2 vecFromCenter=float2(0.0,0.0)-(i.uv-float2(0.5,0.5))*2.0;
 
                 float2 st_R=i.uv+vecFromCenter*_gapOffsetPower*_GapOffsetX.r;
