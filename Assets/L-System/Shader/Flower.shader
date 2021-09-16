@@ -43,7 +43,7 @@
             {
                 float4 pos=v.vertex;
                 float l=length(pos.xyz);
-                pos.xz*=((sin(_Time.y)+1.0)*0.5*0.8+0.2);
+                // pos.xz*=((sin(_Time.y)+1.0)*0.5*0.8+0.2);
 
                 v2f o;
                 o.vertex = UnityObjectToClipPos(pos);

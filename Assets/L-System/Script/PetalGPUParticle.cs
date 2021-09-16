@@ -14,6 +14,7 @@
         [SerializeField] GPUFlower_Base gPUFlower_Base;
         [SerializeField] int petalGroupCount=4;
         [SerializeField] ComputeShader cal_petalParticle_cs;
+        [SerializeField] float maxPetalParticleHeight=250.0f;
         #endregion
 
         #region private region
@@ -22,13 +23,15 @@
             Vector3 position;
             Vector3 rotation;
             Vector4 petalColor;
-            float petalAngular;
-            public PetalAnimation(float life,Vector3 p,Vector3 r,Vector4 col,float a){
+            Vector3 petalAngular;
+            Vector3 petalVelocity;
+            public PetalAnimation(float life,Vector3 p,Vector3 r,Vector4 col,Vector3 a,Vector3 v){
                 this.petalLifeTime=life;
                 this.position=p;
                 this.rotation=r;
                 this.petalColor=col;
                 this.petalAngular=a;
+                this.petalVelocity=v;
             }
 
         }
@@ -78,33 +81,38 @@
             petalBasePosition_buffer=new ComputeBuffer(gPUFlower_Base.count*petalGroupCount,Marshal.SizeOf(typeof(Vector3)));
             
             for(int i=0;i<gPUFlower_Base.count*petalGroupCount;i++){
-                Vector2 initPos=Random.insideUnitSphere;
+                Vector2 initPos=Random.insideUnitSphere*500.0f;
+                Vector3 initAngular=Random.insideUnitSphere;
+                Vector3 initVelocity=Random.insideUnitSphere;
+                
                 float randomScale=Random.Range(0.5f,2.0f);
                 PetalAnimation petalAnimation=new PetalAnimation(
                     Random.Range(0.0f,1.0f),
-                    new Vector3(0,0,0),
+                    new Vector3(initPos.x,Random.Range(0.0f,250.0f),initPos.y),
                     new Vector3(Random.Range(0.0f,360.0f),Random.Range(0.0f,360.0f),Random.Range(0.0f,360.0f)),
                     new Vector4(Random.Range(0.0f,1.0f),Random.Range(0.0f,1.0f),Random.Range(0.0f,1.0f),1.0f),
-                    Random.Range(1.0f,10.0f)
+                    new Vector3(0,Random.Range(0.5f,2.0f),0),
+                    new Vector3(0.0f,Random.Range(0.5f,2.0f),0.0f)
                 );
+
                 initPetalAnimation.Add(petalAnimation);
                 initPetalBasePosition.Add(new Vector3(initPos.x,Random.Range(0.0f,250.0f),initPos.y));
             }
 
-            petalAnim_buffer.SetData(initPetalBasePosition);
+            petalAnim_buffer.SetData(initPetalAnimation);
             petalBasePosition_buffer.SetData(initPetalBasePosition);
 
         }
 
         void Cal_PetalParticle(){
             cal_petalParticle_cs.SetBuffer(kernel_CalPetalGPUParticle,"_write_petalAnim_buffer",petalAnim_buffer);
-            cal_petalParticle_cs.SetBuffer(kernel_CalPetalGPUParticle,"_read_petalBasePosition_buffer",petalBasePosition_buffer);
+            cal_petalParticle_cs.SetFloat("_DTime",Time.deltaTime*10.0f);
+            cal_petalParticle_cs.SetFloat("_maxPetalParticleHeight",maxPetalParticleHeight);
             cal_petalParticle_cs.Dispatch(kernel_CalPetalGPUParticle,gPUFlower_Base.count/numthread,1,1);
         }
 
         void Render_PetalGPUParticle(){
             petalMaterial.SetBuffer("_read_petalAnim_buffer",petalAnim_buffer);
-            petalMaterial.SetBuffer("_read_petalBasePosition_buffer",petalBasePosition_buffer);
             Graphics.DrawMeshInstancedProcedural(petalGPUParticle_mesh,0,petalMaterial,new Bounds(this.gameObject.transform.position,Vector3.one*500.0f),gPUFlower_Base.count*petalGroupCount);
         }
     }

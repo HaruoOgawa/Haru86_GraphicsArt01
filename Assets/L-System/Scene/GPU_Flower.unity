@@ -738,7 +738,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1658294097
 Transform:
   m_ObjectHideFlags: 0
@@ -765,11 +765,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c87044212e992ac4da77b3d0f9a30bc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  petalData: {fileID: 11400000, guid: 8218d080909500d4c88de797d6037df1, type: 2}
+  petalData: {fileID: 11400000, guid: 8445dcb7516bdfc4083bb33fb0ee64ba, type: 2}
   petalMaterial: {fileID: 2100000, guid: cc669ab6180798e48a01d5838b86753b, type: 2}
   gPUFlower_Base: {fileID: 364405019}
-  petalGroupCount: 4
-  cal_petalParticle_cs: {fileID: 0}
+  petalGroupCount: 1
+  cal_petalParticle_cs: {fileID: 7200000, guid: 425845667738d934597fd3c41a47394d,
+    type: 3}
+  maxPetalParticleHeight: 250
 --- !u!1 &1915276099
 GameObject:
   m_ObjectHideFlags: 0
@@ -815,7 +817,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 351f5af4894c2c64f9540b81e653a082, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bSplineData: {fileID: 11400000, guid: 887d91dfa1297244e8634b349ebdbdb0, type: 2}
+  bSplineData: {fileID: 11400000, guid: a5b6e9df6d98e75489007af8641c3029, type: 2}
+  petalData: {fileID: 11400000, guid: 8218d080909500d4c88de797d6037df1, type: 2}
   meshRenderer: {fileID: 1915276102}
   meshFilter: {fileID: 1915276103}
   petal_mat: {fileID: 2100000, guid: c5dabec01f2b06943a4c5543435ffecd, type: 2}

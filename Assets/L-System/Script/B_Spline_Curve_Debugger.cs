@@ -7,20 +7,22 @@ using GraphicsArt.GPUFlower.GPUFlower_Flowers;
 public class B_Spline_Curve_Debugger : MonoBehaviour
 {
     [SerializeField] BSplineData bSplineData;
+    [SerializeField] PetalData petalData;
     [SerializeField] MeshRenderer meshRenderer;
     [SerializeField] MeshFilter meshFilter;
     [SerializeField] Material petal_mat;
     
     void Start()
     {
-       // RenderTestPetal();
-       RenderTestBSplineCurve();
+    //    RenderTestPetal();
+    //    RenderTestBSplineCurve();
     }
 
     void Update()
     {
-       // RenderTestPetal();
-       RenderTestBSplineCurve();
+    //    RenderTestPetal();
+    //    RenderTestBSplineCurve();
+        RenderPetal();
     }
 
     void RenderTestPetal(){
@@ -68,6 +70,24 @@ public class B_Spline_Curve_Debugger : MonoBehaviour
 
        // Debug.Log("vertices.Count: "+vertices.Count);
 
+    }
+
+    void RenderPetal(){
+        GPUFlower_Base.BaseFlower_Data data=new GPUFlower_Base.BaseFlower_Data();
+        data=GPUFlower_Base.Cal_BSpline_Surface(petalData.controlPoints,petalData.knotMin,petalData.knotMax,petalData.tWidth);
+
+
+        // GPUFlower_Flowers.Multi_Flower_Data multi_Flower_Data=new GPUFlower_Flowers.Multi_Flower_Data();
+        // multi_Flower_Data=GPUFlower_Flowers.RenderMultiFlower(data,new Vector3(0,0,0),new Vector3(0,0,0),new Vector3(0,0,0));
+
+        Mesh petalMesh=new Mesh();
+        petalMesh.vertices=data.vertices.ToArray();
+        petalMesh.triangles=data.triangles.ToArray();
+        petalMesh.normals=data.normals.ToArray();
+        petalMesh.RecalculateNormals();
+
+        meshFilter.mesh=petalMesh;
+        meshRenderer.material=petal_mat;
     }
 
 }
