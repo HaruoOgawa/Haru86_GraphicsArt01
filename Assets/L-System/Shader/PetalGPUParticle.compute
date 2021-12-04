@@ -1,0 +1,63 @@
+﻿#pragma kernel CalPetalGPUParticle
+
+#define NUMTHREADS_VAL 256
+#define PI 3.14159265
+
+struct PetalAnimation{
+    float petalLifeTime;
+    float3 position;
+    float3 rotation;
+    float4 petalColor;
+    float3 petalAngular;
+    float3 petalVelocity;
+};
+
+RWStructuredBuffer<PetalAnimation> _write_petalAnim_buffer;
+float _DTime;
+float _maxPetalParticleHeight;
+float _stemGrowthRange;
+
+float rand(float2 st){
+    return frac(
+        sin(dot(st.xy,float2(12.9898,78.233)))*43758.5453123
+    );
+}
+
+float3 RandSpherePosition(float2 st,float radiusVal){
+    float r=radiusVal*(rand(st+float2(0.123,0.456))*0.9+0.1);
+    float a=2.0*PI*rand(st+float2(0.963,0.741));
+    return float3(r*cos(a),0.0,r*sin(a));
+}
+
+[numthreads(NUMTHREADS_VAL,1,1)]
+void CalPetalGPUParticle(
+    uint3 DID : SV_DISPATCHTHREADID
+){
+    PetalAnimation petal=_write_petalAnim_buffer[DID.x];
+    
+    if(petal.position.y<_maxPetalParticleHeight){
+        float3 angular=petal.petalAngular;
+        float3 petal_v=petal.petalVelocity+angular*_DTime;
+        float3 petal_position=petal.position+petal_v*_DTime;
+
+        petal.petalLifeTime=(abs(petal_position)/_maxPetalParticleHeight);
+        petal.petalAngular=angular;
+        petal.petalVelocity=petal_v;
+        petal.position=petal_position;
+        petal.rotation+=float3(_DTime,_DTime,_DTime)*0.4;
+
+        _write_petalAnim_buffer[DID.x]=petal;
+    }else{
+        petal.petalLifeTime=1.0;
+        petal.petalAngular=float3(
+            0.0, 
+            rand(float2(DID.x,_DTime+0.258))*1.5+0.5,
+            0.0 
+        );
+        petal.petalVelocity=float3(0.0,rand(float2(DID.x,_DTime+0.258))*1.5+0.5,0.0);
+        petal.position=RandSpherePosition(float2(DID.x,_DTime),_stemGrowthRange);
+        petal.rotation=float3(rand(float2(DID.x,_DTime+0.321))*2.0*PI,rand(float2(DID.x,_DTime+0.654))*2.0*PI,rand(float2(DID.x,_DTime+0.987))*2.0*PI);
+
+        _write_petalAnim_buffer[DID.x]=petal;
+    }
+}

@@ -1,0 +1,98 @@
+﻿#pragma kernel CalFlowerGrowth
+
+#define NUMTHRED_VAL 256
+
+struct StemData{
+    int resampleIndex;
+    int resampleIndexInStem;
+    float3 position;
+    float3 tangent;
+    float3 normal;
+    float3 bioNormal;
+    int renderFlag;
+    float lifeTime;
+    float flowerSize;
+};
+
+struct StemVertex{
+    float3 vertice;
+    float3 tangent;
+    float3 normal;
+    float3 bioNormal;
+    int index;
+};
+
+struct StemManage{
+    float stemLifeVal;
+    float stemWaitTime;
+    float signNum;
+    int manageLifeCountFlag;
+    int flowerCount;
+    int flowerStartIndex;
+    int leafCount;
+    int leafStartIndex;
+};
+
+RWStructuredBuffer<StemData> _write_stemDataFlower_buffer;
+RWStructuredBuffer<StemVertex> _read_stemVertex_buffer;
+RWStructuredBuffer<StemManage> _read_stemManage_buffer;
+
+RWStructuredBuffer<float4x4> _debug_buffer;
+
+int _stemVertexCount;
+float _isFloweringTime;
+float _DTime;
+
+float rand(float2 st){
+    return frac(
+        sin(dot(st.xy,float2(12.9898,78.233)))*43758.5453123
+    );
+}
+
+[numthreads(NUMTHRED_VAL,1,1)]
+void CalFlowerGrowth(
+    uint3 DID : SV_DISPATCHTHREADID
+){
+    StemData sData=_write_stemDataFlower_buffer[DID.x];
+    StemManage sManage=_read_stemManage_buffer[DID.x];
+    int resampleIndexInStem=_stemVertexCount-1-1;
+    int stemIndex=DID.x;
+    int resampleIndex=stemIndex*_stemVertexCount+resampleIndexInStem;
+    StemVertex sVertex=_read_stemVertex_buffer[resampleIndex];
+
+    sData.resampleIndex=resampleIndex;
+    sData.resampleIndexInStem=resampleIndexInStem;
+    sData.position=sVertex.vertice;
+    sData.tangent=sVertex.tangent;
+    sData.normal=sVertex.normal;
+    sData.bioNormal=sVertex.bioNormal;
+    sData.renderFlag=0;
+    sData.flowerSize=(rand(float2(DID.x,0.123))+1.0)*2.0;
+
+    if(sManage.stemLifeVal>=_isFloweringTime){
+        float lifeSign=sManage.signNum;
+        float lifeTime=sData.lifeTime;
+       
+        if(sManage.manageLifeCountFlag==1){
+             sData.lifeTime=max(min(sData.lifeTime+lifeSign*(1.0/(1.0-_isFloweringTime))*_DTime*0.5,1.0),0.0);
+        }else{
+            sData.lifeTime=1.0;
+        }
+        
+       
+        
+        
+    }else{
+        sData.lifeTime=0.0;
+    }    
+
+    _write_stemDataFlower_buffer[DID.x]=sData;
+
+      _debug_buffer[DID.x]=float4x4(
+        float4(sData.lifeTime,sManage.stemLifeVal,_isFloweringTime,sManage.signNum),
+        float4(0,0,0,0),
+        float4(0,0,0,0),
+        float4(0,0,0,0)
+    );
+
+}

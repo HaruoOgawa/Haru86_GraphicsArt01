@@ -1,0 +1,328 @@
+﻿#pragma kernel CalStemBSplineCurveResult
+
+#pragma kernel InitStemGrowth
+
+#pragma kernel CalStemManage
+#pragma kernel CalStemGrowth
+
+#define NUMTHRED_VAL 256
+
+struct StemVertex{
+    float3 vertice;
+    float3 tangent;
+    float3 normal;
+    float3 bioNormal;
+    int index;
+};
+
+//花の数など
+struct StemManage{
+    float stemLifeVal;
+    float stemWaitTime;
+    float signNum;
+    int manageLifeCountFlag;
+    int flowerCount;
+    int flowerStartIndex;
+    int leafCount;
+    int leafStartIndex;
+};
+
+//花や茎を生成するための情報を載せる構造体
+struct StemData{
+    int resampleIndex;
+    int resampleGroupIndex;
+    float3 position;
+    float3 tangent;
+    float3 normal;
+    float3 bioNormal;
+    int renderFlag;
+    float lifeTime;
+};
+
+RWStructuredBuffer<float3> _read_stemBasePosition_buffer;
+RWStructuredBuffer<StemVertex> _read_stemResult_buffer;
+RWStructuredBuffer<StemVertex> _write_stemResult_buffer;
+RWStructuredBuffer<StemVertex> _read_stemVertex_buffer;
+RWStructuredBuffer<StemVertex> _write_stemVertex_buffer;
+RWStructuredBuffer<StemManage> _read_stemManage_buffer;
+RWStructuredBuffer<StemManage> _write_stemManage_buffer;
+RWStructuredBuffer<StemData> _read_stemDataFlower_buffer;
+RWStructuredBuffer<StemData> _write_stemDataFlower_buffer;
+RWStructuredBuffer<StemData> _read_stemDataLeaf_buffer;
+RWStructuredBuffer<StemData> _write_stemDataLeaf_buffer;
+
+
+int _contPosArrayLength;
+float4 _controlPoints[6];
+float _knotMin;
+float _knotMax;
+float _tWidth;
+int _stemVertexCount;
+float _stemLength;
+float _DTime;
+float _stemGrowthRange;
+
+//debug
+RWStructuredBuffer<float4x4> _write_stem_debug_bufer;
+float _testLife;
+
+#define PI 3.14159265
+
+float rand(float2 st){
+    return frac(
+        sin(dot(st.xy,float2(12.9898,78.233)))*43758.5453123
+    );
+}
+
+float3 RandSpherePosition(float2 st,float radiusVal){
+    float r=radiusVal*(rand(st+float2(0.123,0.456))*0.9+0.1);
+    float a=2.0*PI*rand(st+float2(0.963,0.741));
+    return float3(r*cos(a),0.0,r*sin(a));
+}
+
+float GetBasisFunctionFour(float u[10],int j,int k,float t){
+    float w1=0.0;
+    float w2=0.0;
+
+    if(u[j]<t&&t<=u[j+1]){
+        return 1.0;
+    }else{
+        return 0.0;
+    }
+    
+}
+
+float GetBasisFunctionThird(float u[10],int j,int k,float t){
+    float w1=0.0;
+    float w2=0.0;
+
+        if(u[j]<t&&t<=u[j+1]){
+            return 1.0;
+        }else{
+            return 0.0;
+        }
+}
+
+float GetBasisFunctionSecond(float u[10],int j,int k,float t){
+    float w1=0.0;
+    float w2=0.0;
+
+    if(k==0){
+        if(u[j]<t&&t<=u[j+1]){
+            return 1.0;
+        }else{
+            return 0.0;
+        }
+    }else{
+        if(u[j+k+1]-u[j+1]!=0.0){
+            w1=GetBasisFunctionThird(u,j+1,k-1,t)*(u[j+k+1]-t)/(u[j+k+1]-u[j+1]);
+        }
+
+        if((u[j+k]-u[j])!=0.0){
+            w2=GetBasisFunctionThird(u,j,k-1,t)*(t-u[j])/(u[j+k]-u[j]);
+        }
+
+        return w1+w2;
+    }
+    
+}
+
+float GetBasisFunction(float u[10],int j,int k,float t){
+    float w1=0.0;
+    float w2=0.0;
+
+    if(k==0){
+        if(u[j]<t&&t<=u[j+1]){
+            return 1.0;
+        }else{
+            return 0.0;
+        }
+    }else{
+        if(u[j+k+1]-u[j+1]!=0.0){
+            w1=GetBasisFunctionSecond(u,j+1,k-1,t)*(u[j+k+1]-t)/(u[j+k+1]-u[j+1]);
+        }
+
+        if((u[j+k]-u[j])!=0.0){
+            w2=GetBasisFunctionSecond(u,j,k-1,t)*(t-u[j])/(u[j+k]-u[j]);
+        }
+
+        return w1+w2;
+    }
+    
+}
+
+void Cal_BSplineCurve(inout float3 S[64],float4 controlPoints[6],float knotMin,float knotMax,float tWidth,uint3 DID){
+    int p=6;
+    int n=3;
+    int m=p+n+1;
+ 
+    //GetKnotVector
+    float u[10];
+    int knotN=n+1;
+    
+    for(int i=0;i<m;i++){
+        if(i>=0&&i<knotN){
+            u[i]=knotMin;
+        }else if(i>=knotN&&i<(m-knotN)){
+            int knotWidth=m-knotN*2;
+            float knotVal=(knotMax-knotMin)/(float)(knotWidth+1);
+            knotVal=knotVal*(float)(i-knotN+1);
+            u[i]=knotVal;
+        }else if(i>=(m-knotN)&&i<m){
+            u[i]=knotMax;
+        }
+    }
+    
+    float tDelta[64];
+    int num=(int)((knotMax-knotMin)/tWidth);
+    for(int i=0;i<num;i++){
+        tDelta[i]=(float)(tWidth*i);
+    }
+
+    for(int i=0;i<64;i++){
+        S[i]=float3(0,0,0);
+    }
+    
+    S[0]=controlPoints[0].xyz;
+    
+    for(int i=1;i<64;i++){
+        for(int j=0;j<p;j++){
+            float b=GetBasisFunction(u,j,n,tDelta[i]);
+            S[i]=S[i]+controlPoints[j].xyz*b;
+        }
+    }
+}
+
+[numthreads(NUMTHRED_VAL,1,1)]
+void CalStemBSplineCurveResult(
+    uint3 DID : SV_DISPATCHTHREADID
+){
+    float3 stemBasePosition[64];
+    for(int i=0;i<64;i++){
+        stemBasePosition[i]=float3(0,0,0);
+    }
+
+    float3 resampleControlPoints[6];
+    int stemGroupID=floor(DID.x/_stemVertexCount);
+    int idInMyStem=DID.x-stemGroupID*_stemVertexCount;
+    
+    float4 cp[6]=_controlPoints;
+    float cpPower=1.0;
+    for(int i=0;i<6;i++){
+        cp[i].xyz+=((i==5)? 0 : 1)*cpPower*float3(rand(float2((float)stemGroupID,0.123+(float)i))*2.0-1.0,
+                            rand(float2((float)stemGroupID,0.456+(float)i))*2.0-1.0,
+                            rand(float2((float)stemGroupID,0.789+(float)i))*2.0-1.0
+                            );
+    }
+
+    Cal_BSplineCurve(stemBasePosition,cp,_knotMin,_knotMax,_tWidth,DID);
+    
+    StemVertex stemO;
+    stemO.vertice=stemBasePosition[idInMyStem];
+    stemO.tangent=float3(0,0,0);
+    stemO.normal=float3(0,0,0);
+    stemO.bioNormal=float3(0,0,0);
+
+    if(idInMyStem>0&&idInMyStem<64-1){
+        float3 stemTangent=normalize(stemBasePosition[idInMyStem+1]-stemBasePosition[idInMyStem-1]);
+        float3 stemNormal=normalize(cross(stemTangent,float3(1,0,0)));
+        float3 stemBioNormal=normalize(cross(stemTangent,stemNormal));
+
+        stemO.tangent=stemTangent;
+        stemO.normal=stemNormal;
+        stemO.bioNormal=stemBioNormal;
+
+    }
+
+    stemO.index=idInMyStem;
+
+    _write_stemResult_buffer[DID.x]=stemO;
+}
+
+[numthreads(NUMTHRED_VAL,1,1)]
+void InitStemGrowth(
+     uint3 DID : SV_DISPATCHTHREADID
+){
+    int stemGroupID=floor(DID.x/_stemVertexCount);
+    int idInMyStem=DID.x-stemGroupID*_stemVertexCount;
+    StemManage sManege=_read_stemManage_buffer[stemGroupID];
+    float life=sManege.stemLifeVal;
+
+    life=_testLife;
+
+    int resampleStemNodeID=(int)(floor(idInMyStem*life));
+    resampleStemNodeID=stemGroupID*_stemVertexCount+resampleStemNodeID;
+
+    StemVertex result=_read_stemResult_buffer[resampleStemNodeID];
+
+    StemVertex stemO;
+    stemO.vertice=result.vertice+_read_stemBasePosition_buffer[stemGroupID];
+    stemO.tangent=result.tangent;
+    stemO.normal=result.normal;
+    stemO.bioNormal=result.bioNormal;
+    stemO.index=result.index;
+
+    _write_stemVertex_buffer[DID.x]=stemO;
+}
+
+[numthreads(NUMTHRED_VAL,1,1)]
+void CalStemManage(
+     uint3 DID : SV_DISPATCHTHREADID
+){
+    StemManage sManege=_write_stemManage_buffer[DID.x];
+    float life=sManege.stemLifeVal;
+    float waitTime=sManege.stemWaitTime;
+    _DTime*=0.2;
+
+    if(sManege.manageLifeCountFlag==1){
+        sManege.stemLifeVal=life+sManege.signNum*_DTime;
+        
+        if(life<0.0){
+            sManege.manageLifeCountFlag=0;
+            sManege.signNum=-sManege.signNum;
+            sManege.stemWaitTime=rand(float2(DID.x,0.123))*2.0+1.0;
+            sManege.stemLifeVal=0.0;
+            _read_stemBasePosition_buffer[DID.x]=RandSpherePosition(float2(DID.x,_DTime),_stemGrowthRange);
+        }
+
+        if(life>1.0){
+            sManege.manageLifeCountFlag=0;
+            sManege.signNum=-sManege.signNum;
+            sManege.stemWaitTime=rand(float2(DID.x,0.123))*7.0+3.0;
+            sManege.stemLifeVal=1.0;
+        }
+
+    }else{
+        sManege.stemWaitTime=waitTime-_DTime;
+        if(waitTime<0.0){
+            sManege.manageLifeCountFlag=1;
+            sManege.stemWaitTime=0.0;
+        }
+    }
+
+    _write_stemManage_buffer[DID.x]=sManege;
+}
+
+[numthreads(NUMTHRED_VAL,1,1)]
+void CalStemGrowth(
+     uint3 DID : SV_DISPATCHTHREADID
+){
+    int stemGroupID=floor(DID.x/_stemVertexCount);
+    int idInMyStem=DID.x-stemGroupID*_stemVertexCount;
+    StemManage sManege=_read_stemManage_buffer[stemGroupID];
+    float life=sManege.stemLifeVal;
+
+    int resampleStemNodeID=(int)(floor(idInMyStem*life));
+    resampleStemNodeID=stemGroupID*_stemVertexCount+resampleStemNodeID;
+
+    StemVertex result=_read_stemResult_buffer[resampleStemNodeID];
+
+    StemVertex stemO;
+    stemO.vertice=result.vertice+_read_stemBasePosition_buffer[stemGroupID];
+    stemO.tangent=result.tangent;
+    stemO.normal=result.normal;
+    stemO.bioNormal=result.bioNormal;
+    stemO.index=result.index;
+
+    _write_stemVertex_buffer[DID.x]=stemO;
+}
